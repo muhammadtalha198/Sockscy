@@ -1,0 +1,230 @@
+[
+  {
+    "id": "sunny-side-up",
+    "name": "Sunny Side Up",
+    "price": 1250,
+    "collection": "eggs",
+    "colors": ["black", "yellow", "white"],
+    "sizes": ["S", "M", "L"],
+    "stock": { "S": 1, "M": 2, "L": 0 },
+    "tile": "yellow",
+    "featured": false,
+    "art": { "pattern": "eggs", "base": "#111111", "trim": "#f4d500" },
+    "description": "fried eggs on black crew socks. the skate-day pair that started it all — breakfast you can wear to the park.",
+    "details": ["crew length", "cotton blend, thrifted & washed", "one pair per size, then it's gone"],
+    "images": [
+      { "src": null, "view": "kick", "alt": "Sunny Side Up socks: black crew socks with fried-egg print, worn with legs kicked up against a yellow background" },
+      { "src": null, "view": "pair", "alt": "Sunny Side Up socks laid flat as a pair on yellow" },
+      { "src": null, "view": "detail", "alt": "Close-up of the fried-egg pattern on the Sunny Side Up socks" }
+    ]
+  },
+  {
+    "id": "matcha-mornings",
+    "name": "Matcha Mornings",
+    "price": 1150,
+    "collection": "eggs",
+    "colors": ["green", "white"],
+    "sizes": ["S", "M", "L"],
+    "stock": { "S": 2, "M": 1, "L": 1 },
+    "tile": "pink",
+    "featured": false,
+    "art": { "pattern": "matcha", "base": "#f5f1e8", "trim": "#1c7d56" },
+    "description": "part of the breakfast club. tiny matcha cups on cream socks for people who say 'i'm not a morning person' at 7am.",
+    "details": ["crew length", "cotton blend, thrifted & washed", "pairs well with eggs"],
+    "images": [
+      { "src": null, "view": "kick", "alt": "Matcha Mornings socks: cream socks with green matcha-cup print, worn legs-up against pink" },
+      { "src": null, "view": "pair", "alt": "Matcha Mornings socks laid flat as a pair on pink" },
+      { "src": null, "view": "detail", "alt": "Close-up of the matcha cup pattern" }
+    ]
+  },
+  {
+    "id": "avo-toast",
+    "name": "Avo Toast",
+    "price": 1150,
+    "collection": "fruits",
+    "colors": ["green", "yellow"],
+    "sizes": ["S", "M", "L"],
+    "stock": { "S": 0, "M": 2, "L": 1 },
+    "tile": "red",
+    "featured": true,
+    "art": { "pattern": "avocado", "base": "#b9d77a", "trim": "#1c7d56" },
+    "description": "avocado halves, pit included. a whole millennial personality, now for your ankles.",
+    "details": ["crew length", "cotton blend, thrifted & washed", "no toast included"],
+    "images": [
+      { "src": null, "view": "kick", "alt": "Avo Toast socks: light green socks with avocado-half print, worn legs-up against red" },
+      { "src": null, "view": "pair", "alt": "Avo Toast socks laid flat as a pair on red" },
+      { "src": null, "view": "detail", "alt": "Close-up of the avocado pattern" }
+    ]
+  },
+  {
+    "id": "just-peachy",
+    "name": "Just Peachy",
+    "price": 1050,
+    "collection": "fruits",
+    "colors": ["pink", "orange"],
+    "sizes": ["S", "M", "L"],
+    "stock": { "S": 1, "M": 1, "L": 1 },
+    "tile": "green",
+    "featured": false,
+    "art": { "pattern": "peach", "base": "#ffc2d6", "trim": "#ff7a3d" },
+    "description": "soft pink socks covered in little peaches. everything is fine. everything is peachy.",
+    "details": ["ankle-crew length", "cotton blend, thrifted & washed"],
+    "images": [
+      { "src": null, "view": "kick", "alt": "Just Peachy socks: pink socks with peach print, worn legs-up against green" },
+      { "src": null, "view": "pair", "alt": "Just Peachy socks laid flat as a pair on green" },
+      { "src": null, "view": "detail", "alt": "Close-up of the peach pattern" }
+    ]
+  },
+  {
+    "id": "pizza-party",
+    "name": "Pizza Party",
+    "price": 1350,
+    "collection": "fruits",
+    "colors": ["red", "yellow"],
+    "sizes": ["S", "M", "L"],
+    "stock": { "S": 1, "M": 0, "L": 2 },
+    "tile": "yellow",
+    "featured": true,
+    "art": { "pattern": "pizza", "base": "#e63a3f", "trim": "#f4d500" },
+    "description": "tomato is a fruit, so pizza is a fruit. we don't make the rules. pepperoni slices on red socks.",
+    "details": ["crew length", "cotton blend, thrifted & washed", "ships great in the pizza-box gift pack"],
+    "images": [
+      { "src": null, "view": "kick", "alt": "Pizza Party socks: red socks with pizza-slice print, worn legs-up against yellow" },
+      { "src": null, "view": "pair", "alt": "Pizza Party socks laid flat as a pair on yellow" },
+      { "src": null, "view": "detail", "alt": "Close-up of the pizza slice pattern" }
+    ]
+  },
+  {
+    "id": "heartbreaker",
+    "name": "Heartbreaker",
+    "price": 1100,
+    "collection": "hearts",
+    "colors": ["pink", "red"],
+    "sizes": ["S", "M", "L"],
+    "stock": { "S": 2, "M": 2, "L": 1 },
+    "tile": "green",
+    "featured": true,
+    "art": { "pattern": "hearts", "base": "#ff52a1", "trim": "#e63a3f" },
+    "description": "red hearts on hot pink. wear your heart on your sock instead of your sleeve.",
+    "details": ["crew length", "cotton blend, thrifted & washed"],
+    "images": [
+      { "src": null, "view": "kick", "alt": "Heartbreaker socks: pink socks with red heart print, worn legs-up against green" },
+      { "src": null, "view": "pair", "alt": "Heartbreaker socks laid flat as a pair on green" },
+      { "src": null, "view": "detail", "alt": "Close-up of the heart pattern" }
+    ]
+  },
+  {
+    "id": "flower-power",
+    "name": "Flower Power",
+    "price": 1150,
+    "collection": "hearts",
+    "colors": ["orange", "white", "yellow"],
+    "sizes": ["S", "M", "L"],
+    "stock": { "S": 1, "M": 1, "L": 0 },
+    "tile": "pink",
+    "featured": false,
+    "art": { "pattern": "flowers", "base": "#e8962e", "trim": "#f4d500" },
+    "description": "doodle daisies on burnt orange. thrifted from a very good year. flowers are just hearts that grew petals.",
+    "details": ["crew length", "ribbed cuff", "cotton blend, thrifted & washed"],
+    "images": [
+      { "src": null, "view": "kick", "alt": "Flower Power socks: orange socks with white daisy print, worn legs-up against pink" },
+      { "src": null, "view": "pair", "alt": "Flower Power socks laid flat as a pair on pink" },
+      { "src": null, "view": "detail", "alt": "Close-up of the daisy pattern" }
+    ]
+  },
+  {
+    "id": "checkmate",
+    "name": "Checkmate",
+    "price": 1250,
+    "collection": "checkers",
+    "colors": ["black", "white"],
+    "sizes": ["S", "M", "L"],
+    "stock": { "S": 2, "M": 2, "L": 2 },
+    "tile": "red",
+    "featured": false,
+    "art": { "pattern": "checker", "base": "#ffffff", "trim": "#111111" },
+    "description": "black and white checkerboard. matches your deck, your vans and your entire personality.",
+    "details": ["crew length", "cotton blend, thrifted & washed", "skate approved"],
+    "images": [
+      { "src": null, "view": "kick", "alt": "Checkmate socks: black and white checkerboard socks, worn legs-up against red" },
+      { "src": null, "view": "pair", "alt": "Checkmate socks laid flat as a pair on red" },
+      { "src": null, "view": "detail", "alt": "Close-up of the checkerboard pattern" }
+    ]
+  },
+  {
+    "id": "acid-smile",
+    "name": "Acid Smile",
+    "price": 1300,
+    "collection": "checkers",
+    "colors": ["yellow", "black"],
+    "sizes": ["S", "M", "L"],
+    "stock": { "S": 1, "M": 1, "L": 1 },
+    "tile": "pink",
+    "featured": true,
+    "art": { "pattern": "smiley", "base": "#111111", "trim": "#f4d500" },
+    "description": "y2k smileys on black. they're smiling. you should be too. it's just socks.",
+    "details": ["crew length", "cotton blend, thrifted & washed"],
+    "images": [
+      { "src": null, "view": "kick", "alt": "Acid Smile socks: black socks with yellow smiley print, worn legs-up against pink" },
+      { "src": null, "view": "pair", "alt": "Acid Smile socks laid flat as a pair on pink" },
+      { "src": null, "view": "detail", "alt": "Close-up of the smiley pattern" }
+    ]
+  },
+  {
+    "id": "stripe-club",
+    "name": "Stripe Club",
+    "price": 950,
+    "collection": "checkers",
+    "colors": ["blue", "orange", "white"],
+    "sizes": ["S", "M", "L"],
+    "stock": { "S": 2, "M": 1, "L": 2 },
+    "tile": "yellow",
+    "featured": false,
+    "art": { "pattern": "stripes", "base": "#f5f1e8", "trim": "#111111" },
+    "description": "retro tv stripes in blue, orange and cream. stripes are just checkers that gave up halfway.",
+    "details": ["crew length", "cotton blend, thrifted & washed"],
+    "images": [
+      { "src": null, "view": "kick", "alt": "Stripe Club socks: blue, orange and cream striped socks, worn legs-up against yellow" },
+      { "src": null, "view": "pair", "alt": "Stripe Club socks laid flat as a pair on yellow" },
+      { "src": null, "view": "detail", "alt": "Close-up of the stripe pattern" }
+    ]
+  },
+  {
+    "id": "cool-cat",
+    "name": "Cool Cat",
+    "price": 1200,
+    "collection": "creatures",
+    "colors": ["orange", "black"],
+    "sizes": ["S", "M", "L"],
+    "stock": { "S": 1, "M": 2, "L": 1 },
+    "tile": "red",
+    "featured": false,
+    "art": { "pattern": "cats", "base": "#ff9b3d", "trim": "#111111" },
+    "description": "orange cat energy, one brain cell, many little cat faces. sold as a pair, unlike your cat.",
+    "details": ["crew length", "cotton blend, thrifted & washed"],
+    "images": [
+      { "src": null, "view": "kick", "alt": "Cool Cat socks: orange socks with cat-face print, worn legs-up against red" },
+      { "src": null, "view": "pair", "alt": "Cool Cat socks laid flat as a pair on red" },
+      { "src": null, "view": "detail", "alt": "Close-up of the cat face pattern" }
+    ]
+  },
+  {
+    "id": "blob-gang",
+    "name": "Blob Gang",
+    "price": 1450,
+    "collection": "creatures",
+    "colors": ["pink", "green"],
+    "sizes": ["S", "M", "L"],
+    "stock": { "S": 0, "M": 1, "L": 0 },
+    "tile": "green",
+    "featured": false,
+    "art": { "pattern": "blobs", "base": "#1c7d56", "trim": "#ff52a1" },
+    "description": "little pink blob monsters with big teeth. found in a market bin, never seen again. this is the only pair.",
+    "details": ["crew length", "cotton blend, thrifted & washed", "true one of one"],
+    "images": [
+      { "src": null, "view": "kick", "alt": "Blob Gang socks: green socks with pink blob-monster print, worn legs-up against green" },
+      { "src": null, "view": "pair", "alt": "Blob Gang socks laid flat as a pair on green" },
+      { "src": null, "view": "detail", "alt": "Close-up of the blob monster pattern" }
+    ]
+  }
+]
