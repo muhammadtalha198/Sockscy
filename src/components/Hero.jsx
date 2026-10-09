@@ -43,9 +43,16 @@ export default function Hero() {
 
   // physics is a bonus: load it once the page is idle (after the intro)
   useEffect(() => {
-    if (reduced || !introDone) return
+    if (!introDone) return
+    if (reduced) {
+      // reduced motion switched on mid-visit: unmount the canvas (destroys the world)
+      setLoadPhysics(false)
+      setWorld(null)
+      return
+    }
     return whenIdle(() => setLoadPhysics(true), 1200)
   }, [reduced, introDone])
+  const openQuickView = useUi((s) => s.openQuickView)
 
   async function enableTilt() {
     if (!world) return
@@ -112,7 +119,7 @@ export default function Hero() {
         </Sticker>
         {badge('absolute bottom-2 left-[36%] z-30 w-24')}
         {world && (
-          <p className="hero-hint absolute left-0 top-full z-30 mt-0.5 text-[0.8rem] font-extrabold lowercase" data-hidden={touched || undefined}>
+          <p className="hero-hint absolute left-0 top-full z-30 mt-0.5 text-[0.8rem] font-extrabold lowercase" data-hidden={touched || undefined} aria-hidden="true">
             ↑ drag, throw &amp; stack the socks
           </p>
         )}
@@ -171,7 +178,7 @@ export default function Hero() {
           </button>
         )}
         {world && (
-          <p className="hero-hint mt-4 hidden text-sm font-extrabold lowercase md:block" data-hidden={touched || undefined}>
+          <p className="hero-hint mt-4 hidden text-sm font-extrabold lowercase md:block" data-hidden={touched || undefined} aria-hidden="true">
             psst — grab a sock and throw it. click one for a quick look.
           </p>
         )}
@@ -181,6 +188,26 @@ export default function Hero() {
       {badge('absolute z-30 hidden md:block md:bottom-6 md:right-[6%] md:w-36 lg:bottom-[8%] lg:right-[28%] lg:w-40')}
 
       {loadPhysics && <PhysicsLayer sectionRef={sectionRef} onReady={setWorld} />}
+
+      {/* keyboard path to the quick views the falling socks open (shown when focused) */}
+      {world && (
+        <nav
+          aria-label="quick look at the socks in the pile"
+          className="sr-only focus-within:not-sr-only focus-within:absolute focus-within:inset-x-0 focus-within:bottom-4 focus-within:z-50 focus-within:px-gutter"
+        >
+          <ul className="flex flex-wrap gap-2">
+            {world.pool
+              .filter((item) => item.kind === 'sock')
+              .map(({ product }) => (
+                <li key={product.id}>
+                  <button type="button" className="btn btn-sm btn-offwhite" onClick={() => openQuickView(product.id)}>
+                    quick look: {product.name}
+                  </button>
+                </li>
+              ))}
+          </ul>
+        </nav>
+      )}
     </section>
   )
 }

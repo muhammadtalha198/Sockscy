@@ -391,9 +391,11 @@ html.has-cursor :is(input, textarea, select, [contenteditable="true"]) {
   40% { transform: scale(1.04) rotate(0deg); opacity: 1; }
   100% { transform: scale(1.2) rotate(10deg); opacity: 0; }
 }
+.spin-stage:focus-visible { outline-offset: -8px; } /* the carousel track clips outer rings */
+/* bottom-left: clear of the "one of one" / "sold out" badge (top-left) and the arrows (bottom-right) */
 .spin-hint {
   position: absolute;
-  top: 1rem;
+  bottom: 1.1rem;
   left: 1rem;
   padding: 0.3rem 0.75rem;
   border: 2px solid #000;
@@ -464,10 +466,11 @@ html.has-cursor :is(input, textarea, select, [contenteditable="true"]) {
   60% { transform: translateX(3px) rotate(2deg); }
   80% { transform: translateX(-1px); }
 }
-.side-tab-count { animation: count-pop var(--dur-med) var(--ease-overshoot) both; color: var(--color-yellow); }
+.side-tab-count { animation: count-pop var(--dur-med) var(--ease-overshoot) both; }
+/* yellow only while popping, then back to the tab's own (hover-aware) ink */
 @keyframes count-pop {
-  0% { transform: scale(1); }
-  40% { transform: scale(1.9); }
+  0% { transform: scale(1); color: var(--color-yellow); }
+  40% { transform: scale(1.9); color: var(--color-yellow); }
   100% { transform: scale(1); }
 }
 .cart-toast {

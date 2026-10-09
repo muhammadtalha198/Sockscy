@@ -33,13 +33,21 @@ export default function GiantHeadline({ as: Tag = 'h2', lines, size = 'giant', c
             data-from={l.from || (i % 2 ? 'right' : 'left')}
             style={{ transitionDelay: `${i * 90}ms`, ...l.style }}
           >
-            {l.letters
-              ? [...l.text].map((ch, k) => (
-                  <span key={k} className="giant-letter">
-                    {ch}
-                  </span>
-                ))
-              : l.text}
+            {l.letters ? (
+              <>
+                {/* split for the physics letter shake; screen readers get the word once */}
+                <span aria-hidden="true">
+                  {[...l.text].map((ch, k) => (
+                    <span key={k} className="giant-letter">
+                      {ch}
+                    </span>
+                  ))}
+                </span>
+                <span className="sr-only">{l.text}</span>
+              </>
+            ) : (
+              l.text
+            )}
             {i < lines.length - 1 && ' '}
           </span>
         )

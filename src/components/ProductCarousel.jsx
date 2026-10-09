@@ -70,7 +70,7 @@ export default function ProductCarousel({ product, badge, art, spinKey }) {
             role="group"
             aria-roledescription="slide"
             aria-label={slide.kind === 'spin' ? `3D view, ${i + 1} of ${slides.length}` : `${i + 1} of ${slides.length}`}
-            aria-hidden={i !== index || undefined}
+            inert={i !== index}
             className="aspect-[4/5] w-full shrink-0 snap-start md:aspect-square"
             style={{ background: TILE_BG[tiles[i % tiles.length]] }}
           >

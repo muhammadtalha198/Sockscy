@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { prefersReducedMotion } from '../../hooks/useReducedMotion'
+import { prefersReducedMotion, useReducedMotion } from '../../hooks/useReducedMotion'
 import SockArt, { SOCK_PATH } from '../art/SockArt'
 
 /*
@@ -34,6 +34,7 @@ export default function SockSpinner({ art, label, frames }) {
   const first = useRef(true)
   // idle spin: one turn from -24° that eases to rest facing front, then the loop stops
   const st = useRef({ angle: -24, vel: 0, drag: false, lastX: 0, auto: true, autoLeft: 384, raf: 0, visible: true })
+  const reducedMotion = useReducedMotion()
 
   // colourway change → splash + swap
   useEffect(() => {
@@ -54,7 +55,7 @@ export default function SockSpinner({ art, label, frames }) {
   useEffect(() => {
     const s = st.current
     const stage = stageRef.current
-    const reduced = prefersReducedMotion()
+    const reduced = reducedMotion
     if (reduced) {
       s.auto = false
       s.angle = 0
@@ -154,7 +155,7 @@ export default function SockSpinner({ art, label, frames }) {
       stage.removeEventListener('pointercancel', onUp)
       stage.removeEventListener('keydown', onKey)
     }
-  }, [frames])
+  }, [frames, reducedMotion])
 
   return (
     <div
