@@ -232,3 +232,8 @@ Order: A, B, C, E, D, F, H, J, G, I, K. 60fps on a mid-range Android. Lazy-load 
   logo (`[data-logo]`) tapped 5× in 2.5 s → `ui.remixSocks()`; `SockArt` shifts its pattern by
   `ui.remix` (prop `fixed` opts out — the game uses it) and heroWorld re-bakes its sprites.
   404: the matching sock peeks out from behind the footer (`.lost-sock`).
+- **I Performance** — Home mounts its below-fold sections one per idle slot
+  (`useStagedMount`; a #hash or the first scroll mounts all). heroWorld `watchFrameBudget`:
+  ~40 frames over 26 ms → `html[data-lite]` (canvas DPR 1, decorative float/spin loops paused).
+  Never put `filter` on a parent of an infinite animation (re-rasterises every frame).
+  `public/robots.txt`. Lighthouse mobile (vite preview): home 88–89, product 87, shop 88.

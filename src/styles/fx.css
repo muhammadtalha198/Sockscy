@@ -541,7 +541,8 @@ html.lenis body { height: auto; }
 
 /* ---------- F. FIND THE PAIR ---------------------------------------------- */
 .play-button {
-  filter: drop-shadow(3px 5px 6px rgb(0 0 0 / 0.3));
+  /* box-shadow, not filter: a filter over the spinning badge re-rasterises every frame */
+  box-shadow: 3px 5px 8px rgb(0 0 0 / 0.3);
   transition: transform var(--dur-fast) var(--ease-spring), bottom var(--dur-med) var(--ease-spring);
 }
 .play-button:hover { transform: scale(1.08) rotate(-6deg); }
@@ -720,7 +721,7 @@ html.lenis body { height: auto; }
   transform: rotate(-6deg);
 }
 .sound-toggle[data-on] .sound-toggle-tag { background: var(--color-yellow); }
-.sound-toggle[data-on] .sound-wave { animation: sound-wave 0.9s ease-in-out infinite alternate; }
+.sound-toggle[data-on] .sound-wave { animation: sound-wave 0.45s ease-in-out 6 alternate both; } /* finite: it sits inside a filtered sticker */
 .sound-toggle[data-on] .sound-wave-2 { animation-delay: 0.25s; }
 @keyframes sound-wave { from { opacity: 0.25; } to { opacity: 1; } }
 @media (max-width: 47.99rem) {
@@ -763,6 +764,11 @@ html.lenis body { height: auto; }
   .lost-sock { left: 52%; width: 3.5rem; }
   .lost-sock-msg { left: auto; right: 0.75rem; bottom: 5.5rem; }
 }
+
+/* ---------- I. ADAPTIVE QUALITY ------------------------------------------ */
+/* set by the physics hero when a device can't hold its frame budget */
+html[data-lite] .animate-float,
+html[data-lite] .animate-spin-slow { animation-play-state: paused; }
 
 /* ---------- REDUCED MOTION: effects off ---------------------------------- */
 @media (prefers-reduced-motion: reduce) {

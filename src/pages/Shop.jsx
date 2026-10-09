@@ -199,6 +199,7 @@ export default function Shop() {
         </div>
 
         <div className="px-gutter pt-10 lg:pr-24">
+          <h2 className="sr-only">socks</h2>
           {error ? (
             <p className="copy font-bold">couldn’t load socks: {error.message}</p>
           ) : (

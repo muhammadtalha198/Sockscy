@@ -75,6 +75,8 @@ class HeroWorld {
     this.timers = []
     this.lastShake = 0
     this.lastMag = 0
+    this.slowFrames = 0 // adaptive quality: consecutive frames over budget
+    this.lite = false
     this.destroyed = false
     for (const k of ['loop', 'onDown', 'onMove', 'onUp', 'onClickCapture', 'onTouchMove', 'onLeave', 'onVisibility', 'onOrient', 'onMotion']) {
       this[k] = this[k].bind(this)
@@ -605,8 +607,10 @@ class HeroWorld {
 
   loop(now) {
     if (!this.running) return
-    const dt = Math.min(now - this.last, 64)
+    const raw = now - this.last
+    const dt = Math.min(raw, 64)
     this.last = now
+    this.watchFrameBudget(raw)
     this.acc += dt
     let steps = 0
     while (this.acc >= STEP && steps < 3) {
@@ -633,6 +637,23 @@ class HeroWorld {
       this.idleSince = 0
     }
     this.raf = requestAnimationFrame(this.loop)
+  }
+
+  /**
+   * Slow phone? After ~1 s of frames over 26 ms, switch to lite mode: canvas at 1×
+   * pixel ratio and the site's decorative CSS loops (sticker float, badge spin) paused
+   * via html[data-lite]. The toy keeps working; it just stops competing for frames.
+   */
+  watchFrameBudget(frameMs) {
+    if (this.lite || frameMs > 200) return // >200 ms = tab was hidden / first frame
+    this.slowFrames = frameMs > 26 ? this.slowFrames + 1 : Math.max(0, this.slowFrames - 2)
+    if (this.slowFrames < 40) return
+    this.lite = true
+    document.documentElement.dataset.lite = ''
+    if (this.cfg.dpr > 1) {
+      this.cfg.dpr = 1
+      this.resizeCanvas()
+    }
   }
 
   draw() {
