@@ -29,7 +29,8 @@ export default function CartLine({ item, large = false }) {
               {item.name}
             </Link>
             <p className="mt-1 text-sm font-semibold lowercase">
-              size {item.size} · {formatPKR(item.price)} each
+              size {item.size}
+              {item.colorway ? ` · ${item.colorway.label}` : ''} · {formatPKR(item.price)} each
             </p>
           </div>
           <p className={cx('shrink-0 font-black', large ? 'text-xl' : 'text-base')}>{formatPKR(item.price * item.qty)}</p>

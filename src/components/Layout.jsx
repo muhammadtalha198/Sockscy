@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import { Outlet, useLocation } from 'react-router'
 import { useCart } from '../store/cart'
 import CartDrawer from './CartDrawer'
+import CartToast from './CartToast'
 import Cursor from './fx/Cursor'
 import Intro from './fx/Intro'
 import Footer from './Footer'
@@ -52,6 +53,7 @@ export default function Layout() {
       <SideTab />
       <CartDrawer />
       <QuickView />
+      <CartToast />
       <Cursor />
       <p className="sr-only" role="status" aria-live="polite">
         {announcement}

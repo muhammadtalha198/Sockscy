@@ -187,3 +187,12 @@ Order: A, B, C, E, D, F, H, J, G, I, K. 60fps on a mid-range Android. Lazy-load 
   `[data-cursor]`: `view` (ProductCard, physics socks), `add` (add-to-cart buttons), `grab`,
   `grabbing`, `drop`; links → grow; inputs → native cursor. Trail = 14 pooled WAAPI particles.
   Magnetic: `.btn` transform uses `--mx/--my` (tokens.css), set by the cursor.
+- **E Cards + product page + add to cart** — `ProductCard` (pointer 3D tilt via `--rx/--ry`,
+  `.peel` corner sticker with urgency label `urgencyLabel()`, `.pcard-price` bounce, torn
+  paper `.pcard-paper` on first view/img load). `product/SockSpinner.jsx` (layered CSS 3D,
+  drag + inertia + arrows, optional `product.spin` frame URLs) is slide 1 of
+  `ProductCarousel`. **Data**: optional `colorways: [{id,label,base,trim}]` (10 products);
+  stock stays per size, shared across colourways (cart `rebalance()` + mock API enforce it);
+  cart line key `id:size[:colorway]`, checkout sends `colorway`. `hooks/useAddToCart.js` →
+  `fx/flyToCart.jsx` (WAAPI arc → `[data-cart-target]` SideTab shakes, count pops, 'add'
+  sound, `fx/confetti.js` burst) + `CartToast` (drawer no longer auto-opens from these).

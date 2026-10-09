@@ -7,7 +7,8 @@
 //       shipping: { address, city, province, postalCode?, notes? },
 //       payment: "cod" | "card",
 //       giftPack: boolean,
-//       items: [{ id, size, qty }]          ← ids only; the server prices the order
+//       items: [{ id, size, qty, colorway? }] ← ids only; the server prices the order.
+//                                              Stock is per size, shared by all colourways.
 //     }
 //     → { orderNumber, status, total, payment, paymentUrl? }
 //       For "card", return paymentUrl from your gateway (PayFast / Safepay / Stripe…)
@@ -88,14 +89,17 @@ function mockCreateOrder({ customer, shipping, payment, giftPack, items }) {
   if (!items?.length) throw new ApiError('your cart is empty', 400)
 
   // Re-price on the "server" from the catalogue, like the real backend must.
-  const priced = items.map(({ id, size, qty }) => {
+  const wanted = {}
+  for (const { id, size, qty } of items) wanted[`${id}:${size}`] = (wanted[`${id}:${size}`] || 0) + qty
+  const priced = items.map(({ id, size, qty, colorway }) => {
     const product = productsData.find((p) => p.id === id)
     if (!product) throw new ApiError(`product ${id} no longer exists`, 409)
     const left = product.stock?.[size] ?? 0
-    if (left < qty) {
+    if (left < wanted[`${id}:${size}`]) {
       throw new ApiError(`sorry — only ${left} left of ${product.name} in ${size}`, 409)
     }
-    return { id, size, qty, name: product.name, price: product.price }
+    const cw = product.colorways?.find((c) => c.id === colorway)
+    return { id, size, qty, colorway: cw?.id, name: cw ? `${product.name} (${cw.label})` : product.name, price: product.price }
   })
 
   const totals = getTotals(priced, giftPack)

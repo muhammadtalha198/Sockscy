@@ -92,7 +92,7 @@ export default function Checkout() {
         },
         payment: form.payment,
         giftPack,
-        items: items.map((i) => ({ id: i.id, size: i.size, qty: i.qty })),
+        items: items.map((i) => ({ id: i.id, size: i.size, qty: i.qty, colorway: i.colorway?.id })),
       })
       if (res.paymentUrl) {
         window.location.assign(res.paymentUrl) // card: hand off to the payment gateway
@@ -263,7 +263,7 @@ export default function Checkout() {
               {items.map((i) => (
                 <li key={i.key} className="flex justify-between gap-4">
                   <span>
-                    {i.qty} × {i.name} <span className="font-semibold">({i.size})</span>
+                    {i.qty} × {i.name} <span className="font-semibold">({i.size}{i.colorway ? `, ${i.colorway.label}` : ''})</span>
                   </span>
                   <span className="shrink-0">{formatPKR(i.price * i.qty)}</span>
                 </li>

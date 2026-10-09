@@ -243,9 +243,253 @@ html.has-cursor :is(input, textarea, select, [contenteditable="true"]) {
 }
 .cursor-trail svg { width: 100%; height: 100%; }
 
+/* ---------- E. PRODUCT CARDS --------------------------------------------- */
+.pcard-tile {
+  --rx: 0deg;
+  --ry: 0deg;
+  perspective: 900px;
+}
+.pcard-sock {
+  transform: rotateX(var(--rx)) rotateY(var(--ry));
+  transform-style: preserve-3d;
+  transition: transform var(--dur-med) var(--ease-spring);
+}
+.pcard-sock > * {
+  transition: transform var(--dur-med) var(--ease-overshoot);
+}
+.group:hover .pcard-sock > *,
+.group:focus-visible .pcard-sock > * {
+  transform: translateZ(46px) rotate(var(--lean)) scale(1.03);
+}
+
+/* corner sticker that peels on hover */
+.peel {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.7rem;
+  z-index: 4;
+  width: 4.4rem;
+  height: 4.4rem;
+  transform: rotate(8deg);
+  transition: transform var(--dur-med) var(--ease-spring);
+}
+.peel-face,
+.peel-flap {
+  position: absolute;
+  inset: 0;
+  border-radius: 0.75rem;
+  transition: clip-path var(--dur-med) var(--ease-spring);
+}
+.peel-face {
+  display: grid;
+  place-items: center;
+  padding: 0.35rem;
+  border: 2px solid #000;
+  background: var(--color-offwhite);
+  color: #000;
+  font-size: 0.72rem;
+  font-weight: 900;
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%, 0 100%);
+  box-shadow: 0 0 0 3px #fff;
+}
+.peel-dark .peel-face { background: #000; color: var(--color-offwhite); }
+.peel-flap {
+  background: #ddd5c3;
+  clip-path: polygon(0 100%, 0 100%, 0 100%);
+}
+.group:hover .peel { transform: rotate(3deg) scale(1.06); }
+.group:hover .peel-face { clip-path: polygon(0 0, 100% 0, 100% 100%, 46% 100%, 0 54%); }
+.group:hover .peel-flap { clip-path: polygon(0 54%, 46% 100%, 46% 54%); }
+
+/* price bounces like a ball */
+.pcard-price {
+  display: inline-block;
+  transform-origin: 50% 100%;
+}
+.group:hover .pcard-price { animation: price-bounce 0.85s both; }
+@keyframes price-bounce {
+  0% { transform: translateY(0); animation-timing-function: cubic-bezier(0, 0.55, 0.45, 1); }
+  18% { transform: translateY(-15px) scale(0.94, 1.08); animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  36% { transform: translateY(0) scale(1.14, 0.84); animation-timing-function: cubic-bezier(0, 0.55, 0.45, 1); }
+  52% { transform: translateY(-6px) scale(0.97, 1.03); animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  66% { transform: translateY(0) scale(1.05, 0.95); }
+  80% { transform: translateY(-2px); }
+  100% { transform: translateY(0); }
+}
+
+/* torn-paper reveal on first view */
+.pcard-paper {
+  position: absolute;
+  inset: -2px;
+  z-index: 5;
+  pointer-events: none;
+}
+.pcard-paper-half {
+  position: absolute;
+  inset: 0;
+  background: var(--color-offwhite);
+  transition: transform 0.9s var(--ease-snap);
+}
+.pcard-paper.is-torn .pcard-paper-half { transform: translate3d(-115%, 8%, 0) rotate(-14deg); }
+.pcard-paper.is-torn .pcard-paper-right { transform: translate3d(115%, -6%, 0) rotate(12deg); }
+
+/* ---------- E. PRODUCT PAGE: 3D spin + colourway swatches ---------------- */
+.spin-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  perspective: 1100px;
+  touch-action: pan-y;
+  user-select: none;
+  cursor: grab;
+}
+.spin-stage[data-dragging] { cursor: grabbing; }
+.spin-body {
+  position: relative;
+  height: 74%;
+  aspect-ratio: 164 / 244;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.spin-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.spin-face { backface-visibility: hidden; }
+.spin-face svg { width: 100%; height: 100%; }
+.spin-shadow {
+  position: absolute;
+  bottom: 8%;
+  left: 50%;
+  width: 46%;
+  height: 4.5%;
+  border-radius: 50%;
+  background: rgb(0 0 0 / 0.18);
+  transform: translateX(-50%);
+}
+.spin-frames { height: 82%; width: auto; object-fit: contain; pointer-events: none; }
+.spin-splash {
+  position: absolute;
+  inset: 5%;
+  width: 90%;
+  height: 90%;
+  pointer-events: none;
+  animation: spin-splash 0.95s var(--ease-spring) both;
+}
+@keyframes spin-splash {
+  0% { transform: scale(0) rotate(-40deg); opacity: 1; }
+  40% { transform: scale(1.04) rotate(0deg); opacity: 1; }
+  100% { transform: scale(1.2) rotate(10deg); opacity: 0; }
+}
+.spin-hint {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  padding: 0.3rem 0.75rem;
+  border: 2px solid #000;
+  border-radius: 999px;
+  background: var(--color-offwhite);
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: lowercase;
+  transition: opacity 0.3s ease;
+}
+.spin-stage[data-dragging] .spin-hint { opacity: 0; }
+
+.swatch-dot {
+  display: block;
+  width: 2.9rem;
+  height: 2.9rem;
+  border: 2px solid #000;
+  border-radius: 999px;
+  background: var(--base);
+  box-shadow: inset 0 0 0 7px var(--trim), var(--shadow-hard);
+  transition: transform var(--dur-fast) var(--ease-spring), box-shadow 0.15s ease;
+}
+.swatch:hover .swatch-dot { transform: scale(1.08) rotate(-6deg); }
+.peer:checked + .swatch-dot {
+  transform: translate(3px, 3px) scale(1.06);
+  box-shadow: inset 0 0 0 7px var(--trim), 0 0 0 3px var(--color-offwhite), 0 0 0 5px #000;
+}
+
+/* ---------- E. ADD TO CART: flying sock, tab shake, toast ----------------- */
+.fly-sock {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 250;
+  pointer-events: none;
+  will-change: transform;
+}
+.fx-confetti {
+  position: fixed;
+  inset: 0;
+  z-index: 260;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.side-tab-inner.is-bumped { animation: tab-shake 0.6s both; }
+@keyframes tab-shake {
+  0%, 100% { transform: none; }
+  15% { transform: translateX(-7px) rotate(-6deg); }
+  30% { transform: translateX(5px) rotate(5deg); }
+  45% { transform: translateX(-4px) rotate(-3deg); }
+  60% { transform: translateX(3px) rotate(2deg); }
+  80% { transform: translateX(-1px); }
+}
+.side-tab-count { animation: count-pop var(--dur-med) var(--ease-overshoot) both; color: var(--color-yellow); }
+@keyframes count-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.9); }
+  100% { transform: scale(1); }
+}
+.cart-toast {
+  position: fixed;
+  right: 3.25rem;
+  top: calc(50% + 5.5rem);
+  z-index: 45;
+  width: min(21rem, calc(100vw - 4.5rem));
+  padding: 0.9rem 1rem;
+  border: 2px solid #000;
+  border-radius: 1.25rem;
+  background: var(--color-yellow);
+  color: #000;
+  box-shadow: var(--shadow-hard);
+  opacity: 0;
+  transform: translate3d(30px, 0, 0) rotate(2deg) scale(0.9);
+  pointer-events: none;
+  transition:
+    opacity 0.25s ease,
+    transform var(--dur-med) var(--ease-spring);
+}
+.cart-toast[data-visible] {
+  opacity: 1;
+  transform: rotate(-1deg);
+  pointer-events: auto;
+}
+@media (min-width: 48rem) {
+  .cart-toast { right: 4.5rem; top: calc(50% + 7rem); }
+}
+
 /* ---------- REDUCED MOTION: effects off ---------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   .intro { display: none; }
   .qv-panel,
   .qv-overlay { animation: none; }
+  .group:hover .pcard-price,
+  .side-tab-inner.is-bumped,
+  .side-tab-count { animation: none; }
+  .pcard-sock,
+  .group:hover .pcard-sock > * { transform: none; }
+  .spin-splash { animation: none; display: none; }
 }

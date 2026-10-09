@@ -18,6 +18,7 @@ export default function ProductImage({
   view,
   priority = false,
   decorative = false,
+  onLoad,
   sizes = '(min-width: 1024px) 25vw, 50vw',
   className = '',
   artClassName = 'h-[82%] w-[82%]',
@@ -38,6 +39,8 @@ export default function ProductImage({
         loading={priority ? 'eager' : 'lazy'}
         fetchPriority={priority ? 'high' : undefined}
         decoding="async"
+        onLoad={onLoad}
+        onError={onLoad}
         className={cx('h-full w-full object-cover', className)}
       />
     )

@@ -3,7 +3,7 @@ import { Link } from 'react-router'
 import { getProduct } from '../api/products'
 import { useAsync } from '../hooks/useAsync'
 import { useDialog } from '../hooks/useDialog'
-import { useCart } from '../store/cart'
+import { useAddToCart } from '../hooks/useAddToCart'
 import { useUi } from '../store/ui'
 import { TILE_BG } from '../lib/constants'
 import { formatPKR, stockNote } from '../lib/format'
@@ -27,7 +27,8 @@ function QuickViewDialog({ id, onClose }) {
   const onBackdrop = () => {
     if (performance.now() - openedAt.current > 400) onClose()
   }
-  const addItem = useCart((s) => s.addItem)
+  const addToCart = useAddToCart()
+  const addRef = useRef(null)
   const { data: product, loading, error } = useAsync(({ signal }) => getProduct(id, { signal }), [id])
   const [picked, setPicked] = useState(null)
   const size = picked ?? firstInStockSize(product)
@@ -35,8 +36,9 @@ function QuickViewDialog({ id, onClose }) {
 
   function add() {
     if (!product || !size) return
+    const source = addRef.current?.getBoundingClientRect()
     onClose()
-    addItem(product, size, 1)
+    addToCart(product, size, 1, { colorway: product.colorways?.[0] ?? null, source })
   }
 
   return (
@@ -70,7 +72,7 @@ function QuickViewDialog({ id, onClose }) {
               <p className="inline-block w-fit -rotate-1 rounded-full border-2 border-black bg-yellow px-3 py-1 text-sm font-black">{stockNote(product, size)}</p>
               <SizePicker product={product} value={size} onChange={setPicked} />
               <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-3">
-                <button type="button" className="btn btn-pink btn-lg" disabled={!size} onClick={add} data-cursor="add">
+                <button ref={addRef} type="button" className="btn btn-pink btn-lg" disabled={!size} onClick={add} data-cursor="add">
                   {size ? 'add to cart' : 'sold out'}
                 </button>
                 <Link to={`/product/${product.id}`} onClick={onClose} className="font-extrabold lowercase underline decoration-[3px] underline-offset-[6px]">

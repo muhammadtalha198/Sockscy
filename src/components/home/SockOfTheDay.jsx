@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Link } from 'react-router'
 import { getSockOfTheDay } from '../../api/products'
 import { useAsync } from '../../hooks/useAsync'
-import { useCart } from '../../store/cart'
+import { useAddToCart } from '../../hooks/useAddToCart'
 import { TILE_BG } from '../../lib/constants'
 import { formatPKR, stockNote } from '../../lib/format'
 import { Squiggle } from '../art/Doodles'
@@ -17,7 +17,8 @@ import TornReveal from '../TornReveal'
 export default function SockOfTheDay() {
   const { data: product, loading } = useAsync(({ signal }) => getSockOfTheDay({ signal }), [])
   const [picked, setPicked] = useState(null)
-  const addItem = useCart((s) => s.addItem)
+  const addToCart = useAddToCart()
+  const imageRef = useRef(null)
   const size = picked ?? firstInStockSize(product)
   const tile = product?.tile === 'pink' ? 'yellow' : product?.tile || 'yellow'
 
@@ -39,7 +40,7 @@ export default function SockOfTheDay() {
       />
 
       <div className="mt-10 grid gap-10 px-gutter lg:grid-cols-12 lg:items-end lg:pr-24">
-        <div className="relative lg:col-span-7">
+        <div ref={imageRef} className="relative lg:col-span-7">
           {loading || !product ? (
             <div className="aspect-square animate-pulse rounded-[2rem] border-2 border-black bg-offwhite/40" />
           ) : (
@@ -79,7 +80,7 @@ export default function SockOfTheDay() {
                 className="btn btn-yellow btn-lg"
                 data-cursor="add"
                 disabled={!size}
-                onClick={() => addItem(product, size, 1)}
+                onClick={() => addToCart(product, size, 1, { colorway: product.colorways?.[0] ?? null, source: imageRef.current })}
               >
                 {size ? 'add to cart' : 'sold out'}
               </button>
