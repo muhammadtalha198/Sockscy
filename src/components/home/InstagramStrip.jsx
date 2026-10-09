@@ -30,7 +30,8 @@ export default function InstagramStrip() {
         {TILES.map((t, i) => (
           // masonry: columns sit on two planes (by column, so stacked tiles on the 3-column
           // phone grid never collide), the grid breathes and realigns at rest
-          <ParallaxLayer as="li" key={i} depth={i % 3 === 1 ? 0.12 : -0.06} decorative={false}>
+          // (links: scroll only, they never chase the pointer)
+          <ParallaxLayer as="li" key={i} depth={i % 3 === 1 ? 0.12 : -0.06} pointer={false} decorative={false}>
             <a
               href={SITE.instagram}
               target="_blank"

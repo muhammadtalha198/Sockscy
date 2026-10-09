@@ -2,7 +2,7 @@ import { lazy, useEffect, useState } from 'react'
 import { Route, Routes, useLocation } from 'react-router'
 import Curtain from './components/fx/Curtain'
 import Layout from './components/Layout'
-import { prefersReducedMotion } from './hooks/useReducedMotion'
+import { lessMotion } from './hooks/useLessMotion'
 import { PAGE_LOADERS, loaderFor, toneFor } from './lib/routes'
 import { setTransition } from './parallax/engine'
 import Home from './pages/Home'
@@ -23,7 +23,7 @@ const COVER_MS = 460
   Page transitions: when the path changes, a torn-paper curtain in the next page's
   colour wipes across; the new page (its chunk preloaded meanwhile) is swapped in
   while the screen is covered, then the curtain wipes off. Search/hash-only changes
-  (shop filters, /#collections on the home page) swap instantly. Reduced motion: instant.
+  (shop filters, /#collections on the home page) swap instantly. Reduced motion / calm: instant.
   v2 depth: as the curtain comes in, the old page's planes move away at their own speeds
   (near ones rush up, far ones sink); the new page's planes arrive from behind and spring
   home as it wipes off (src/parallax/engine.js setTransition).
@@ -35,11 +35,11 @@ export default function App() {
 
   useEffect(() => {
     if (location === display) return
-    if (location.pathname === display.pathname || prefersReducedMotion()) {
+    if (location.pathname === display.pathname || lessMotion()) {
       setDisplay(location)
       // a wipe already in flight (e.g. Back pressed mid-transition) must still leave,
       // otherwise the curtain stays over the page and swallows every click
-      setCurtain((c) => (!c ? c : prefersReducedMotion() ? null : c.phase === 'in' ? { ...c, phase: 'out' } : c))
+      setCurtain((c) => (!c ? c : lessMotion() ? null : c.phase === 'in' ? { ...c, phase: 'out' } : c))
       setTransition(null)
       return
     }

@@ -205,8 +205,10 @@ function start() {
   window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', (e) => {
     reduced = e.matches
     targetStrength = strength = computeTarget()
-    if (reduced) resetAll()
-    else for (const l of layers) io.observe(l.el)
+    if (reduced) {
+      resetAll()
+      Object.assign(trans, { phase: null, t: 0, v: 0, ready: true }) // a transition in flight must not resume later
+    } else for (const l of layers) io.observe(l.el)
     measureQueued = true
     notify()
     kick()

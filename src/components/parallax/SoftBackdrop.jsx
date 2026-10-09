@@ -33,7 +33,7 @@ export default function SoftBackdrop() {
 export function DriftSticker({ className, drift = 140, dir = -1, children, ...sticker }) {
   const ref = useParallax({ depth: 'far', drift, dir, pointer: false })
   return (
-    <div ref={ref} aria-hidden="true" className={className}>
+    <div ref={ref} aria-hidden="true" className={`pointer-events-none ${className}`}>
       <Sticker parallax={0} {...sticker}>
         {children}
       </Sticker>

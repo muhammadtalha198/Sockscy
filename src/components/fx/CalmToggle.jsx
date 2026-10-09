@@ -13,7 +13,8 @@ export default function CalmToggle() {
       type="button"
       onClick={() => setCalm(!calm)}
       aria-pressed={calm}
-      aria-label="calm mode: less motion"
+      aria-label="calm mode"
+      title="calm mode: less motion"
       data-cursor="add"
       className="ctl"
     >
@@ -35,7 +36,7 @@ export default function CalmToggle() {
         </svg>
       </span>
       <span className="ctl-tag" aria-hidden="true">
-        {calm ? 'calm on' : 'calm mode'}
+        calm mode
       </span>
     </button>
   )

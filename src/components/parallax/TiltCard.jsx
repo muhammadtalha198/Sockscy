@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { prefersReducedMotion } from '../../hooks/useReducedMotion'
+import { useUi } from '../../store/ui'
 import { addTilter } from '../../parallax/engine'
 import { cx } from '../../lib/cx'
 
@@ -14,6 +15,9 @@ import { cx } from '../../lib/cx'
  */
 export default function TiltCard({ as: Tag = 'div', max = 11, className, children, ...rest }) {
   const ref = useRef(null)
+  const calm = useUi((s) => s.calm)
+  // calm mode keeps only a hint of the tilt and the inner shift
+  const k = calm ? 0.3 : 1
 
   useEffect(() => {
     const el = ref.current
@@ -23,10 +27,10 @@ export default function TiltCard({ as: Tag = 'div', max = 11, className, childre
       const key = `${s.x.toFixed(3)},${s.y.toFixed(3)}`
       if (key === s.written) return
       s.written = key
-      el.style.setProperty('--tx', s.x.toFixed(3))
-      el.style.setProperty('--ty', s.y.toFixed(3))
-      el.style.setProperty('--ry', `${(s.x * max).toFixed(2)}deg`)
-      el.style.setProperty('--rx', `${(-s.y * max * 0.8).toFixed(2)}deg`)
+      el.style.setProperty('--tx', (s.x * k).toFixed(3))
+      el.style.setProperty('--ty', (s.y * k).toFixed(3))
+      el.style.setProperty('--ry', `${(s.x * max * k).toFixed(2)}deg`)
+      el.style.setProperty('--rx', `${(-s.y * max * 0.8 * k).toFixed(2)}deg`)
     }
     const tilter = {
       step(f) {
@@ -81,7 +85,7 @@ export default function TiltCard({ as: Tag = 'div', max = 11, className, childre
       el.removeEventListener('pointerup', rest_)
       el.removeEventListener('pointercancel', rest_)
     }
-  }, [max])
+  }, [max, k])
 
   return (
     <Tag ref={ref} className={cx('tilt-card', className)} {...rest}>

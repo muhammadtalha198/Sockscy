@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { prefersReducedMotion } from '../hooks/useReducedMotion'
+import { useLessMotion } from '../hooks/useLessMotion'
 import { cx } from '../lib/cx'
 import { subscribeVelocity } from '../motion/velocity'
 import { Flower } from './art/Doodles'
@@ -19,11 +19,13 @@ export default function Marquee({
 }) {
   const rootRef = useRef(null)
   const trackRef = useRef(null)
+  // calm mode / reduced motion: the band stands still (calm is also its pause control)
+  const still = useLessMotion()
 
   useEffect(() => {
     const root = rootRef.current
     const track = trackRef.current
-    if (!root || !track || prefersReducedMotion()) return
+    if (!root || !track || still) return
     let x = 0
     let half = track.scrollWidth / 2
     let dir = reverse ? 1 : -1
@@ -76,7 +78,7 @@ export default function Marquee({
       root.removeEventListener('pointerenter', enter)
       root.removeEventListener('pointerleave', leave)
     }
-  }, [reverse, speed])
+  }, [reverse, speed, still])
 
   const row = (key) => (
     <ul key={key} className="flex shrink-0 items-center" aria-hidden="true">

@@ -4,6 +4,7 @@
 import { prefersReducedMotion } from '../hooks/useReducedMotion'
 import { registerScrollHooks } from '../lib/scrollLock'
 import { attachTicker } from '../parallax/engine'
+import { useUi } from '../store/ui'
 
 let kit = null
 let loading = null
@@ -16,7 +17,9 @@ export function loadScrollKit() {
       .then(([{ gsap }, { ScrollTrigger }, { default: Lenis }]) => {
         gsap.registerPlugin(ScrollTrigger)
         ScrollTrigger.config({ ignoreMobileResize: true })
-        const lenis = new Lenis({ duration: 1.1, smoothWheel: true, syncTouch: false })
+        const lenis = new Lenis({ duration: 1.1, smoothWheel: !useUi.getState().calm, syncTouch: false })
+        // calm mode: plain native wheel scrolling (Lenis reads the option on every wheel event)
+        useUi.subscribe((s) => (lenis.options.smoothWheel = !s.calm))
         lenis.on('scroll', ScrollTrigger.update)
         gsap.ticker.add((t) => lenis.raf(t * 1000))
         gsap.ticker.lagSmoothing(0)

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useReducedMotion } from '../../hooks/useReducedMotion'
 import { clamp } from '../../lib/motion'
+import { useUi } from '../../store/ui'
 
 /*
   Custom cursor (desktop with a fine pointer only; native cursor with reduced motion).
@@ -155,7 +156,8 @@ function CursorImpl() {
 
       pos.style.transform = `translate3d(${st.x}px, ${st.y}px, 0)`
       squish.style.transform = `rotate(${ang}rad) scale(${(1 + stretch) * st.press}, ${(1 - stretch * 0.5) * st.press}) rotate(${-ang}rad) rotate(${st.spin % 360}deg)`
-      if (speed > 18 && now - st.lastEmit > 28 && st.state !== 'text') {
+      // calm mode: the flower cursor stays, the trail does not
+      if (speed > 18 && now - st.lastEmit > 28 && st.state !== 'text' && !useUi.getState().calm) {
         st.lastEmit = now
         emit(st.x, st.y, vx, vy)
       }

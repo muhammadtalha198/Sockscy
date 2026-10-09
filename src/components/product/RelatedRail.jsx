@@ -19,7 +19,9 @@ export default function RelatedRail({ products, loading }) {
     mq.addEventListener('change', on)
     return () => mq.removeEventListener('change', on)
   }, [])
-  const railRef = useParallax({ depth: 'far', axis: 'x', drift: 70, dir: -1, pointer: false, enabled: wide })
+  // registers once the list is actually rendered (the first render is the loading grid)
+  const ready = !loading && !!products?.length
+  const railRef = useParallax({ depth: 'far', axis: 'x', drift: 70, dir: -1, pointer: false, enabled: wide && ready })
 
   if (loading || !products?.length) return <ProductGrid products={products} loading={loading} skeletons={4} />
 
@@ -33,7 +35,11 @@ export default function RelatedRail({ products, loading }) {
         <ParallaxLayer
           as="li"
           key={p.id}
-          depth={i % 2 ? 0.14 : -0.05}
+          // cards are links with prices: scroll only (never chase the pointer), and on the
+          // phone scroller shallow enough to stay inside its 16px top padding (no clipped
+          // card tops or focus rings)
+          depth={wide ? (i % 2 ? 0.14 : -0.05) : i % 2 ? 0.05 : -0.02}
+          pointer={false}
           decorative={false}
           className="w-[62vw] max-w-[17rem] shrink-0 snap-start lg:w-auto lg:max-w-none"
         >

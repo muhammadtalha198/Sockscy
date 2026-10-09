@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { Link } from 'react-router'
-import { prefersReducedMotion } from '../hooks/useReducedMotion'
+import { useReducedMotion } from '../hooks/useReducedMotion'
+import { scrollToTarget } from '../motion/scroll'
 import { COLLECTIONS, SITE } from '../lib/constants'
 import { useUi } from '../store/ui'
 import NewsletterForm from './NewsletterForm'
@@ -14,10 +15,11 @@ import NewsletterForm from './NewsletterForm'
 */
 function useFooterReveal(footerRef, wordRef) {
   const calm = useUi((s) => s.calm)
+  const reduced = useReducedMotion()
   useEffect(() => {
     const footer = footerRef.current
     const word = wordRef.current
-    if (!footer || !word || prefersReducedMotion() || calm) return
+    if (!footer || !word || reduced || calm) return
     let raf = 0
     let running = false
     // only lie underneath the page when the whole footer fits on screen (measured up
@@ -50,12 +52,23 @@ function useFooterReveal(footerRef, wordRef) {
       fit()
       onScroll()
     }
+    // keyboard: a focused footer link must never sit hidden under the page — while the
+    // footer lies underneath, focusing into it jumps to the end so it is fully uncovered
+    const onFocus = () => {
+      if (!('fits' in footer.dataset)) return
+      const main = document.getElementById('main')
+      if (main && main.getBoundingClientRect().bottom > window.innerHeight - footer.offsetHeight + 1) {
+        scrollToTarget(document.documentElement.scrollHeight, { immediate: true })
+      }
+    }
+    footer.addEventListener('focusin', onFocus)
     window.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', onResize, { passive: true })
     fit()
     update()
     return () => {
       io.disconnect()
+      footer.removeEventListener('focusin', onFocus)
       cancelAnimationFrame(raf)
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onResize)
@@ -63,7 +76,7 @@ function useFooterReveal(footerRef, wordRef) {
       word.style.scale = ''
       delete footer.dataset.fits
     }
-  }, [footerRef, wordRef, calm])
+  }, [footerRef, wordRef, calm, reduced])
 }
 
 const col = 'text-[0.95rem] font-semibold lowercase hover:text-yellow hover:underline underline-offset-4'

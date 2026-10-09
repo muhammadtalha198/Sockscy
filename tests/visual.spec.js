@@ -110,7 +110,7 @@ test('reduced motion: nothing animates, no canvas, no curtain', async ({ browser
 
 test('calm mode toggle: visible, pressable, turns the planes down', async ({ page }) => {
   await page.goto('/about', { waitUntil: 'networkidle' })
-  const calm = page.getByRole('button', { name: 'calm mode: less motion' })
+  const calm = page.getByRole('button', { name: 'calm mode', exact: true })
   await expect(calm).toBeVisible()
   await expect(calm).toHaveAttribute('aria-pressed', 'false')
   await calm.click()
@@ -137,4 +137,50 @@ test('cart → checkout → order still works', async ({ page }) => {
   await page.locator('button[form=checkout-form]').click()
   await expect(page).toHaveURL(/order-placed/, { timeout: 10_000 })
   await expect(page.getByText('ORDER', { exact: false }).first()).toBeVisible()
+})
+
+test('keyboard focus in the footer is never hidden under the page', async ({ page }) => {
+  await page.goto('/about', { waitUntil: 'networkidle' })
+  await page.waitForTimeout(600)
+  // tab order: the last link of the page, then on into the footer form
+  const field = page.locator('footer input').first()
+  await field.focus()
+  // the browser may smooth-scroll to it; it must end up on screen and on top
+  await expect
+    .poll(
+      () =>
+        field.evaluate((el) => {
+          const r = el.getBoundingClientRect()
+          const hit = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2)
+          return r.bottom <= innerHeight && r.top >= 0 && (hit === el || el.contains(hit))
+        }),
+      { timeout: 4000 },
+    )
+    .toBe(true)
+})
+
+test('after an order, a new cart survives going Back to the order page', async ({ page }) => {
+  const lines = () => page.evaluate(() => JSON.parse(localStorage.getItem('socksavvy-cart') || '{}').state?.items?.length ?? 0)
+  await page.goto('/checkout', { waitUntil: 'networkidle' })
+  await page.fill('#name', 'Ayesha Khan')
+  await page.fill('#phone', '03211234567')
+  await page.fill('#address', 'House 12, Street 4, Gulberg III')
+  await page.locator('#city').selectOption({ index: 1 })
+  await page.locator('#province').selectOption({ index: 1 })
+  await page.locator('button[form=checkout-form]').click()
+  await expect(page).toHaveURL(/order-placed/, { timeout: 10_000 })
+  await expect.poll(lines).toBe(0) // emptied at submit
+
+  // shop again: a new pair in the cart
+  await page.goto('/product/checkmate', { waitUntil: 'networkidle' })
+  await page.locator('input[type=radio][name^=size]:not([disabled])').first().check({ force: true })
+  await page.locator('form button[type=submit][data-cursor=add]').click()
+  await expect.poll(lines).toBe(1)
+
+  // Back to the confirmation (its order is still in history state): the new cart stays
+  await page.goBack()
+  await expect(page).toHaveURL(/order-placed/)
+  await expect(page.getByText('order number')).toBeVisible()
+  await page.waitForTimeout(800)
+  expect(await lines()).toBe(1)
 })

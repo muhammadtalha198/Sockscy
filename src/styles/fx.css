@@ -558,7 +558,7 @@ html.lenis body { height: auto; }
   transition: transform var(--dur-fast) var(--ease-spring), bottom var(--dur-med) var(--ease-spring);
 }
 .play-button:hover { transform: scale(1.08) rotate(-6deg); }
-.play-button[data-tucked] { transform: translate3d(-130%, 0, 0) rotate(-90deg); }
+.play-button[data-tucked]:not(:focus-within) { transform: translate3d(-130%, 0, 0) rotate(-90deg); }
 .play-button:active { transform: scale(0.94); }
 .game-sock {
   display: block;
@@ -719,7 +719,7 @@ html.lenis body { height: auto; }
   gap: 0.35rem;
   transition: transform var(--dur-fast) var(--ease-spring), bottom var(--dur-med) var(--ease-spring);
 }
-.motion-controls[data-tucked] { transform: translate3d(140%, 0, 0) rotate(90deg); }
+.motion-controls[data-tucked]:not(:focus-within) { transform: translate3d(140%, 0, 0) rotate(90deg); }
 .ctl {
   display: grid;
   justify-items: center;

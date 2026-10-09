@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import { prefersReducedMotion } from '../hooks/useReducedMotion'
+import { lessMotion } from '../hooks/useLessMotion'
 import { useParallax } from '../hooks/useParallax'
 import { cx } from '../lib/cx'
 import { springEasing } from '../lib/motion'
@@ -41,7 +41,7 @@ export default function Sticker({
   const plane = parallax ?? (typeof depth === 'string' ? depth : DEPTH_PLANE[depth ?? (outline ? 2 : 1)])
   const parallaxRef = useParallax({ depth: plane, pin })
   const flyRef = useRef(null)
-  const [pending, setPending] = useState(() => flyIn && typeof window !== 'undefined' && !prefersReducedMotion())
+  const [pending, setPending] = useState(() => flyIn && typeof window !== 'undefined' && !lessMotion())
   const side = useRef(-1)
 
   // fly in from the nearest edge — measured before paint, and always pushed *away*

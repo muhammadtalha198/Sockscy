@@ -83,6 +83,11 @@ html[data-lite] .dof-blur { filter: none; }
    The engine drops every plane to 15% strength; decorative loops pause too. */
 html[data-calm] .animate-float,
 html[data-calm] .animate-spin-slow { animation-play-state: paused; }
+/* calm: things arrive in place (no slide, rise or pop); story blocks keep a short fade */
+html[data-calm] .pcard:not([data-in]),
+html[data-calm] .story-block:not([data-in]) { translate: none; scale: none; }
+html[data-calm] .chip-in { animation: none; }
+html[data-calm] .slide-line[data-from] { transform: none; transition: none; }
 
 @media (prefers-reduced-motion: reduce) {
   [data-px-scroll] { animation: none !important; }

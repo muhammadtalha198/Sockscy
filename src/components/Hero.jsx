@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router'
-import { useReducedMotion } from '../hooks/useReducedMotion'
+import { useLessMotion } from '../hooks/useLessMotion'
 import { FREE_SHIPPING_THRESHOLD } from '../lib/constants'
 import { formatPKR } from '../lib/format'
 import { whenIdle } from '../lib/motion'
@@ -38,7 +38,8 @@ const canTilt = () =>
 
 export default function Hero() {
   const introDone = useUi((s) => s.introDone)
-  const reduced = useReducedMotion()
+  // reduced motion or calm mode: static cutouts, no physics
+  const reduced = useLessMotion()
   const sectionRef = useRef(null)
   const [loadPhysics, setLoadPhysics] = useState(false)
   const [world, setWorld] = useState(null)
@@ -49,7 +50,7 @@ export default function Hero() {
   useEffect(() => {
     if (!introDone) return
     if (reduced) {
-      // reduced motion switched on mid-visit: unmount the canvas (destroys the world)
+      // reduced motion / calm switched on mid-visit: unmount the canvas (destroys the world)
       setLoadPhysics(false)
       setWorld(null)
       return

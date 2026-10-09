@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useReducedMotion } from '../../hooks/useReducedMotion'
 import { getState, subscribe } from '../../parallax/engine'
 import { requestTilt, stopTilt, tiltSupported } from '../../parallax/tilt'
 import { useUi } from '../../store/ui'
@@ -8,14 +9,17 @@ export default function TiltToggle() {
   const [on, setOn] = useState(() => getState().tilt)
   const [supported] = useState(tiltSupported)
   const calm = useUi((s) => s.calm)
+  // reduced motion: the planes never move, so a tilt switch (and its permission prompt) would lie
+  const reduced = useReducedMotion()
   useEffect(() => subscribe((s) => setOn(s.tilt)), [])
-  if (!supported || calm) return null
+  if (!supported || calm || reduced) return null
   return (
     <button
       type="button"
       onClick={() => (on ? stopTilt() : requestTilt())}
       aria-pressed={on}
-      aria-label="tilt your phone to move the layers"
+      aria-label="tilt"
+      title="tilt your phone to move the layers"
       className="ctl"
     >
       <span className="sticker block w-9">
@@ -26,7 +30,7 @@ export default function TiltToggle() {
         </svg>
       </span>
       <span className="ctl-tag" aria-hidden="true">
-        {on ? 'tilt on' : 'tilt'}
+        tilt
       </span>
     </button>
   )

@@ -20,7 +20,8 @@ export default function SoundToggle() {
       type="button"
       onClick={toggle}
       aria-pressed={soundOn}
-      aria-label="sound effects"
+      aria-label="sound"
+      title="sound effects"
       data-on={soundOn || undefined}
       data-cursor="add"
       className="ctl sound-toggle"
@@ -40,7 +41,7 @@ export default function SoundToggle() {
         </svg>
       </span>
       <span className="ctl-tag" aria-hidden="true">
-        {soundOn ? 'sound on' : 'sound off'}
+        sound
       </span>
     </button>
   )

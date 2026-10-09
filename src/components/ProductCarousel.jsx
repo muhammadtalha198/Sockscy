@@ -96,7 +96,8 @@ export default function ProductCarousel({ product, badge, art, spinKey }) {
               ))}
             </ParallaxLayer>
             {slide.kind !== 'spin' && <span className="slide-floor" aria-hidden="true" />}
-            <ParallaxLayer depth="near" decorative={false} className="relative h-full w-full">
+            {/* the sock you drag: scroll depth only, so it never slides under the finger/pointer */}
+            <ParallaxLayer depth="near" pointer={false} decorative={false} className="relative h-full w-full">
               {slide.kind === 'spin' ? (
                 <SockSpinner art={art || product.art} label={`${product.name} sock in 3D`} frames={product.spin} />
               ) : (
