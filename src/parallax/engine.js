@@ -253,7 +253,8 @@ function scrollOffset(l, d, anchorH) {
     const p = Math.min(1, Math.max(0, d))
     const max = vh * t.clamp
     const off = Math.max(-max, Math.min(max, -p * vh * l.depth * t.travel * 1.6 * strength))
-    if (l.axis === 'x') tx = off
+    if (l.drift) tx = p * l.drift * l.dir * strength // drifts sideways as the first screen leaves
+    else if (l.axis === 'x') tx = off
     else ty = off
     const s = 1 + p * l.scale * strength
     return { tx, ty, s, r: p * l.rotate * strength }
@@ -373,9 +374,12 @@ function frame(now) {
 
     if (!useCss && l.scroll) {
       const anchor = l.section || l
+      // rest-top: progress through the CSS `exit` range — it starts when the anchor can no
+      // longer be fully contained (its top at the viewport top, or its bottom at the viewport
+      // bottom when it is taller than the screen) and lasts min(height, viewport)
       const d =
         l.rest === 'top'
-          ? (y + vh - (anchor.top + anchor.height)) / vh // exit progress
+          ? (y - anchor.top - Math.max(0, anchor.height - vh)) / Math.max(1, Math.min(anchor.height, vh))
           : anchor.top + anchor.height / 2 - (y + vh / 2)
       const o = scrollOffset(l, d, anchor.height)
       tx = o.tx

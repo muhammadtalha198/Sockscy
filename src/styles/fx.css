@@ -871,6 +871,16 @@ html[data-lite] .animate-spin-slow { animation-play-state: paused; }
   pointer-events: none;
 }
 
+/* ---------- v2: soft backdrop (cart, checkout) ------------------------------
+   Tone-on-tone paper, no outline, no shadow: depth without noise. ±5–35% of the
+   tone keeps body ink far above 4.5:1 on top of it. */
+.soft-sheet {
+  aspect-ratio: 5 / 4;
+  border-radius: 2.75rem;
+}
+.soft-sheet-dark { background: color-mix(in srgb, var(--tone-bg), #000 5%); }
+.soft-sheet-light { background: color-mix(in srgb, var(--tone-bg), #fff 35%); }
+
 /* ---------- v2: story blocks enter at their own depth --------------------- */
 .story-block {
   transition: translate var(--dur-slow) var(--ease-spring), scale var(--dur-slow) var(--ease-spring), opacity 0.4s ease;

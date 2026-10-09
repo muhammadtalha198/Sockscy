@@ -8,7 +8,8 @@ import CartSummary from '../components/cart/CartSummary'
 import GiftPackToggle from '../components/cart/GiftPackToggle'
 import { ErrorSummary, SelectField, TextArea, TextField } from '../components/form/Field'
 import GiantHeadline from '../components/GiantHeadline'
-import Sticker from '../components/Sticker'
+import ParallaxSection from '../components/parallax/ParallaxSection'
+import SoftBackdrop, { DriftSticker } from '../components/parallax/SoftBackdrop'
 import { useCart } from '../store/cart'
 import { CITIES, PROVINCES } from '../lib/constants'
 import { cx } from '../lib/cx'
@@ -114,8 +115,9 @@ export default function Checkout() {
 
   if (!items.length) {
     return (
-      <section className="tone-offwhite clip-x relative min-h-[80svh] pb-section pt-28 md:pt-36">
+      <section className="tone-offwhite clip-x relative isolate min-h-[80svh] pb-section pt-28 md:pt-36">
         <title>checkout — SOCKSAVVY</title>
+        <SoftBackdrop />
         <GiantHeadline as="h1" lines={[{ text: 'NOTHING', className: 'pl-gutter' }, { text: 'TO PAY', className: 'pl-[18vw]' }]} />
         <div className="mt-8 flex flex-col items-start gap-5 px-gutter">
           <p className="copy">your cart is empty, so there’s nothing to check out (yet).</p>
@@ -128,21 +130,25 @@ export default function Checkout() {
   }
 
   return (
-    <section aria-labelledby="checkout-title" className="tone-offwhite clip-x relative pb-section pt-28 md:pt-36">
+    // v2: subtle only — soft paper behind, one drifting sticker; the form never moves
+    <section aria-labelledby="checkout-title" className="tone-offwhite clip-x relative isolate pb-section">
       <title>checkout — SOCKSAVVY</title>
-      <Sticker className="absolute right-[6%] top-[84px] z-20 w-16 md:w-24" rotate={12} depth="near">
-        <Star fill="#f4d500" />
-      </Sticker>
+      <SoftBackdrop />
+      <ParallaxSection as="div" rest="top" className="pt-28 md:pt-36">
+        <DriftSticker className="absolute right-[6%] top-[84px] z-20 w-16 md:w-24" rotate={12}>
+          <Star fill="#f4d500" />
+        </DriftSticker>
 
-      <GiantHeadline
-        as="h1"
-        id="checkout-title"
-        lines={[
-          { text: 'CHECK', from: 'left', className: 'pl-gutter' },
-          { text: 'OUT', from: 'right', className: 'pl-[30vw]' },
-        ]}
-      />
-      <p className="copy mt-4 px-gutter">one page. no account. cash on delivery anywhere in pakistan.</p>
+        <GiantHeadline
+          as="h1"
+          id="checkout-title"
+          lines={[
+            { text: 'CHECK', from: 'left', className: 'pl-gutter' },
+            { text: 'OUT', from: 'right', className: 'pl-[30vw]' },
+          ]}
+        />
+        <p className="copy mt-4 px-gutter">one page. no account. cash on delivery anywhere in pakistan.</p>
+      </ParallaxSection>
 
       <div className="mt-10 grid gap-10 px-gutter lg:grid-cols-12 lg:gap-14 lg:pr-24">
         <form id="checkout-form" onSubmit={onSubmit} noValidate className="space-y-10 lg:col-span-7">

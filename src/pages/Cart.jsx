@@ -6,6 +6,8 @@ import CartSummary from '../components/cart/CartSummary'
 import FreeShippingBar from '../components/cart/FreeShippingBar'
 import GiftPackToggle from '../components/cart/GiftPackToggle'
 import GiantHeadline from '../components/GiantHeadline'
+import ParallaxSection from '../components/parallax/ParallaxSection'
+import SoftBackdrop, { DriftSticker } from '../components/parallax/SoftBackdrop'
 import Sticker from '../components/Sticker'
 import TrustStrip from '../components/TrustStrip'
 import { useCart } from '../store/cart'
@@ -22,22 +24,27 @@ export default function Cart() {
   return (
     <>
       <title>{`cart (${count}) — SOCKSAVVY`}</title>
-      <section aria-labelledby="cart-title" className="tone-yellow clip-x relative min-h-[80svh] pb-section pt-28 md:pt-36">
-        <Sticker className="absolute right-[8%] top-[90px] z-20 w-16 md:w-24" rotate={12} depth="near">
-          <Heart />
-        </Sticker>
-        <Sticker className="absolute left-[44%] top-[120px] hidden w-20 md:block" outline={false} rotate={-14}>
-          <Squiggle fill="#ff52a1" />
-        </Sticker>
+      {/* v2: subtle only — soft paper behind, one drifting sticker; the lines and summary never move */}
+      <section aria-labelledby="cart-title" className="tone-yellow clip-x relative isolate min-h-[80svh] pb-section">
+        <SoftBackdrop />
+        {/* the header is its own first screen: still on load, drifts apart as it leaves */}
+        <ParallaxSection as="div" rest="top" className="pt-28 md:pt-36">
+          <DriftSticker className="absolute right-[8%] top-[90px] z-20 w-16 md:w-24" rotate={12}>
+            <Heart />
+          </DriftSticker>
+          <Sticker className="absolute left-[44%] top-[120px] hidden w-20 md:block" outline={false} rotate={-14}>
+            <Squiggle fill="#ff52a1" />
+          </Sticker>
 
-        <GiantHeadline
-          as="h1"
-          id="cart-title"
-          lines={[
-            { text: 'YOUR', from: 'right', className: 'pl-[22vw]' },
-            { text: `CART (${count})`, from: 'left', className: 'pl-gutter' },
-          ]}
-        />
+          <GiantHeadline
+            as="h1"
+            id="cart-title"
+            lines={[
+              { text: 'YOUR', from: 'right', className: 'pl-[22vw]' },
+              { text: `CART (${count})`, from: 'left', className: 'pl-gutter' },
+            ]}
+          />
+        </ParallaxSection>
 
         {items.length === 0 ? (
           <div className="mt-12 flex flex-col items-start gap-5 px-gutter">
