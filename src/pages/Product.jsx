@@ -6,7 +6,8 @@ import PizzaBox from '../components/art/PizzaBox'
 import QuantityStepper from '../components/cart/QuantityStepper'
 import GiantHeadline from '../components/GiantHeadline'
 import ProductCarousel from '../components/ProductCarousel'
-import ProductGrid from '../components/ProductGrid'
+import ParallaxSection from '../components/parallax/ParallaxSection'
+import RelatedRail from '../components/product/RelatedRail'
 import SizePicker, { firstInStockSize } from '../components/SizePicker'
 import Sticker from '../components/Sticker'
 import { useAsync } from '../hooks/useAsync'
@@ -101,7 +102,7 @@ function ProductView({ product }) {
     <>
       <title>{`${product.name} — SOCKSAVVY`}</title>
 
-      <section className="tone-offwhite clip-x relative pb-section pt-28 md:pt-36">
+      <ParallaxSection rest="top" className="tone-offwhite clip-x relative pb-section pt-28 md:pt-36">
         <nav aria-label="breadcrumb" className="px-gutter text-sm font-bold lowercase">
           <ol className="flex flex-wrap gap-2">
             <li>
@@ -230,7 +231,7 @@ function ProductView({ product }) {
             </div>
           </div>
         </div>
-      </section>
+      </ParallaxSection>
 
       <StickyBuyBar
         watchRef={buttonRef}
@@ -244,7 +245,7 @@ function ProductView({ product }) {
         onAdd={add}
       />
 
-      <section aria-labelledby="related-title" className="tone-red clip-x relative py-section">
+      <ParallaxSection aria-labelledby="related-title" className="tone-red clip-x relative py-section">
         <Sticker className="absolute right-[8%] top-10 w-14 md:w-20" outline={false} rotate={-8}>
           <Sparkle fill="#f4d500" />
         </Sticker>
@@ -256,9 +257,9 @@ function ProductView({ product }) {
           ]}
         />
         <div className="mt-12 px-gutter lg:pr-24">
-          <ProductGrid products={related.data} loading={related.loading} skeletons={4} />
+          <RelatedRail products={related.data} loading={related.loading} />
         </div>
-      </section>
+      </ParallaxSection>
     </>
   )
 }

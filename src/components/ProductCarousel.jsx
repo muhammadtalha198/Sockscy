@@ -5,11 +5,22 @@ import { cx } from '../lib/cx'
 import SockArt from './art/SockArt'
 import ProductImage from './ProductImage'
 import SockSpinner from './product/SockSpinner'
+import ParallaxLayer from './parallax/ParallaxLayer'
+import { Flower, Sparkle, Star } from './art/Doodles'
+
+// one small doodle per slide on the front plane
+const FRONT = [<Sparkle key="s" fill="#f5f1e8" />, <Flower key="f" fill="#ff52a1" center="#f4d500" />, <Star key="t" fill="#f5f1e8" />]
 
 /**
  * Product media: slide 1 is the drag-to-spin 3D sock (in the chosen colourway),
  * then the photos. Scroll-snap swipe, arrows, thumbnails and arrow keys.
  * `spinKey` changes (colourway picked) jump back to the 3D slide.
+ *
+ * v2: every slide is a little diorama (layers anchored to the product section):
+ *   back  a cut-paper sheet · far  the giant product name in the tile's display colour
+ *   mid   a soft floor shadow · near  the sock (overlaps the name, moves faster)
+ *   front one small doodle
+ * Real photos: use transparent cutouts so the layers behind the sock stay visible.
  */
 export default function ProductCarousel({ product, badge, art, spinKey }) {
   const images = product.images?.length ? product.images : [{ src: null, view: 'single', alt: product.name }]
@@ -71,20 +82,38 @@ export default function ProductCarousel({ product, badge, art, spinKey }) {
             aria-roledescription="slide"
             aria-label={slide.kind === 'spin' ? `3D view, ${i + 1} of ${slides.length}` : `${i + 1} of ${slides.length}`}
             inert={i !== index}
-            className="aspect-[4/5] w-full shrink-0 snap-start md:aspect-square"
+            className={cx('slide-diorama relative aspect-[4/5] w-full shrink-0 snap-start overflow-hidden md:aspect-square', `tone-${tiles[i % tiles.length]}`)}
             style={{ background: TILE_BG[tiles[i % tiles.length]] }}
           >
-            {slide.kind === 'spin' ? (
-              <SockSpinner art={art || product.art} label={`${product.name} sock in 3D`} frames={product.spin} />
-            ) : (
-              <ProductImage
-                product={{ ...product, art: art || product.art }}
-                image={slide.img}
-                priority={i === 1}
-                sizes="(min-width: 1024px) 58vw, 100vw"
-                artClassName="h-[88%] w-[88%]"
-              />
-            )}
+            <ParallaxLayer depth="back" className="pointer-events-none absolute inset-[13%_11%_17%]">
+              <span className="slide-sheet block h-full w-full" style={{ rotate: i % 2 ? '4deg' : '-5deg' }} />
+            </ParallaxLayer>
+            <ParallaxLayer depth="far" className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+              {product.name.toUpperCase().split(' ').map((w) => (
+                <span key={w} className="giant t-display block text-[clamp(3.6rem,17vw,8.5rem)] leading-[0.82] lg:text-[clamp(4rem,8.5vw,9.5rem)]">
+                  {w}
+                </span>
+              ))}
+            </ParallaxLayer>
+            {slide.kind !== 'spin' && <span className="slide-floor" aria-hidden="true" />}
+            <ParallaxLayer depth="near" decorative={false} className="relative h-full w-full">
+              {slide.kind === 'spin' ? (
+                <SockSpinner art={art || product.art} label={`${product.name} sock in 3D`} frames={product.spin} />
+              ) : (
+                <ProductImage
+                  product={{ ...product, art: art || product.art }}
+                  image={slide.img}
+                  priority={i === 1}
+                  sizes="(min-width: 1024px) 58vw, 100vw"
+                  artClassName="h-[88%] w-[88%]"
+                />
+              )}
+            </ParallaxLayer>
+            <ParallaxLayer depth="front" className="pointer-events-none absolute right-[9%] top-[9%] w-10 md:w-14">
+              <span className="block" style={{ rotate: `${i % 2 ? 14 : -12}deg` }}>
+                {FRONT[i % FRONT.length]}
+              </span>
+            </ParallaxLayer>
           </div>
         ))}
       </div>

@@ -852,6 +852,25 @@ html[data-lite] .animate-spin-slow { animation-play-state: paused; }
   from { transform: translate3d(0, 14px, 0) scale(0.8); }
 }
 
+/* ---------- v2: product slides as dioramas -------------------------------- */
+.slide-sheet {
+  border: 2px solid #000;
+  border-radius: 1.75rem;
+  background: var(--color-offwhite);
+  box-shadow: var(--shadow-hard-lg);
+}
+.slide-floor {
+  position: absolute;
+  left: 50%;
+  bottom: 10%;
+  width: 52%;
+  height: 5%;
+  border-radius: 50%;
+  background: rgb(0 0 0 / 0.16);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
 /* ---------- REDUCED MOTION: effects off ---------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   .intro { display: none; }
