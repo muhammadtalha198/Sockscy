@@ -148,8 +148,35 @@ What the pass changed:
 - **Phones run at 65% strength.** There is no velocity skew on phones, and no depth-of-field
   blur on phones or in lite mode.
 
-**Lighthouse** (median of 3, `vite preview`): see `lighthouse-v1-before.md` and
+### Lighthouse
+
+Median of 3, `vite preview`, simulated throttling; files `lighthouse-v1-before.md` and
 `lighthouse-v2-after.md`.
+
+| page | mobile v1 → v2 | LCP v1 → v2 | TBT v1 → v2 | CLS v2 | desktop v1 → v2 |
+| --- | --- | --- | --- | --- | --- |
+| home | 90 → **89** | 2.9 → 2.9 s | 111 → 158 ms | 0.004 | 100 → 100 |
+| shop | 90 → **89** | 3.0 → 3.0 s | 43 → 35 ms | 0.003 | 100 → 100 |
+| product | 89 → **85** | 3.0 → 3.6 s | 48 → 60 ms | 0.009 | 100 → 100 |
+| about | 85 → **85** | 3.6 → 3.6 s | 39 → 49 ms | 0.003 | 99 → 99 |
+| cart | 89 → **89** | 3.1 → 3.1 s | 41 → 50 ms | 0.020 | 100 → 100 |
+| checkout | 89 → **88** | 3.0 → 3.1 s | 35 → 46 ms | 0.042 | 100 → 100 |
+| 404 | 90 → **86** | 3.0 → 3.4 s | 74 → 44 ms | 0.002 | 100 → 99 |
+
+Every page stays at or above the 80 mobile target, and CLS stays under 0.1 everywhere.
+Accessibility, best practices and SEO are unchanged (96–100 / 100 / 100).
+
+The two drops (product, 404) are a change in which element Lighthouse measures, not a slower
+page:
+- In v1 the largest paint on both pages was the "loading…" placeholder shown while the lazy
+  page chunk loads. That was big and early, which flattered v1.
+- In v2 a bigger element now wins: the giant product name behind the sock, and the ghost
+  "404". These paint together with the real page content, so LCP now reports when the page
+  actually appears.
+
+I left it as it is rather than tuning the layout to game the metric. If you want those points
+back, the real fix is to preload the page chunk and the product data (an architecture change,
+not part of v2).
 
 ## Accessibility pass
 

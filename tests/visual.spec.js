@@ -54,7 +54,7 @@ for (const [name, path] of PAGES) {
       requestAnimationFrame(tick)
       const H = document.documentElement.scrollHeight
       for (let y = 0; y < H; y += Math.round(innerHeight * 0.5)) {
-        window.scrollTo(0, y)
+        window.scrollTo({ top: y, behavior: 'instant' }) // html has scroll-behavior: smooth
         await new Promise((r) => setTimeout(r, 120))
       }
       run = false
@@ -67,6 +67,9 @@ for (const [name, path] of PAGES) {
     await page.evaluate(() => window.scrollTo(0, 0))
     await page.waitForTimeout(1200)
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)
+    // full-page capture keeps the real viewport, so the sticky footer (which lies under the
+    // page on desktop) would be painted behind <main>: put it back in flow for the picture
+    await page.addStyleTag({ content: '.site-footer[data-fits]{position:relative!important}' })
     await page.screenshot({ path: `test-results/screens/${info.project.name}/${name}.png`, fullPage: true })
 
     expect(errors, 'console / page errors').toEqual([])
