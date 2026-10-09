@@ -66,9 +66,24 @@ All of it switches off with the OS "reduce motion" setting. Heavy libraries load
 | **Conversion**: sticky add-to-cart bar on phones, walking sock on the free-shipping bar, real-stock urgency labels, trust strip, confetti + Instagram share on the order page | `pages/Product.jsx`, `cart/FreeShippingBar.jsx`, `TrustStrip.jsx`, `pages/OrderPlaced.jsx` |
 | **Sound + easter eggs**: sound toggle (off by default); Konami code (↑↑↓↓←→←→BA) rains socks; tap the logo 5× to remix every sock pattern; a hidden sock on the 404 page | `fx/SoundToggle.jsx`, `fx/EasterEggs.jsx`, `fx/sound.js`, `pages/NotFound.jsx` |
 
+## Version 2: depth (parallax)
+
+Every page is a layered diorama on five depth planes (back · far · mid · near · front). Scroll moves them at different speeds; on desktop the pointer moves them too; on phones, tilt moves them after a tap on the "tilt" sticker. The look, cart, checkout, routes and data are unchanged. Everything is static with "reduce motion". A **calm mode** sticker (bottom right) turns motion down to 15% for anyone who wants less.
+
+| What | Where |
+| --- | --- |
+| Depth tokens (plane values, strength, pointer range, tilt, calm, phone) | `src/styles/tokens.css` → `--depth-*`, `--parallax-*` |
+| Engine (scroll via CSS scroll-driven animations, JS fallback for Firefox; pointer, tilt, page-transition depth) | `src/parallax/engine.js`, `src/parallax/tilt.js` |
+| Components: `ParallaxSection`, `ParallaxLayer`, `ParallaxText`, `ParallaxSticker`, `TiltCard`, `StoryBlock`, `SoftBackdrop` + `DriftSticker`; hook `useParallax` | `src/components/parallax/`, `src/hooks/useParallax.js` |
+| Per-page changes, before/after screenshots, the real image files to add | `docs/version-2/` (`CHANGES.md`, `before/`, `after/`) |
+
+Checks: `npm run test:visual` (Playwright at 390/768/1440: errors, overflow, scroll stalls, reduced motion on every page, calm toggle, checkout) and `npm run lighthouse -- --label=x` (median of 3, mobile + desktop; serve the build with `npm run preview` first). Add `?parallax=js` to any URL to try the JS fallback.
+
 **Colourways have their own stock.** In `products.json`, `colorways[].stock` is per size, and the product's `stock` must equal the sum of its colourways. The cart caps every line by colour and by size.
 
 ### Real files to add
+
+The version 2 depth layers (hero front sock, About cutout, 404 lost sock, Instagram tiles, confetti sprites) are listed with sizes in `docs/version-2/CHANGES.md`.
 
 | File | Size / format | Used for |
 | --- | --- | --- |
