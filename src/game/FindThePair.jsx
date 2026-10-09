@@ -3,7 +3,7 @@ import { Link } from 'react-router'
 import SockArt from '../components/art/SockArt'
 import { useDialog } from '../hooks/useDialog'
 import { prefersReducedMotion } from '../hooks/useReducedMotion'
-import { DISCOUNTS, hasWonToday, recordWin } from '../lib/discount'
+import { DISCOUNTS, hasWonToday, recordWin, usedToday } from '../lib/discount'
 import { cx } from '../lib/cx'
 import { play } from '../fx/sound'
 import { useCart } from '../store/cart'
@@ -30,6 +30,26 @@ const BASES = ['#111111', '#ff52a1', '#f5f1e8', '#1c7d56', '#a7d3f0', '#c9b6ff']
 const TRIMS = ['#f4d500', '#e63a3f', '#111111', '#1c7d56', '#ff52a1']
 
 const rand = (n) => Math.floor(Math.random() * n)
+const sockCount = () => (typeof window !== 'undefined' && window.innerWidth < 640 ? 10 : 16)
+
+/**
+ * Where today's prize stands, read from the cart (the truth) and the local win record:
+ *   fresh   — not won today          → a win applies it
+ *   applied — PAIRUP10 is in the cart → just for fun
+ *   removed — won today, not in cart, not used → a win puts it back
+ *   used    — went into an order today → just for fun until tomorrow
+ */
+function prizeState() {
+  if (usedToday()) return 'used'
+  if (useCart.getState().discount?.code === PRIZE.code) return 'applied'
+  return hasWonToday() ? 'removed' : 'fresh'
+}
+const INTRO = {
+  fresh: [`win ${PRIZE.percent}% off`, `find the matching pair before the timer runs out and ${PRIZE.code} goes straight into your cart.`, 'start'],
+  applied: [`${PRIZE.code} is in your cart`, 'you already won today. come back tomorrow for another prize — or play just for fun.', 'play for fun'],
+  removed: ['win it back', `you won ${PRIZE.code} today but it’s not in your cart any more. find the pair again to put it back.`, 'start'],
+  used: ['prize used today', `${PRIZE.code} is one win per day and you’ve used today’s. come back tomorrow — or play just for fun.`, 'play for fun'],
+}
 const shuffle = (a) => {
   for (let i = a.length - 1; i > 0; i--) {
     const j = rand(i + 1)
@@ -84,15 +104,18 @@ export default function FindThePair({ onClose }) {
   const panelRef = useRef(null)
   const closeRef = useRef(null)
   const applyDiscount = useCart((s) => s.applyDiscount)
-  const [alreadyWon] = useState(hasWonToday)
+  const [prize, setPrize] = useState(prizeState)
+  const canWin = prize === 'fresh' || prize === 'removed'
   const [phase, setPhase] = useState('intro') // intro | play | won | lost
   const [round, setRound] = useState(0)
   const [selected, setSelected] = useState(null)
   const [wrong, setWrong] = useState([])
   const [left, setLeft] = useState(SECONDS)
   const [live, setLive] = useState('')
-  const count = typeof window !== 'undefined' && window.innerWidth < 640 ? 10 : 16
-  const board = useMemo(() => makeBoard(count), [count, round])
+  // the sock count is fixed per round — rotating the phone must not deal a new board
+  const [count, setCount] = useState(sockCount)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const board = useMemo(() => makeBoard(count), [round])
   useDialog(true, { onClose, panelRef, initialFocusRef: closeRef })
 
   // countdown
@@ -112,6 +135,8 @@ export default function FindThePair({ onClose }) {
   }, [phase, round])
 
   function start() {
+    setPrize(prizeState())
+    setCount(sockCount())
     setRound((r) => r + 1)
     setSelected(null)
     setWrong([])
@@ -135,9 +160,9 @@ export default function FindThePair({ onClose }) {
     const first = board.find((s) => s.id === selected)
     if (first.pair && sock.pair) {
       setPhase('won')
-      setLive(alreadyWon ? 'you found the pair!' : `you found the pair! ${PRIZE.code} is applied to your cart.`)
+      setLive(canWin ? `you found the pair! ${PRIZE.code} is applied to your cart.` : 'you found the pair!')
       play('win')
-      if (!alreadyWon) {
+      if (canWin) {
         recordWin()
         applyDiscount(PRIZE.code)
       }
@@ -220,14 +245,10 @@ export default function FindThePair({ onClose }) {
           {phase === 'intro' && (
             <div className="absolute inset-0 grid place-items-center p-6 text-center">
               <div className="max-w-md">
-                <p className="text-display font-black">{alreadyWon ? 'you already won today' : `win ${PRIZE.percent}% off`}</p>
-                <p className="copy mx-auto mt-3">
-                  {alreadyWon
-                    ? `${PRIZE.code} is in your cart. come back tomorrow for another prize — or play just for fun.`
-                    : `find the matching pair before the timer runs out and ${PRIZE.code} goes straight into your cart.`}
-                </p>
+                <p className="text-display font-black">{INTRO[prize][0]}</p>
+                <p className="copy mx-auto mt-3">{INTRO[prize][1]}</p>
                 <button type="button" className="btn btn-yellow btn-lg mt-6" onClick={start}>
-                  {alreadyWon ? 'play for fun' : 'start'}
+                  {INTRO[prize][2]}
                 </button>
               </div>
             </div>
@@ -239,11 +260,13 @@ export default function FindThePair({ onClose }) {
             {phase === 'won' ? (
               <>
                 <p className="text-display font-black leading-none">pair found!</p>
-                {alreadyWon ? (
-                  <p className="copy mt-2">nice. your {PRIZE.code} from today is still in your cart.</p>
-                ) : (
+                {canWin ? (
                   <p className="mt-3 inline-block -rotate-2 rounded-xl border-2 border-black bg-yellow px-4 py-2 text-xl font-black">
-                    {PRIZE.code} · {PRIZE.percent}% off — applied to your cart
+                    {PRIZE.code} · {PRIZE.percent}% off — {prize === 'removed' ? 'back in your cart' : 'applied to your cart'}
+                  </p>
+                ) : (
+                  <p className="copy mt-2">
+                    {prize === 'used' ? `nice. today’s ${PRIZE.code} is already used — new prize tomorrow.` : `nice. your ${PRIZE.code} is still in your cart.`}
                   </p>
                 )}
                 <div className="mt-4 flex flex-wrap items-center gap-3">

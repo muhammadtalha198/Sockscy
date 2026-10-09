@@ -1,7 +1,6 @@
 import { lazy, Suspense, useRef, useState } from 'react'
 import { useLocation } from 'react-router'
 import { useTuckOnScroll } from '../hooks/useTuckOnScroll'
-import { hasWonToday } from '../lib/discount'
 import { useCart } from '../store/cart'
 import { useUi } from '../store/ui'
 import SockArt from './art/SockArt'
@@ -24,7 +23,7 @@ export default function PlayButton() {
   // phones: slide away while scrolling down so it never sits on top of what you're reading
   const buttonRef = useRef(null)
   const tucked = useTuckOnScroll(buttonRef)
-  const won = discount?.code === 'PAIRUP10' || hasWonToday()
+  const won = discount?.code === 'PAIRUP10' // the cart is the truth, not the win record
   const prefetch = () => {
     if (!prefetched) {
       setPrefetched(true)

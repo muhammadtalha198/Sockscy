@@ -33,6 +33,9 @@ export default function App() {
     if (location === display) return
     if (location.pathname === display.pathname || prefersReducedMotion()) {
       setDisplay(location)
+      // a wipe already in flight (e.g. Back pressed mid-transition) must still leave,
+      // otherwise the curtain stays over the page and swallows every click
+      setCurtain((c) => (!c ? c : prefersReducedMotion() ? null : c.phase === 'in' ? { ...c, phase: 'out' } : c))
       return
     }
     let cancelled = false

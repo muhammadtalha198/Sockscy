@@ -6,11 +6,17 @@ import Sticker from '../components/Sticker'
 import { SITE } from '../lib/constants'
 import { formatPKR } from '../lib/format'
 import { play } from '../fx/sound'
+import { useCart } from '../store/cart'
 
 /** Confirmation screen. Checkout navigates here with the order in router state. */
 export default function OrderPlaced() {
   const order = useLocation().state?.order
   const [shareNote, setShareNote] = useState('')
+
+  // the order is placed: empty the cart now that this page has replaced checkout
+  useEffect(() => {
+    if (order) useCart.getState().clear()
+  }, [order])
 
   // it's a party: sock confetti rains once the page curtain has wiped off
   useEffect(() => {

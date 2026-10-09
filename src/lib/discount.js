@@ -19,18 +19,23 @@ export function todayKey(date = new Date()) {
   return `${y}-${m}-${d}`
 }
 
-export function hasWonToday() {
+function readGame() {
   try {
-    return JSON.parse(localStorage.getItem(GAME_KEY) || '{}').lastWin === todayKey()
+    return JSON.parse(localStorage.getItem(GAME_KEY) || '{}')
   } catch {
-    return false
+    return {}
   }
 }
-
-export function recordWin() {
+function writeGame(patch) {
   try {
-    localStorage.setItem(GAME_KEY, JSON.stringify({ lastWin: todayKey() }))
+    localStorage.setItem(GAME_KEY, JSON.stringify({ ...readGame(), ...patch }))
   } catch {
     /* storage blocked — the win still applies for this session */
   }
 }
+
+export const hasWonToday = () => readGame().lastWin === todayKey()
+export const recordWin = () => writeGame({ lastWin: todayKey() })
+/** today's prize went into a placed order — no second one until tomorrow */
+export const usedToday = () => readGame().usedOn === todayKey()
+export const markUsed = () => writeGame({ usedOn: todayKey() })

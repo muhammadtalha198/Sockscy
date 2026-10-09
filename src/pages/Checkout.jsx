@@ -13,6 +13,7 @@ import { useCart } from '../store/cart'
 import { CITIES, PROVINCES } from '../lib/constants'
 import { cx } from '../lib/cx'
 import { formatPKR, isValidEmail, isValidPkMobile, normalisePhone } from '../lib/format'
+import { markUsed } from '../lib/discount'
 import { getTotals } from '../lib/pricing'
 
 const EMPTY = {
@@ -53,8 +54,8 @@ function validate(f) {
 }
 
 export default function Checkout() {
-  const { items, giftPack, setGiftPack, clear, discount } = useCart(
-    useShallow((s) => ({ items: s.items, giftPack: s.giftPack, setGiftPack: s.setGiftPack, clear: s.clear, discount: s.discount })),
+  const { items, giftPack, setGiftPack, discount } = useCart(
+    useShallow((s) => ({ items: s.items, giftPack: s.giftPack, setGiftPack: s.setGiftPack, discount: s.discount })),
   )
   const [form, setForm] = useState(EMPTY)
   const [errors, setErrors] = useState({})
@@ -100,11 +101,13 @@ export default function Checkout() {
         return
       }
       const order = { ...res, phone: normalisePhone(form.phone), total: res.total ?? totals.total }
-      clear()
+      if (totals.discountCode === 'PAIRUP10') markUsed()
+      // the cart is cleared by OrderPlaced once it is on screen — clearing here would flash
+      // checkout's "nothing to pay" state under the page curtain
       navigate('/order-placed', { replace: true, state: { order } })
+      // stay "submitting" while the page swaps, so the order can't be placed twice
     } catch (err) {
       setServerError(err.message || 'something went wrong — please try again')
-    } finally {
       setSubmitting(false)
     }
   }

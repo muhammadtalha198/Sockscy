@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
+import productsData from '../data/products.json'
 import { lookupDiscount } from '../lib/discount'
 import { artFor, stockFor } from '../lib/stock'
 
@@ -22,6 +23,34 @@ function rebalance(items) {
     const cap = Math.min(lineStock, sizeStock - othersInSize(items, item.key, item.id, item.size))
     return { ...item, sizeStock, lineStock, maxQty: Math.max(item.qty, cap) }
   })
+}
+
+/**
+ * v1 → v2: carts saved before colourways had their own stock may hold lines that
+ * colour can't fill. Re-derive both stock caps from the (static) catalogue, clamp the
+ * quantities, drop lines with nothing left. The server re-checks stock at checkout anyway.
+ */
+function migrateCart(state, version) {
+  if (version >= 2 || !Array.isArray(state?.items)) return state
+  const items = []
+  const used = {} // pairs already given to earlier lines of the same product + size
+  for (const item of state.items) {
+    const product = productsData.find((p) => p.id === item.id)
+    if (!product) {
+      items.push(item) // unknown here (real backend catalogue) — let checkout validate it
+      continue
+    }
+    const colorway = product.colorways?.find((c) => c.id === item.colorway?.id) ?? null
+    const sizeStock = product.stock?.[item.size] ?? 0
+    const lineStock = Math.min(sizeStock, stockFor(product, colorway)[item.size] ?? 0)
+    const k = `${item.id}:${item.size}`
+    const qty = Math.min(item.qty, lineStock, sizeStock - (used[k] || 0))
+    if (qty > 0) {
+      used[k] = (used[k] || 0) + qty
+      items.push({ ...item, sizeStock, lineStock, qty })
+    }
+  }
+  return { ...state, items: rebalance(items) }
 }
 
 /**
@@ -126,7 +155,8 @@ export const useCart = create(
     }),
     {
       name: 'socksavvy-cart',
-      version: 1,
+      version: 2,
+      migrate: migrateCart,
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({ items: state.items, giftPack: state.giftPack, discount: state.discount }),
     },
