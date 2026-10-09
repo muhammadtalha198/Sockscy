@@ -91,11 +91,44 @@ test('reduced motion: nothing animates, no canvas, no curtain', async ({ browser
   expect(state).toEqual({ running: 0, canvas: 0, intro: false, moved: 0 })
   await page.locator('header a', { hasText: 'shop' }).first().click()
   await expect(page.locator('.curtain')).toHaveCount(0)
+
+  // every other page is static too: no running animation, no layer offset, no CSS scroll animation
+  for (const [name, path] of PAGES) {
+    await page.goto(path, { waitUntil: 'networkidle' })
+    await page.waitForTimeout(600)
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight / 2))
+    await page.waitForTimeout(500)
+    const still = await page.evaluate(() => ({
+      running: document.getAnimations().filter((a) => a.playState === 'running').length,
+      moved: [...document.querySelectorAll('[data-depth]')].filter((el) => el.style.transform && el.style.transform !== 'none').length,
+      scrollAnimated: document.querySelectorAll('[data-px-scroll]').length,
+    }))
+    expect(still, `${name} under reduced motion`).toEqual({ running: 0, moved: 0, scrollAnimated: 0 })
+  }
   await context.close()
+})
+
+test('calm mode toggle: visible, pressable, turns the planes down', async ({ page }) => {
+  await page.goto('/about', { waitUntil: 'networkidle' })
+  const calm = page.getByRole('button', { name: 'calm mode: less motion' })
+  await expect(calm).toBeVisible()
+  await expect(calm).toHaveAttribute('aria-pressed', 'false')
+  await calm.click()
+  await expect(calm).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.locator('html')).toHaveAttribute('data-calm', '')
+  expect(await page.evaluate(() => window.__parallax.getState().calm)).toBe(true)
+  await calm.click()
+  await expect(page.locator('html')).not.toHaveAttribute('data-calm', '')
 })
 
 test('cart → checkout → order still works', async ({ page }) => {
   await page.goto('/checkout', { waitUntil: 'networkidle' })
+  // the form never moves: pointer motion shifts only the soft backdrop
+  const before = await page.locator('#name').boundingBox()
+  await page.mouse.move(40, 40)
+  await page.mouse.move(900, 600, { steps: 8 })
+  await page.waitForTimeout(400)
+  expect(await page.locator('#name').boundingBox()).toEqual(before)
   await page.fill('#name', 'Ayesha Khan')
   await page.fill('#phone', '03211234567')
   await page.fill('#address', 'House 12, Street 4, Gulberg III')
