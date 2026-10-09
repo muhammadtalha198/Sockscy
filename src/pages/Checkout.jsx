@@ -55,9 +55,15 @@ function validate(f) {
 }
 
 export default function Checkout() {
-  const { items, giftPack, setGiftPack, discount } = useCart(
-    useShallow((s) => ({ items: s.items, giftPack: s.giftPack, setGiftPack: s.setGiftPack, discount: s.discount })),
+  const cart = useCart(
+    useShallow((s) => ({ items: s.items, giftPack: s.giftPack, setGiftPack: s.setGiftPack, discount: s.discount, clear: s.clear })),
   )
+  // once the order is placed the cart is emptied straight away (so Back, a reload or a
+  // cancelled page swap can never leave it full); this page keeps showing what was ordered
+  // while the curtain covers it, instead of flashing "nothing to pay"
+  const [placed, setPlaced] = useState(null)
+  const { items, giftPack, discount } = placed || cart
+  const { setGiftPack } = cart
   const [form, setForm] = useState(EMPTY)
   const [errors, setErrors] = useState({})
   const [submitting, setSubmitting] = useState(false)
@@ -103,8 +109,8 @@ export default function Checkout() {
       }
       const order = { ...res, phone: normalisePhone(form.phone), total: res.total ?? totals.total }
       if (totals.discountCode === 'PAIRUP10') markUsed()
-      // the cart is cleared by OrderPlaced once it is on screen — clearing here would flash
-      // checkout's "nothing to pay" state under the page curtain
+      setPlaced({ items, giftPack, discount })
+      cart.clear()
       navigate('/order-placed', { replace: true, state: { order } })
       // stay "submitting" while the page swaps, so the order can't be placed twice
     } catch (err) {
