@@ -213,3 +213,8 @@ Order: A, B, C, E, D, F, H, J, G, I, K. 60fps on a mid-range Android. Lazy-load 
   `getTotals(items, giftPack, discount)` takes 10% off socks only, free shipping judged after
   discount; `CartSummary` shows it (removable on /cart); checkout sends `discountCode`; mock API
   re-validates via `lookupDiscount`. Order clears the discount.
+- **H Page transitions** — `App.jsx` renders `<Routes location={display}>`; on a pathname
+  change it shows `fx/Curtain.jsx` (torn edges, colour = `toneFor(next)` from `lib/routes.js`),
+  preloads the page chunk (`loaderFor`), swaps `display` while covered, then wipes off.
+  Search/hash/state-only changes and reduced motion swap instantly. `useLocation()` inside
+  the tree returns the *displayed* location.

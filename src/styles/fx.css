@@ -567,6 +567,62 @@ html.lenis body { height: auto; }
 }
 .game-result { animation: qv-in var(--dur-med) var(--ease-spring) both; }
 
+/* ---------- H. PAGE TRANSITION CURTAIN ------------------------------------ */
+.curtain {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: -3rem;
+  z-index: 150;
+  display: flex;
+  width: calc(100vw + 6rem);
+  will-change: transform;
+}
+.curtain[data-phase="in"] { animation: curtain-in 0.46s cubic-bezier(0.7, 0, 0.3, 1) both; }
+.curtain[data-phase="out"] { animation: curtain-out 0.56s cubic-bezier(0.7, 0, 0.3, 1) both; }
+@keyframes curtain-in {
+  from { transform: translate3d(100%, 0, 0); }
+  to { transform: translate3d(0, 0, 0); }
+}
+@keyframes curtain-out {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-100%, 0, 0); }
+}
+.curtain-edge {
+  flex: none;
+  width: 3rem;
+  height: 100%;
+}
+.curtain-edge-trail { transform: scaleX(-1); }
+.curtain-body {
+  display: grid;
+  flex: 1;
+  place-items: center;
+  margin-inline: -1px;
+  background: var(--curtain-bg);
+}
+.curtain-mark {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  animation: curtain-wobble 0.6s var(--ease-spring) both;
+}
+.curtain-word {
+  padding: 0.5rem 1rem;
+  border: 2px solid var(--color-offwhite);
+  border-radius: 999px;
+  background: #000;
+  color: var(--color-yellow);
+  font-size: clamp(1.2rem, 3vw, 1.8rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  box-shadow: var(--shadow-hard);
+}
+@keyframes curtain-wobble {
+  from { transform: rotate(-14deg) scale(0.6); }
+  to { transform: rotate(-4deg) scale(1); }
+}
+
 /* ---------- REDUCED MOTION: effects off ---------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   .intro { display: none; }
@@ -586,4 +642,5 @@ html.lenis body { height: auto; }
   .game-sock.is-wrong,
   .game-result { animation: none; }
   .game-timer { animation-duration: 20s !important; animation-iteration-count: 1 !important; }
+  .curtain { display: none; }
 }

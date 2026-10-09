@@ -3,6 +3,7 @@ import { Outlet, useLocation } from 'react-router'
 import { useCart } from '../store/cart'
 import { whenIdle } from '../lib/motion'
 import { loadScrollKit } from '../motion/scroll'
+import { toneFor } from '../lib/routes'
 import CartDrawer from './CartDrawer'
 import CartToast from './CartToast'
 import Cursor from './fx/Cursor'
@@ -13,19 +14,6 @@ import PlayButton from './PlayButton'
 import QuickView from './QuickView'
 import ScrollManager from './ScrollManager'
 import SideTab from './SideTab'
-
-// Colour of each page's first section, so the nav picks a readable ink.
-function toneFor(pathname) {
-  if (pathname === '/') return 'yellow'
-  if (pathname.startsWith('/shop')) return 'green'
-  if (pathname.startsWith('/product')) return 'offwhite'
-  if (pathname.startsWith('/cart')) return 'yellow'
-  if (pathname.startsWith('/checkout')) return 'offwhite'
-  if (pathname.startsWith('/order-placed')) return 'green'
-  if (pathname.startsWith('/about')) return 'red'
-  if (pathname.startsWith('/contact') || pathname.startsWith('/orders')) return 'green'
-  return 'pink' // 404
-}
 
 function PageLoader() {
   return (
