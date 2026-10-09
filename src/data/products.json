@@ -11,9 +11,9 @@
     "featured": false,
     "art": { "pattern": "eggs", "base": "#111111", "trim": "#f4d500" },
     "colorways": [
-      { "id": "midnight", "label": "midnight yolk", "base": "#111111", "trim": "#f4d500" },
-      { "id": "bubblegum", "label": "bubblegum yolk", "base": "#ff52a1", "trim": "#f4d500" },
-      { "id": "garden", "label": "green eggs", "base": "#1c7d56", "trim": "#f5f1e8" }
+      { "id": "midnight", "label": "midnight yolk", "base": "#111111", "trim": "#f4d500", "stock": { "S": 1, "M": 0, "L": 0 } },
+      { "id": "bubblegum", "label": "bubblegum yolk", "base": "#ff52a1", "trim": "#f4d500", "stock": { "S": 0, "M": 1, "L": 0 } },
+      { "id": "garden", "label": "green eggs", "base": "#1c7d56", "trim": "#f5f1e8", "stock": { "S": 0, "M": 1, "L": 0 } }
     ],
     "description": "fried eggs on black crew socks. the skate-day pair that started it all — breakfast you can wear to the park.",
     "details": ["crew length", "cotton blend, thrifted & washed", "one pair per size, then it's gone"],
@@ -35,9 +35,9 @@
     "featured": false,
     "art": { "pattern": "matcha", "base": "#f5f1e8", "trim": "#1c7d56" },
     "colorways": [
-      { "id": "cream", "label": "cream", "base": "#f5f1e8", "trim": "#1c7d56" },
-      { "id": "latte", "label": "oat latte", "base": "#e8c9a0", "trim": "#7a4a2a" },
-      { "id": "blush", "label": "blush", "base": "#ffc6dd", "trim": "#1c7d56" }
+      { "id": "cream", "label": "cream", "base": "#f5f1e8", "trim": "#1c7d56", "stock": { "S": 1, "M": 1, "L": 0 } },
+      { "id": "latte", "label": "oat latte", "base": "#e8c9a0", "trim": "#7a4a2a", "stock": { "S": 1, "M": 0, "L": 0 } },
+      { "id": "blush", "label": "blush", "base": "#ffc6dd", "trim": "#1c7d56", "stock": { "S": 0, "M": 0, "L": 1 } }
     ],
     "description": "part of the breakfast club. tiny matcha cups on cream socks for people who say 'i'm not a morning person' at 7am.",
     "details": ["crew length", "cotton blend, thrifted & washed", "pairs well with eggs"],
@@ -59,9 +59,9 @@
     "featured": true,
     "art": { "pattern": "avocado", "base": "#b9d77a", "trim": "#1c7d56" },
     "colorways": [
-      { "id": "lime", "label": "lime", "base": "#b9d77a", "trim": "#1c7d56" },
-      { "id": "toast", "label": "toast", "base": "#e8962e", "trim": "#7a4a2a" },
-      { "id": "night", "label": "night shift", "base": "#111111", "trim": "#b9d77a" }
+      { "id": "lime", "label": "lime", "base": "#b9d77a", "trim": "#1c7d56", "stock": { "S": 0, "M": 1, "L": 0 } },
+      { "id": "toast", "label": "toast", "base": "#e8962e", "trim": "#7a4a2a", "stock": { "S": 0, "M": 1, "L": 0 } },
+      { "id": "night", "label": "night shift", "base": "#111111", "trim": "#b9d77a", "stock": { "S": 0, "M": 0, "L": 1 } }
     ],
     "description": "avocado halves, pit included. a whole millennial personality, now for your ankles.",
     "details": ["crew length", "cotton blend, thrifted & washed", "no toast included"],
@@ -83,9 +83,9 @@
     "featured": false,
     "art": { "pattern": "peach", "base": "#ffc2d6", "trim": "#ff7a3d" },
     "colorways": [
-      { "id": "peach", "label": "peach", "base": "#ffc2d6", "trim": "#ff7a3d" },
-      { "id": "cream", "label": "cream", "base": "#f5f1e8", "trim": "#ff7a3d" },
-      { "id": "sky", "label": "sky", "base": "#a7d3f0", "trim": "#ff7a3d" }
+      { "id": "peach", "label": "peach", "base": "#ffc2d6", "trim": "#ff7a3d", "stock": { "S": 1, "M": 0, "L": 0 } },
+      { "id": "cream", "label": "cream", "base": "#f5f1e8", "trim": "#ff7a3d", "stock": { "S": 0, "M": 1, "L": 0 } },
+      { "id": "sky", "label": "sky", "base": "#a7d3f0", "trim": "#ff7a3d", "stock": { "S": 0, "M": 0, "L": 1 } }
     ],
     "description": "soft pink socks covered in little peaches. everything is fine. everything is peachy.",
     "details": ["ankle-crew length", "cotton blend, thrifted & washed"],
@@ -107,9 +107,9 @@
     "featured": true,
     "art": { "pattern": "pizza", "base": "#e63a3f", "trim": "#f4d500" },
     "colorways": [
-      { "id": "marinara", "label": "marinara", "base": "#e63a3f", "trim": "#f4d500" },
-      { "id": "charcoal", "label": "wood-fired", "base": "#111111", "trim": "#e63a3f" },
-      { "id": "mozz", "label": "mozzarella", "base": "#f5f1e8", "trim": "#e63a3f" }
+      { "id": "marinara", "label": "marinara", "base": "#e63a3f", "trim": "#f4d500", "stock": { "S": 1, "M": 0, "L": 0 } },
+      { "id": "charcoal", "label": "wood-fired", "base": "#111111", "trim": "#e63a3f", "stock": { "S": 0, "M": 0, "L": 1 } },
+      { "id": "mozz", "label": "mozzarella", "base": "#f5f1e8", "trim": "#e63a3f", "stock": { "S": 0, "M": 0, "L": 1 } }
     ],
     "description": "tomato is a fruit, so pizza is a fruit. we don't make the rules. pepperoni slices on red socks.",
     "details": ["crew length", "cotton blend, thrifted & washed", "ships great in the pizza-box gift pack"],
@@ -131,9 +131,9 @@
     "featured": true,
     "art": { "pattern": "hearts", "base": "#ff52a1", "trim": "#e63a3f" },
     "colorways": [
-      { "id": "hotpink", "label": "hot pink", "base": "#ff52a1", "trim": "#e63a3f" },
-      { "id": "cream", "label": "love letter", "base": "#f5f1e8", "trim": "#e63a3f" },
-      { "id": "goth", "label": "goth crush", "base": "#111111", "trim": "#ff52a1" }
+      { "id": "hotpink", "label": "hot pink", "base": "#ff52a1", "trim": "#e63a3f", "stock": { "S": 1, "M": 1, "L": 0 } },
+      { "id": "cream", "label": "love letter", "base": "#f5f1e8", "trim": "#e63a3f", "stock": { "S": 1, "M": 0, "L": 1 } },
+      { "id": "goth", "label": "goth crush", "base": "#111111", "trim": "#ff52a1", "stock": { "S": 0, "M": 1, "L": 0 } }
     ],
     "description": "red hearts on hot pink. wear your heart on your sock instead of your sleeve.",
     "details": ["crew length", "cotton blend, thrifted & washed"],
@@ -174,9 +174,9 @@
     "featured": false,
     "art": { "pattern": "checker", "base": "#ffffff", "trim": "#111111" },
     "colorways": [
-      { "id": "classic", "label": "classic", "base": "#ffffff", "trim": "#111111" },
-      { "id": "red", "label": "red cuff", "base": "#ffffff", "trim": "#e63a3f" },
-      { "id": "green", "label": "green cuff", "base": "#ffffff", "trim": "#1c7d56" }
+      { "id": "classic", "label": "classic", "base": "#ffffff", "trim": "#111111", "stock": { "S": 1, "M": 1, "L": 1 } },
+      { "id": "red", "label": "red cuff", "base": "#ffffff", "trim": "#e63a3f", "stock": { "S": 1, "M": 0, "L": 0 } },
+      { "id": "green", "label": "green cuff", "base": "#ffffff", "trim": "#1c7d56", "stock": { "S": 0, "M": 1, "L": 1 } }
     ],
     "description": "black and white checkerboard. matches your deck, your vans and your entire personality.",
     "details": ["crew length", "cotton blend, thrifted & washed", "skate approved"],
@@ -198,9 +198,9 @@
     "featured": true,
     "art": { "pattern": "smiley", "base": "#111111", "trim": "#f4d500" },
     "colorways": [
-      { "id": "black", "label": "black", "base": "#111111", "trim": "#f4d500" },
-      { "id": "pink", "label": "pink", "base": "#ff52a1", "trim": "#f4d500" },
-      { "id": "green", "label": "green", "base": "#1c7d56", "trim": "#f4d500" }
+      { "id": "black", "label": "black", "base": "#111111", "trim": "#f4d500", "stock": { "S": 1, "M": 0, "L": 0 } },
+      { "id": "pink", "label": "pink", "base": "#ff52a1", "trim": "#f4d500", "stock": { "S": 0, "M": 1, "L": 0 } },
+      { "id": "green", "label": "green", "base": "#1c7d56", "trim": "#f4d500", "stock": { "S": 0, "M": 0, "L": 1 } }
     ],
     "description": "y2k smileys on black. they're smiling. you should be too. it's just socks.",
     "details": ["crew length", "cotton blend, thrifted & washed"],
@@ -222,9 +222,9 @@
     "featured": false,
     "art": { "pattern": "stripes", "base": "#f5f1e8", "trim": "#111111" },
     "colorways": [
-      { "id": "black", "label": "black cuff", "base": "#f5f1e8", "trim": "#111111" },
-      { "id": "red", "label": "red cuff", "base": "#f5f1e8", "trim": "#e63a3f" },
-      { "id": "green", "label": "green cuff", "base": "#f5f1e8", "trim": "#1c7d56" }
+      { "id": "black", "label": "black cuff", "base": "#f5f1e8", "trim": "#111111", "stock": { "S": 1, "M": 0, "L": 1 } },
+      { "id": "red", "label": "red cuff", "base": "#f5f1e8", "trim": "#e63a3f", "stock": { "S": 0, "M": 1, "L": 0 } },
+      { "id": "green", "label": "green cuff", "base": "#f5f1e8", "trim": "#1c7d56", "stock": { "S": 1, "M": 0, "L": 1 } }
     ],
     "description": "retro tv stripes in blue, orange and cream. stripes are just checkers that gave up halfway.",
     "details": ["crew length", "cotton blend, thrifted & washed"],
@@ -246,9 +246,9 @@
     "featured": false,
     "art": { "pattern": "cats", "base": "#ff9b3d", "trim": "#111111" },
     "colorways": [
-      { "id": "ginger", "label": "ginger", "base": "#ff9b3d", "trim": "#111111" },
-      { "id": "lilac", "label": "lilac", "base": "#c9b6ff", "trim": "#111111" },
-      { "id": "pink", "label": "pink", "base": "#ff52a1", "trim": "#111111" }
+      { "id": "ginger", "label": "ginger", "base": "#ff9b3d", "trim": "#111111", "stock": { "S": 1, "M": 1, "L": 0 } },
+      { "id": "lilac", "label": "lilac", "base": "#c9b6ff", "trim": "#111111", "stock": { "S": 0, "M": 1, "L": 0 } },
+      { "id": "pink", "label": "pink", "base": "#ff52a1", "trim": "#111111", "stock": { "S": 0, "M": 0, "L": 1 } }
     ],
     "description": "orange cat energy, one brain cell, many little cat faces. sold as a pair, unlike your cat.",
     "details": ["crew length", "cotton blend, thrifted & washed"],

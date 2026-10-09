@@ -4,9 +4,11 @@ import { getProduct } from '../api/products'
 import { useAsync } from '../hooks/useAsync'
 import { useDialog } from '../hooks/useDialog'
 import { useAddToCart } from '../hooks/useAddToCart'
+import { useCart } from '../store/cart'
 import { useUi } from '../store/ui'
 import { TILE_BG } from '../lib/constants'
 import { formatPKR, stockNote } from '../lib/format'
+import { artFor, pickColorway } from '../lib/stock'
 import ProductImage from './ProductImage'
 import SizePicker, { firstInStockSize } from './SizePicker'
 
@@ -32,13 +34,16 @@ function QuickViewDialog({ id, onClose }) {
   const { data: product, loading, error } = useAsync(({ signal }) => getProduct(id, { signal }), [id])
   const [picked, setPicked] = useState(null)
   const size = picked ?? firstInStockSize(product)
+  // quick view has no swatches: add the first colourway that still has this size
+  const cartItems = useCart((s) => s.items)
+  const colorway = pickColorway(product, size, cartItems)
   useDialog(true, { onClose, panelRef, initialFocusRef: closeRef })
 
   function add() {
     if (!product || !size) return
     const source = addRef.current?.getBoundingClientRect()
     onClose()
-    addToCart(product, size, 1, { colorway: product.colorways?.[0] ?? null, source })
+    addToCart(product, size, 1, { colorway, source })
   }
 
   return (
@@ -61,7 +66,7 @@ function QuickViewDialog({ id, onClose }) {
         {product && (
           <div className="grid gap-6 p-5 md:grid-cols-2 md:p-7">
             <div className="aspect-square overflow-hidden rounded-[1.5rem] border-2 border-black" style={{ background: TILE_BG[product.tile] }}>
-              <ProductImage product={product} view="kick" decorative artClassName="h-[90%] w-[90%]" />
+              <ProductImage product={{ ...product, art: artFor(product, colorway) }} view="kick" decorative artClassName="h-[90%] w-[90%]" />
             </div>
             <div className="flex flex-col gap-4">
               <p className="tag">{product.collection}</p>
@@ -70,6 +75,7 @@ function QuickViewDialog({ id, onClose }) {
               </h2>
               <p className="text-display font-black">{formatPKR(product.price)}</p>
               <p className="inline-block w-fit -rotate-1 rounded-full border-2 border-black bg-yellow px-3 py-1 text-sm font-black">{stockNote(product, size)}</p>
+              {colorway && <p className="-mt-2 text-sm font-bold lowercase">colour: {colorway.label}</p>}
               <SizePicker product={product} value={size} onChange={setPicked} />
               <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-3">
                 <button ref={addRef} type="button" className="btn btn-pink btn-lg" disabled={!size} onClick={add} data-cursor="add">

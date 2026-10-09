@@ -1,5 +1,6 @@
 import { useCallback } from 'react'
 import { flyToCart } from '../fx/flyToCart'
+import { artFor } from '../lib/stock'
 import { useCart } from '../store/cart'
 
 /**
@@ -14,8 +15,7 @@ export function useAddToCart() {
     (product, size, qty = 1, { colorway = null, source = null } = {}) => {
       const added = addItem(product, size, qty, { colorway, open: false })
       if (added > 0) {
-        const art = colorway ? { ...product.art, base: colorway.base, trim: colorway.trim } : product.art
-        flyToCart({ from: source, art })
+        flyToCart({ from: source, art: artFor(product, colorway) })
       }
       return added
     },

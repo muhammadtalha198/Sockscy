@@ -10,6 +10,7 @@ export default function CartLine({ item, large = false }) {
   const setQty = useCart((s) => s.setQty)
   const removeItem = useCart((s) => s.removeItem)
   const product = { name: item.name, art: item.art, images: item.image ? [item.image] : [] }
+  const colour = item.colorway ? ` in ${item.colorway.label}` : ''
 
   return (
     <li className="flex gap-4 py-4">
@@ -42,7 +43,7 @@ export default function CartLine({ item, large = false }) {
               value={item.qty}
               max={item.maxQty}
               onChange={(qty) => setQty(item.key, qty)}
-              label={`quantity for ${item.name}`}
+              label={`quantity for ${item.name}${colour}, size ${item.size}`}
             />
             {item.qty >= item.maxQty && <span className="text-xs font-bold lowercase leading-tight">that’s all<br />we’ve got</span>}
           </div>
@@ -50,7 +51,7 @@ export default function CartLine({ item, large = false }) {
             type="button"
             onClick={() => removeItem(item.key)}
             className="text-sm font-extrabold lowercase underline decoration-2 underline-offset-4 hover:decoration-wavy"
-            aria-label={`remove ${item.name} size ${item.size}`}
+            aria-label={`remove ${item.name}${colour}, size ${item.size}`}
           >
             remove
           </button>

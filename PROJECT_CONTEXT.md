@@ -191,8 +191,9 @@ Order: A, B, C, E, D, F, H, J, G, I, K. 60fps on a mid-range Android. Lazy-load 
   `.peel` corner sticker with urgency label `urgencyLabel()`, `.pcard-price` bounce, torn
   paper `.pcard-paper` on first view/img load). `product/SockSpinner.jsx` (layered CSS 3D,
   drag + inertia + arrows, optional `product.spin` frame URLs) is slide 1 of
-  `ProductCarousel`. **Data**: optional `colorways: [{id,label,base,trim}]` (10 products);
-  stock stays per size, shared across colourways (cart `rebalance()` + mock API enforce it);
+  `ProductCarousel`. **Data**: optional `colorways: [{id,label,base,trim,stock:{S,M,L}}]` (10 products);
+  product `stock` = sum of its colourways; `lib/stock.js` (stockFor/artFor/pickColorway). Cart caps
+  each line at min(colour stock, size stock − other lines); mock API checks both;
   cart line key `id:size[:colorway]`, checkout sends `colorway`. `hooks/useAddToCart.js` →
   `fx/flyToCart.jsx` (WAAPI arc → `[data-cart-target]` SideTab shakes, count pops, 'add'
   sound, `fx/confetti.js` burst) + `CartToast` (drawer no longer auto-opens from these).

@@ -5,6 +5,8 @@ import { useAsync } from '../../hooks/useAsync'
 import { useAddToCart } from '../../hooks/useAddToCart'
 import { TILE_BG } from '../../lib/constants'
 import { formatPKR, stockNote } from '../../lib/format'
+import { useCart } from '../../store/cart'
+import { artFor, pickColorway } from '../../lib/stock'
 import { Squiggle } from '../art/Doodles'
 import Badge from '../Badge'
 import GiantHeadline from '../GiantHeadline'
@@ -20,6 +22,9 @@ export default function SockOfTheDay() {
   const addToCart = useAddToCart()
   const imageRef = useRef(null)
   const size = picked ?? firstInStockSize(product)
+  // no swatches here: add the first colourway that still has this size
+  const cartItems = useCart((s) => s.items)
+  const colorway = pickColorway(product, size, cartItems)
   const tile = product?.tile === 'pink' ? 'yellow' : product?.tile || 'yellow'
 
   return (
@@ -47,7 +52,7 @@ export default function SockOfTheDay() {
             <TornReveal className="aspect-square overflow-hidden rounded-[2rem] border-2 border-black">
               <div className="h-full w-full" style={{ background: TILE_BG[tile] }}>
                 <ProductImage
-                  product={product}
+                  product={{ ...product, art: artFor(product, colorway) }}
                   view="kick"
                   sizes="(min-width: 1024px) 58vw, 100vw"
                   artClassName="h-[92%] w-[92%]"
@@ -68,7 +73,10 @@ export default function SockOfTheDay() {
             <h3 className="giant text-[clamp(2.5rem,4.6vw,4.5rem)] leading-[0.9] tracking-[-0.045em]">{product.name}</h3>
             <p className="mt-3 text-display font-black">{formatPKR(product.price)}</p>
             <p className="copy mt-5">{product.description}</p>
-            <p className="copy copy-offset mt-2 font-extrabold normal-case">{stockNote(product, size)}</p>
+            <p className="copy copy-offset mt-2 font-extrabold normal-case">
+              {stockNote(product, size)}
+              {colorway ? ` · colour: ${colorway.label}` : ''}
+            </p>
 
             <div className="mt-6">
               <SizePicker product={product} value={size} onChange={setPicked} />
@@ -80,7 +88,7 @@ export default function SockOfTheDay() {
                 className="btn btn-yellow btn-lg"
                 data-cursor="add"
                 disabled={!size}
-                onClick={() => addToCart(product, size, 1, { colorway: product.colorways?.[0] ?? null, source: imageRef.current })}
+                onClick={() => addToCart(product, size, 1, { colorway, source: imageRef.current })}
               >
                 {size ? 'add to cart' : 'sold out'}
               </button>

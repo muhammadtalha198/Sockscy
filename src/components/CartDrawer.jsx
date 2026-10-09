@@ -29,7 +29,7 @@ export default function CartDrawer() {
     closeCart()
   }, [pathname, closeCart])
 
-  useDialog(isOpen, { onClose: closeCart, panelRef, initialFocusRef: closeRef })
+  useDialog(isOpen, { onClose: closeCart, panelRef, initialFocusRef: closeRef, fallbackFocus: '[data-cart-target]' })
 
   return (
     <div className={cx('fixed inset-0 z-50', !isOpen && 'pointer-events-none')} inert={!isOpen}>

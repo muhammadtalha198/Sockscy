@@ -12,7 +12,10 @@ import Sticker from '../components/Sticker'
 import { useAsync } from '../hooks/useAsync'
 import { useAddToCart } from '../hooks/useAddToCart'
 import { COLLECTIONS, FREE_SHIPPING_THRESHOLD, GIFT_PACK_PRICE } from '../lib/constants'
+import { cx } from '../lib/cx'
 import { formatPKR, stockNote, totalStock } from '../lib/format'
+import { artFor, colorwayTotal, pickColorway, stockFor } from '../lib/stock'
+import { useCart } from '../store/cart'
 import NotFound from './NotFound'
 
 export default function Product() {
@@ -42,33 +45,52 @@ export default function Product() {
 }
 
 function ProductView({ product }) {
-  const [size, setSize] = useState(() => firstInStockSize(product))
-  const [qty, setQty] = useState(1)
   const colorways = product.colorways || []
-  const [colorwayId, setColorwayId] = useState(colorways[0]?.id ?? null)
+  const [colorwayId, setColorwayId] = useState(() => pickColorway(product, null)?.id ?? null)
   const colorway = colorways.find((c) => c.id === colorwayId) || null
-  const art = useMemo(
-    () => (colorway ? { ...product.art, base: colorway.base, trim: colorway.trim } : product.art),
-    [product.art, colorway],
-  )
+  // the size picker + stock note follow the chosen colourway's own stock
+  const view = useMemo(() => (colorway ? { ...product, stock: stockFor(product, colorway) } : product), [product, colorway])
+  const [size, setSize] = useState(() => firstInStockSize(view))
+  const [qty, setQty] = useState(1)
+  const art = useMemo(() => artFor(product, colorway), [product, colorway])
   const addToCart = useAddToCart()
   const buttonRef = useRef(null)
   const related = useAsync(({ signal }) => getRelated(product.id, 4, { signal }), [product.id])
 
-  const max = product.stock?.[size] ?? 0
+  // what's left to add = this colour's stock in this size, minus what's already in the cart
+  const cwId = colorway?.id ?? null
+  const inLine = useCart(
+    (s) => s.items.find((i) => i.id === product.id && i.size === size && (i.colorway?.id ?? null) === cwId)?.qty ?? 0,
+  )
+  const inSize = useCart((s) =>
+    s.items.filter((i) => i.id === product.id && i.size === size).reduce((n, i) => n + i.qty, 0),
+  )
+  const sizeStock = product.stock?.[size] ?? 0
+  const lineStock = Math.min(sizeStock, view.stock?.[size] ?? 0)
+  const available = Math.max(0, Math.min(lineStock - inLine, sizeStock - inSize))
+  const amount = Math.max(1, Math.min(qty, available))
   const soldOut = totalStock(product) === 0
   const oneOfOne = totalStock(product) === 1
   const collection = COLLECTIONS.find((c) => c.id === product.collection)
 
-  function chooseSize(s) {
-    setSize(s)
-    setQty((q) => Math.max(1, Math.min(q, product.stock?.[s] ?? 1)))
+  function chooseColorway(c) {
+    setColorwayId(c.id)
+    // keep the size if this colour has it, otherwise jump to one it does have
+    if ((c.stock?.[size] ?? 0) === 0) setSize(firstInStockSize({ ...product, stock: c.stock }) ?? size)
   }
 
   function onSubmit(e) {
     e.preventDefault()
-    if (size && max > 0) addToCart(product, size, qty, { colorway, source: buttonRef.current })
+    if (size && available > 0) addToCart(product, size, amount, { colorway, source: buttonRef.current })
   }
+
+  const buttonLabel = soldOut
+    ? 'sold out'
+    : available > 0
+      ? 'add to cart'
+      : inLine > 0
+        ? 'all in your cart'
+        : 'sold out in this size'
 
   return (
     <>
@@ -116,7 +138,7 @@ function ProductView({ product }) {
 
             <p className="mt-4 text-display font-black">{formatPKR(product.price)}</p>
             <p className="mt-2 inline-block -rotate-1 rounded-full border-2 border-black bg-yellow px-3 py-1 text-sm font-black">
-              {stockNote(product, size)}
+              {stockNote(view, size)}
             </p>
 
             <form onSubmit={onSubmit} className="mt-8 space-y-6">
@@ -126,37 +148,55 @@ function ProductView({ product }) {
                     colour: <span className="font-black">{colorway?.label}</span>
                   </legend>
                   <div className="flex flex-wrap gap-3">
-                    {colorways.map((c) => (
-                      <label key={c.id} className="swatch relative cursor-pointer">
-                        <input
-                          type="radio"
-                          name="colorway"
-                          value={c.id}
-                          checked={colorwayId === c.id}
-                          onChange={() => setColorwayId(c.id)}
-                          className="peer sr-only"
-                        />
-                        <span
-                          className="swatch-dot peer-focus-visible:outline-3 peer-focus-visible:outline-offset-3 peer-focus-visible:outline-(--tone-focus)"
-                          style={{ '--base': c.base, '--trim': c.trim }}
-                          aria-hidden="true"
-                        />
-                        <span className="sr-only">{c.label}</span>
-                      </label>
-                    ))}
+                    {colorways.map((c) => {
+                      const out = colorwayTotal(c) === 0
+                      return (
+                        <label key={c.id} className={cx('swatch relative', out ? 'is-out' : 'cursor-pointer')}>
+                          <input
+                            type="radio"
+                            name="colorway"
+                            value={c.id}
+                            checked={colorwayId === c.id}
+                            disabled={out}
+                            onChange={() => chooseColorway(c)}
+                            className="peer sr-only"
+                          />
+                          <span
+                            className="swatch-dot peer-focus-visible:outline-3 peer-focus-visible:outline-offset-3 peer-focus-visible:outline-(--tone-focus)"
+                            style={{ '--base': c.base, '--trim': c.trim }}
+                            aria-hidden="true"
+                          />
+                          <span className="sr-only">
+                            {c.label}
+                            {out ? ' (sold out)' : ''}
+                          </span>
+                        </label>
+                      )
+                    })}
                   </div>
                 </fieldset>
               )}
-              <SizePicker product={product} value={size} onChange={chooseSize} />
+              <SizePicker product={view} value={size} onChange={setSize} />
               <div>
                 <span className="field-label" id="qty-label">
                   quantity
                 </span>
-                <QuantityStepper value={qty} max={Math.max(1, max)} onChange={setQty} label="quantity" />
-                {max > 0 && max <= 2 && <p className="mt-2 text-sm font-bold">max {max} — that’s every pair we’ve got in {size}.</p>}
+                <QuantityStepper value={amount} max={Math.max(1, available)} onChange={setQty} label="quantity" />
+                {inLine > 0 ? (
+                  <p className="mt-2 text-sm font-bold">
+                    {inLine} already in your cart{available > 0 ? ` — ${available} more left` : ' — that’s every pair'}.
+                  </p>
+                ) : (
+                  lineStock > 0 &&
+                  lineStock <= 2 && (
+                    <p className="mt-2 text-sm font-bold">
+                      max {lineStock} — that’s every {colorway ? `${colorway.label} ` : ''}pair we’ve got in {size}.
+                    </p>
+                  )
+                )}
               </div>
-              <button ref={buttonRef} type="submit" data-cursor="add" className="btn btn-pink btn-lg w-full md:w-auto md:min-w-[18rem]" disabled={!size || max === 0}>
-                {soldOut ? 'sold out' : 'add to cart'}
+              <button ref={buttonRef} type="submit" data-cursor="add" className="btn btn-pink btn-lg w-full md:w-auto md:min-w-[18rem]" disabled={!size || available === 0}>
+                {buttonLabel}
               </button>
             </form>
 

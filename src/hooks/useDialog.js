@@ -6,9 +6,11 @@ const FOCUSABLE =
 
 /**
  * Modal dialog behaviour: locks page scroll, focuses `initialFocusRef` (or the panel),
- * traps Tab inside `panelRef`, closes on Escape and restores focus on close.
+ * traps Tab inside `panelRef`, closes on Escape and restores focus on close — to the
+ * element that opened it, or `fallbackFocus` (a selector) when that one is gone
+ * (e.g. the toast that opened the cart has unmounted).
  */
-export function useDialog(open, { onClose, panelRef, initialFocusRef }) {
+export function useDialog(open, { onClose, panelRef, initialFocusRef, fallbackFocus }) {
   useEffect(() => {
     if (!open) return
     const previouslyFocused = document.activeElement
@@ -38,7 +40,8 @@ export function useDialog(open, { onClose, panelRef, initialFocusRef }) {
     return () => {
       unlockScroll()
       document.removeEventListener('keydown', onKey)
-      if (previouslyFocused?.isConnected) previouslyFocused.focus({ preventScroll: true })
+      const target = previouslyFocused?.isConnected ? previouslyFocused : fallbackFocus && document.querySelector(fallbackFocus)
+      target?.focus({ preventScroll: true })
     }
-  }, [open, onClose, panelRef, initialFocusRef])
+  }, [open, onClose, panelRef, initialFocusRef, fallbackFocus])
 }

@@ -1,21 +1,26 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { lookupDiscount } from '../lib/discount'
+import { artFor, stockFor } from '../lib/stock'
 
 /** "id:size" or "id:size:colorway" */
 const lineKey = (id, size, colorwayId) => (colorwayId ? `${id}:${size}:${colorwayId}` : `${id}:${size}`)
 
+/** Pairs held by the other lines of the same product + size. */
+const othersInSize = (items, key, id, size) =>
+  items.filter((o) => o.key !== key && o.id === id && o.size === size).reduce((n, o) => n + o.qty, 0)
+
 /**
- * Stock is per size and shared by every colourway of a product, so each line's
- * maxQty = size stock − what other lines of the same product+size already hold.
+ * Each colourway has its own per-size stock (`lineStock`); the product's per-size
+ * stock (`sizeStock`) is their sum. A line's maxQty is the smaller of its own stock
+ * and what the size has left after the product's other lines.
  */
 function rebalance(items) {
   return items.map((item) => {
-    const stock = item.sizeStock ?? item.maxQty
-    const others = items
-      .filter((o) => o.key !== item.key && o.id === item.id && o.size === item.size)
-      .reduce((n, o) => n + o.qty, 0)
-    return { ...item, sizeStock: stock, maxQty: Math.max(item.qty, stock - others) }
+    const sizeStock = item.sizeStock ?? item.maxQty
+    const lineStock = item.lineStock ?? sizeStock
+    const cap = Math.min(lineStock, sizeStock - othersInSize(items, item.key, item.id, item.size))
+    return { ...item, sizeStock, lineStock, maxQty: Math.max(item.qty, cap) }
   })
 }
 
@@ -40,25 +45,22 @@ export const useCart = create(
        * @returns number of pairs actually added (0 when stock is used up)
        */
       addItem(product, size, qty = 1, { colorway = null, open = true } = {}) {
-        const stock = product.stock?.[size] ?? 0
-        if (stock <= 0) return 0
+        const sizeStock = product.stock?.[size] ?? 0
+        const lineStock = Math.min(sizeStock, stockFor(product, colorway)[size] ?? 0)
         const key = lineKey(product.id, size, colorway?.id)
         const items = get().items
         const existing = items.find((i) => i.key === key)
-        const others = items
-          .filter((i) => i.key !== key && i.id === product.id && i.size === size)
-          .reduce((n, i) => n + i.qty, 0)
-        const cap = Math.max(0, stock - others)
+        const cap = Math.max(0, Math.min(lineStock, sizeStock - othersInSize(items, key, product.id, size)))
         const currentQty = existing?.qty ?? 0
-        const nextQty = Math.min(cap, currentQty + qty)
+        const nextQty = Math.max(currentQty, Math.min(cap, currentQty + qty))
         const added = nextQty - currentQty
-        const art = colorway ? { ...product.art, base: colorway.base, trim: colorway.trim } : product.art
+        const art = artFor(product, colorway)
         const label = colorway ? ` in ${colorway.label}` : ''
 
         let next = items
         if (added > 0) {
           next = existing
-            ? items.map((i) => (i.key === key ? { ...i, qty: nextQty } : i))
+            ? items.map((i) => (i.key === key ? { ...i, qty: nextQty, sizeStock, lineStock } : i))
             : [
                 ...items,
                 {
@@ -69,7 +71,8 @@ export const useCart = create(
                   size,
                   qty: nextQty,
                   maxQty: cap,
-                  sizeStock: stock,
+                  sizeStock,
+                  lineStock,
                   colorway: colorway ? { id: colorway.id, label: colorway.label } : null,
                   tile: product.tile,
                   art,
@@ -80,11 +83,11 @@ export const useCart = create(
         set({
           items: rebalance(next),
           isOpen: open && added > 0 ? true : get().isOpen,
-          lastAdded: { added, name: product.name, size, label, at: Date.now() },
+          lastAdded: { added, requested: qty, name: product.name, size, label, at: Date.now() },
           announcement:
             added > 0
-              ? `added ${added} × ${product.name}${label} (${size}) to your cart`
-              : `you already have every pair of ${product.name} in ${size}`,
+              ? `added ${added} × ${product.name}${label} (${size}) to your cart${added < qty ? ` — that’s every pair we’ve got` : ''}`
+              : `you already have every pair of ${product.name}${label} in ${size}`,
         })
         return added
       },
@@ -103,7 +106,9 @@ export const useCart = create(
         const item = get().items.find((i) => i.key === key)
         set((state) => ({
           items: rebalance(state.items.filter((i) => i.key !== key)),
-          announcement: item ? `removed ${item.name} (${item.size}) from your cart` : '',
+          announcement: item
+            ? `removed ${item.name}${item.colorway ? ` in ${item.colorway.label}` : ''} (${item.size}) from your cart`
+            : '',
         }))
       },
 

@@ -9,7 +9,8 @@
 //       giftPack: boolean,
 //       discountCode?: "PAIRUP10",          ← validate server-side (one win per visitor per day)
 //       items: [{ id, size, qty, colorway? }] ← ids only; the server prices the order.
-//                                              Stock is per size, shared by all colourways.
+//                                              Check stock per colourway + size, and per size
+//                                              (the product's stock is the sum of its colourways).
 //     }
 //     → { orderNumber, status, total, payment, paymentUrl? }
 //       For "card", return paymentUrl from your gateway (PayFast / Safepay / Stripe…)
@@ -92,7 +93,11 @@ function mockCreateOrder({ customer, shipping, payment, giftPack, discountCode, 
 
   // Re-price on the "server" from the catalogue, like the real backend must.
   const wanted = {}
-  for (const { id, size, qty } of items) wanted[`${id}:${size}`] = (wanted[`${id}:${size}`] || 0) + qty
+  const bump = (k, n) => (wanted[k] = (wanted[k] || 0) + n)
+  for (const { id, size, qty, colorway } of items) {
+    bump(`${id}:${size}`, qty)
+    if (colorway) bump(`${id}:${size}:${colorway}`, qty)
+  }
   const priced = items.map(({ id, size, qty, colorway }) => {
     const product = productsData.find((p) => p.id === id)
     if (!product) throw new ApiError(`product ${id} no longer exists`, 409)
@@ -101,6 +106,10 @@ function mockCreateOrder({ customer, shipping, payment, giftPack, discountCode, 
       throw new ApiError(`sorry — only ${left} left of ${product.name} in ${size}`, 409)
     }
     const cw = product.colorways?.find((c) => c.id === colorway)
+    if (colorway && !cw) throw new ApiError(`${product.name} doesn’t come in that colour any more`, 409)
+    if (cw?.stock && (cw.stock[size] ?? 0) < wanted[`${id}:${size}:${colorway}`]) {
+      throw new ApiError(`sorry — only ${cw.stock[size] ?? 0} left of ${product.name} in ${cw.label}, size ${size}`, 409)
+    }
     return { id, size, qty, colorway: cw?.id, name: cw ? `${product.name} (${cw.label})` : product.name, price: product.price }
   })
 

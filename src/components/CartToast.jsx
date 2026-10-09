@@ -17,16 +17,20 @@ export default function CartToast() {
   }, [lastAdded])
 
   if (!lastAdded) return null
-  const ok = lastAdded.added > 0
+  const { added, requested = added } = lastAdded
+  const lead = added === 0 ? 'that’s every pair we’ve got — ' : added > 1 ? `added ${added}! ` : 'added! '
   return (
     <div className="cart-toast" data-visible={visible || undefined} onTransitionEnd={() => !visible && dismiss()}>
       <p className="text-[0.95rem] font-black leading-tight">
-        {ok ? 'added! ' : 'that’s every pair we’ve got — '}
+        {lead}
         <span className="font-bold">
           {lastAdded.name.toLowerCase()} · size {lastAdded.size}
           {lastAdded.label}
         </span>
       </p>
+      {added > 0 && added < requested && (
+        <p className="mt-1 text-sm font-bold">only {added} left, so that’s every pair we’ve got.</p>
+      )}
       <div className="mt-2 flex items-center gap-3">
         <button
           type="button"
