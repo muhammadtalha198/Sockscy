@@ -100,6 +100,47 @@ checkout, routes and product data are unchanged; v2 adds depth. Screens: `before
 - The spring waits until the new page has actually rendered (lazy pages commit late). If you
   press Back mid-way, the planes spring back.
 
+## Performance
+
+**Frame times while scrolling.**
+
+| page | v1 p50 / p95 (ms) | v2 p50 / p95 (ms) |
+| --- | --- | --- |
+| home | 16.7 / 16.8 | 16.7 / 16.8 |
+| shop | 16.7 / 16.8 | 16.7 / 16.8 |
+| product | 16.7 / 33.4 | 16.7 / 33.4 |
+| about | 16.7 / 16.7 | 16.7 / 16.8 |
+| contact + orders | 16.7 / 16.8 | 16.7 / 16.8 |
+| cart (1 item) | 16.7 / 16.8 | 16.7 / 16.8 |
+| checkout (1 item) | 16.7 / 16.8 | 16.7 / 16.7 |
+| 404 | 16.7 / 16.8 | 16.7 / 16.8 |
+
+How it was measured:
+- Phone viewport 390 × 844 at DPR 2.6, with the CPU throttled 4×.
+- A frame-by-frame flick scroll through the whole page.
+- Median of 3 runs.
+- `html[data-lite]` was forced in both versions, because the physics toggles it at random
+  under throttle.
+- The script lives in the session scratchpad, not in the repo.
+
+Read with care: this container has no GPU, so rasterising and compositing run on the CPU. The
+numbers compare v1 and v2; they say nothing absolute about phones. **60fps on a real mid-range
+Android is UNVERIFIED.**
+
+What the pass changed:
+- **`will-change` only while JS writes a layer.** Promoting every visible layer cost more style
+  work per frame than it saved, because the CSS scroll animations are composited anyway. Home
+  p95 went from 33 → 16.8 ms.
+- **Smaller motion-control cluster on phones.** The product page sat right at the frame
+  budget; the cluster also overlapped the carousel thumbnails.
+- **Layer counts.** At most 6 distinct planes on screen at once (About). Home: 4 planes in
+  view. Cart and checkout: 2.
+- **Phones run at 65% strength.** There is no velocity skew on phones, and no depth-of-field
+  blur on phones or in lite mode.
+
+**Lighthouse** (median of 3, `vite preview`): see `lighthouse-v1-before.md` and
+`lighthouse-v2-after.md`.
+
 ## Also fixed (v1 handoff bugs, commit 50cae0e)
 
 - Stuck curtain on a second fast navigation.
