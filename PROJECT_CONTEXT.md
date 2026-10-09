@@ -136,7 +136,7 @@ filters, URL state, a11y (skip link, focus rings, dialogs, labels, reduced motio
 splitting, WebP pipeline, README.
 **Not done / placeholder**: real product photos (SVG stand-ins), real About story copy, real
 WhatsApp number (`VITE_WHATSAPP_NUMBER`), Go backend, payment gateway, SPA host rewrites,
-no automated tests, no Lighthouse run yet. **There is no `main` branch on the remote.**
+no automated tests. **There is no `main` branch on the remote.**
 
 ## 11. Do not change (without asking the owner)
 - Palette hex values, Inter Black giant type, sticker look (white outline + soft shadow),
@@ -145,29 +145,8 @@ no automated tests, no Lighthouse run yet. **There is no `main` branch on the re
 - Lowercase brand voice. PKR + Cash on Delivery.
 
 ## 12. version-1 goals ("PLAYFUL CURSOR AND PHYSICS, MAXIMUM WOW")
-Order: A, B, C, E, D, F, H, J, G, I, K. 60fps on a mid-range Android. Lazy-load heavy modules.
-- **A** Intro: socks drop and stack to spell SOCKSAVVY; knitted-sock loading bar; skip on
-  click/tap; once per session.
-- **B** Physics hero (Matter.js): 12–20 cutouts (8–10 on mobile) fall, grab/throw/stack,
-  cursor pushes, tilt = gravity (permission asked politely), shake drops more, letters shake on
-  impact, click a sock → quick view.
-- **C** Custom cursor (desktop): flower sticker that squishes/rotates with speed, grows into
-  "VIEW"/"ADD" pill on cards, flower/star trail, magnetic buttons.
-- **E** Cards: colour flip, 3D tilt, corner sticker peel, bouncing price, torn-paper reveal.
-  Product page: drag-to-spin pseudo-3D sock, colour swatches with splash. Add to cart: sock
-  flies in an arc to the side tab, tab shakes, counter pops, sound, flower confetti.
-- **D** Scroll story: Lenis + GSAP ScrollTrigger, velocity skew on giant words, stickers fly in
-  with springs, 3 parallax depths, velocity-reactive marquee, pinned "sock factory" scene.
-- **F** "Find the Pair" game → `PAIRUP10` auto-applied, one win per visitor per day.
-- **H** Torn-paper curtain page transitions in the next page's colour.
-- **J** Sticky mobile add-to-cart, walking sock on free-shipping bar, urgency labels, trust
-  strip (COD, easy returns, WhatsApp), order-success sock confetti + Instagram share.
-- **G** Sound (off by default, toggle sticker; pop/drop/add/win < 30 KB) + easter eggs (Konami
-  sock rain, 5 logo clicks remix patterns, hidden sock on 404).
-- **I** Mobile/perf: touch everything, fewer bodies, capped DPR, pause when hidden, lazy load,
-  Lighthouse mobile 80+, no CLS.
-- **K** Polish: spring motion 0.4–0.7s, consistent stickers, ≤ 4 colours per screen, full
-  reduced-motion + keyboard + aria support.
+Order built: A, B, C, E, D, F, H, J, G, I, K — all built; details per feature in §13.
+Targets: 60fps drag, Lighthouse mobile 80+, no CLS, everything off with reduced motion.
 
 ## 13. version-1 progress (update per feature)
 - **A Intro** — `components/fx/Intro.jsx` + `styles/fx.css`. CSS-only, `useUi.introDone`,
@@ -240,3 +219,27 @@ Order: A, B, C, E, D, F, H, J, G, I, K. 60fps on a mid-range Android. Lazy-load 
 - **K Polish** — focus moves to `<main>` after client-side navigation (ScrollManager);
   hash landings re-pin for ~1 s; floating stickers tuck when a `.btn-lg`/`[data-avoid-float]`
   sits under them on phones; skeletons match card height. Known gap: yellow on red is 2.84:1.
+
+## 14. HANDOFF — read this first in the next session (state at commit 1d87f72)
+**Stopped mid final review** (owner asked to stop). Confirmed bugs, NOT fixed yet:
+1. HIGH `App.jsx` curtain sticks (covers site, blocks clicks) when a 2nd navigation within
+   460 ms lands on the displayed pathname (Back, logo, filter). Fix: in the same-pathname /
+   reduced-motion branch also `setCurtain(c => c ? {...c, phase:'out'} : c)` (null if reduced).
+2. `FindThePair.jsx` + `PlayButton.jsx` say "PAIRUP10 in your cart" from `hasWonToday()` even
+   after it was removed/used. Base messages on `useCart(s => s.discount?.code)`; record use on
+   order (add `markUsed`/`usedToday` in `lib/discount.js`); re-apply a removed, unused win.
+3. `FindThePair.jsx` board regenerates when width crosses 640px mid-round; freeze `count` in
+   `start()` state, `useMemo(..., [round])`.
+4. `store/cart.js` persist v1 carts from before colourway stock keep impossible lines → bump
+   to version 2 with `migrate` re-deriving `sizeStock/lineStock` from products.json, clamp qty.
+5. `Checkout.jsx` calls `clear()` before navigate → "NOTHING TO PAY" flashes under the
+   curtain. Clear the cart in `OrderPlaced` on mount (when `state.order` exists) instead.
+**Still to do:** re-run review lenses a11y / perf / completeness (script:
+`.claude` workflow `final-review-version1`, read-only, Playwright at
+`/opt/node22/lib/node_modules/playwright`, preview on :4173 with sessionStorage
+`socksavvy-intro=1`); final Lighthouse on home/shop/product/cart/checkout/404; final report.
+**Owner decision pending:** yellow on red = 2.84:1 (< 3:1 large text). Suggested fix: red
+`#e63a3f` → `#dc363c` in tokens.css — do NOT change without asking (§11).
+**Placeholders:** SVG socks (no photos/cutouts/spin frames), synthesized sounds,
+`SITE.returns` copy, About story, WhatsApp number. Asset list: README "Real files to add".
+
