@@ -4,6 +4,7 @@ import Curtain from './components/fx/Curtain'
 import Layout from './components/Layout'
 import { prefersReducedMotion } from './hooks/useReducedMotion'
 import { PAGE_LOADERS, loaderFor, toneFor } from './lib/routes'
+import { setTransition } from './parallax/engine'
 import Home from './pages/Home'
 
 // Home ships in the main bundle; every other page is code-split.
@@ -23,6 +24,9 @@ const COVER_MS = 460
   colour wipes across; the new page (its chunk preloaded meanwhile) is swapped in
   while the screen is covered, then the curtain wipes off. Search/hash-only changes
   (shop filters, /#collections on the home page) swap instantly. Reduced motion: instant.
+  v2 depth: as the curtain comes in, the old page's planes move away at their own speeds
+  (near ones rush up, far ones sink); the new page's planes arrive from behind and spring
+  home as it wipes off (src/parallax/engine.js setTransition).
 */
 export default function App() {
   const location = useLocation()
@@ -36,11 +40,13 @@ export default function App() {
       // a wipe already in flight (e.g. Back pressed mid-transition) must still leave,
       // otherwise the curtain stays over the page and swallows every click
       setCurtain((c) => (!c ? c : prefersReducedMotion() ? null : c.phase === 'in' ? { ...c, phase: 'out' } : c))
+      setTransition(null)
       return
     }
     let cancelled = false
     const tone = toneFor(location.pathname)
     setCurtain({ tone, phase: 'in', key: location.key })
+    setTransition('leave')
     const loader = loaderFor(location.pathname)
     const ready = Promise.race([
       loader ? loader().catch(() => {}) : Promise.resolve(),
@@ -53,7 +59,9 @@ export default function App() {
       // two frames so the new page has painted under the curtain
       requestAnimationFrame(() =>
         requestAnimationFrame(() => {
-          if (!cancelled) setCurtain({ tone, phase: 'out', key: location.key })
+          if (cancelled) return
+          setCurtain({ tone, phase: 'out', key: location.key })
+          setTransition('arrive')
         }),
       )
     })

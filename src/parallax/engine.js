@@ -94,7 +94,7 @@ let strength = 0
 let targetStrength = 0
 
 // page transitions: 0 = at rest, 1 = fully "away" (see setTransition)
-const trans = { phase: null, t: 0, target: 0 }
+const trans = { phase: null, t: 0, v: 0, target: 0, away: true, ready: true, since: 0 }
 
 const look = { tx: 0, ty: 0, x: 0, y: 0, vx: 0, vy: 0 }
 let pointerOn = false
@@ -354,8 +354,18 @@ function frame(now) {
   look.x += look.vx * f
   look.y += look.vy * f
 
-  // page transition progress (spring toward its target)
-  if (trans.phase) trans.t += (trans.target - trans.t) * (1 - Math.pow(0.82, f))
+  // page transition progress: leaving eases out fast (the curtain is coming); arriving
+  // and settling back use a spring, so the planes land with a small overshoot
+  if (trans.phase === 'leave') trans.t += (trans.target - trans.t) * (1 - Math.pow(0.82, f))
+  else if (trans.phase === 'arrive' && !trans.ready) {
+    // hold the new page's planes back until it has really rendered (a lazy page commits a
+    // frame or two after the swap) — never longer than 1.2 s
+    if (performance.now() - trans.since > 1200) trans.ready = true
+  } else if (trans.phase) {
+    trans.v = (trans.v + (trans.target - trans.t) * 0.08 * f) * Math.pow(0.72, f) // ≈8% overshoot
+    trans.t += trans.v * f
+    if (Math.abs(trans.t - trans.target) + Math.abs(trans.v) < 0.002) Object.assign(trans, { phase: null, t: 0, v: 0 })
+  }
 
   const t = tokens()
   const lookRange = t.pointer * strength * (pointerOn || tiltOn ? 1 : 0)
@@ -363,7 +373,7 @@ function frame(now) {
     Math.abs(velocity) > 0.05 ||
     Math.abs(look.tx - look.x) + Math.abs(look.ty - look.y) > 0.001 ||
     Math.abs(look.vx) + Math.abs(look.vy) > 0.0005 ||
-    (trans.phase && Math.abs(trans.target - trans.t) > 0.002)
+    (trans.phase && Math.abs(trans.target - trans.t) + Math.abs(trans.v) > 0.002)
 
   for (const l of visible) {
     if (l.hidden) continue
@@ -398,10 +408,12 @@ function frame(now) {
       tx += look.x * l.depth * lookRange
       ty += look.y * l.depth * lookRange * 0.6
     }
-    if (trans.phase && trans.t > 0.001) {
-      // leaving: near planes rush up and away, far planes sink; arriving: the reverse
-      const k = trans.t * (trans.phase === 'leave' ? -1 : 1)
-      ty += k * (0.15 + l.depth) * vh * 0.35
+    if (trans.phase && Math.abs(trans.t) > 0.001) {
+      // leaving: near planes rush up and toward you, far planes sink back; arriving: the
+      // new page's planes come up from behind (smaller, lower) and spring home
+      const leave = trans.away
+      ty += trans.t * (leave ? -1 : 1) * (0.15 + l.depth) * vh * 0.35 * strength
+      scale *= leave ? 1 + trans.t * l.depth * 0.2 * strength : 1 - trans.t * (0.04 + 0.1 * Math.max(0, l.depth)) * strength
     }
     const skew = l.skew && !isPhone() ? Math.max(-8, Math.min(8, -velocity * 0.3)) * strength : 0
 
@@ -524,14 +536,29 @@ export function setTilt(v) {
 /**
  * Page-transition depth: 'leave' sends the current page's planes away at their own
  * speeds while the curtain covers it; 'arrive' starts the new page's planes displaced
- * and lets them spring home; null ends it.
+ * and lets them spring home; null springs any displaced planes back (a cancelled leave).
  */
 export function setTransition(phase) {
   if (!started || reduced) return
-  if (phase === 'leave') Object.assign(trans, { phase, t: 0, target: 1 })
-  else if (phase === 'arrive') Object.assign(trans, { phase, t: 1, target: 0 })
-  else Object.assign(trans, { phase: null, t: 0, target: 0 })
+  if (phase === 'leave') Object.assign(trans, { phase, target: 1, v: 0, away: true, t: trans.away ? trans.t : 0, ready: false })
+  else if (phase === 'arrive') Object.assign(trans, { phase, t: 1, v: 0, target: 0, away: false, since: performance.now() })
+  // cancelled mid-leave (e.g. Back pressed): the same planes spring back home
+  else if (trans.phase) Object.assign(trans, { phase: 'settle', target: 0, v: 0 })
   kick()
+}
+
+/** The page swapped in by a transition has committed (Layout calls this from inside its
+ *  Suspense boundary, so it fires only once the page itself is on screen). */
+export function markPageReady() {
+  // its layers register in passive effects and become visible one IntersectionObserver
+  // round later: give them three frames before the spring starts (still held under the curtain)
+  let n = 3
+  const wait = () => {
+    if (--n > 0) return requestAnimationFrame(wait)
+    trans.ready = true
+    kick()
+  }
+  requestAnimationFrame(wait)
 }
 
 /** Re-measure now (e.g. after a layout change no observer can see). */

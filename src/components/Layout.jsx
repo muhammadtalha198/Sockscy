@@ -1,4 +1,4 @@
-import { Suspense, useEffect } from 'react'
+import { Suspense, useEffect, useLayoutEffect } from 'react'
 import { Outlet, useLocation } from 'react-router'
 import { useCart } from '../store/cart'
 import { whenIdle } from '../lib/motion'
@@ -11,6 +11,7 @@ import EasterEggs from './fx/EasterEggs'
 import MotionControls from './fx/MotionControls'
 import TiltChip from './fx/TiltChip'
 import ParallaxRoot from '../parallax/ParallaxRoot'
+import { markPageReady } from '../parallax/engine'
 import Intro from './fx/Intro'
 import Footer from './Footer'
 import Navbar from './Navbar'
@@ -18,6 +19,13 @@ import PlayButton from './PlayButton'
 import QuickView from './QuickView'
 import ScrollManager from './ScrollManager'
 import SideTab from './SideTab'
+
+// commits together with the page inside the same Suspense boundary: tells the parallax
+// engine the new page is really there, so its planes can spring in (page transitions)
+function PageReady() {
+  useLayoutEffect(() => markPageReady(), [])
+  return null
+}
 
 function PageLoader() {
   return (
@@ -28,7 +36,7 @@ function PageLoader() {
 }
 
 export default function Layout() {
-  const { pathname } = useLocation()
+  const { pathname, key } = useLocation()
   const announcement = useCart((s) => s.announcement)
 
   // smooth scroll + ScrollTrigger kit, after first paint
@@ -44,6 +52,7 @@ export default function Layout() {
       <Navbar tone={toneFor(pathname)} />
       <main id="main" tabIndex={-1} className="outline-none">
         <Suspense fallback={<PageLoader />}>
+          <PageReady key={key} />
           <Outlet />
         </Suspense>
       </main>
