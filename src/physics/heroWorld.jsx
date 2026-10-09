@@ -14,6 +14,8 @@ const { Engine, Bodies, Body, Composite, Constraint, Query, Events, Sleeping, Ve
 
 const STEP = 1000 / 60
 const WALL = 400
+// a sock drawn behind a button/link must never steal its press
+const INTERACTIVE = 'a, button, input, select, textarea, label, [role="button"]'
 const SOCK_VIEWBOX = { x: 40, y: 6, w: 164, h: 244 } // SockArt view="upright"
 const SOCK_HULL = [[48, 12], [124, 12], [196, 214], [186, 238], [150, 243], [86, 245], [52, 240], [44, 210]]
 const MONSTER_HULL = [[34, 10], [108, 10], [152, 150], [150, 178], [128, 186], [70, 190], [36, 178], [28, 146]]
@@ -109,7 +111,8 @@ class HeroWorld {
     this.ro = new ResizeObserver(() => {
       clearTimeout(resizeTimer)
       resizeTimer = setTimeout(() => {
-        if (Math.abs(s.clientWidth - lastW) < 1 && Math.abs(s.clientHeight - this.h) < 40) return // mobile URL bar
+        // the hero is sized in svh, so the mobile URL bar never resizes it — any change is real
+        if (s.clientWidth === lastW && s.clientHeight === this.h) return
         lastW = s.clientWidth
         this.relayout()
       }, 180)
@@ -132,6 +135,7 @@ class HeroWorld {
     const { dpr } = this.cfg
     this.canvas.width = Math.round(this.w * dpr)
     this.canvas.height = Math.round(this.h * dpr)
+    this.dirty = true // resizing clears the bitmap
   }
 
   async bakeAll() {
@@ -227,13 +231,26 @@ class HeroWorld {
     this.measure()
     this.resizeCanvas()
     this.buildStatics()
+    // the floor and copy/CTA colliders moved: wake every body (matter never wakes a
+    // sleeping body when its support disappears) and lift any that now sit inside a
+    // solid back to the drop height so they fall onto the new layout
+    const solids = this.statics.filter((b) => !b.isSensor)
     for (const b of this.dynamic) {
-      if (b.position.x > this.w - 20 || b.position.x < 20) {
-        Body.setPosition(b, { x: clamp(b.position.x, 40, this.w - 40), y: Math.min(b.position.y, this.h - 80) })
-        Sleeping.set(b, false)
+      const inside = Query.collides(b, solids).length > 0
+      const x = clamp(b.position.x, 40, this.w - 40)
+      const y = inside ? this.dropY() : Math.min(b.position.y, this.h - 80)
+      if (inside || x !== b.position.x || y !== b.position.y) {
+        Body.setPosition(b, { x, y })
+        Body.setVelocity(b, { x: 0, y: 0 })
       }
+      Sleeping.set(b, false)
     }
     this.kick()
+  }
+
+  /** spawn height: above the hero, or just under the ceiling once tilt has added one */
+  dropY() {
+    return this.ceiling ? rand(30, 140) : rand(-260, -80)
   }
 
   // ---------------------------------------------------------------- bodies
@@ -252,7 +269,7 @@ class HeroWorld {
     return body
   }
 
-  spawn(item, delay, x = rand(0.08, 0.92) * this.w, y = rand(-260, -80)) {
+  spawn(item, delay, x = rand(0.08, 0.92) * this.w, y = this.dropY()) {
     this.timers.push(
       setTimeout(() => {
         if (this.destroyed) return
@@ -289,6 +306,12 @@ class HeroWorld {
     }
     this.timers.push(
       setTimeout(() => {
+        // over the cap: drop anything that escaped off-screen first, then the oldest
+        const gone = this.dynamic.filter((b) => b.position.y < -40 || b.position.y > this.h + 200)
+        for (const b of gone.slice(0, this.dynamic.length - this.maxBodies)) {
+          this.dynamic.splice(this.dynamic.indexOf(b), 1)
+          Composite.remove(this.engine.world, b)
+        }
         while (this.dynamic.length > this.maxBodies) {
           const old = this.dynamic.shift()
           Composite.remove(this.engine.world, old)
@@ -354,6 +377,8 @@ class HeroWorld {
 
   onDown(e) {
     if (e.pointerType === 'mouse' && e.button !== 0) return
+    if (this.drag) return // one sock at a time — a second finger must not orphan the first constraint
+    if (e.target.closest?.(INTERACTIVE)) return
     const p = this.local(e)
     const body = this.hitTest(p)
     if (!body) return
@@ -400,7 +425,7 @@ class HeroWorld {
 
     // cursor pushes nearby bodies away — but never the one under the pointer,
     // so it can still be hovered, clicked and grabbed
-    const hover = this.hitTest(p)
+    const hover = e.target?.closest?.(INTERACTIVE) ? null : this.hitTest(p)
     const speed = Math.hypot(this.pointer.vx, this.pointer.vy)
     if (this.cfg.push && speed > 0.08) {
       const R = 130
@@ -564,7 +589,11 @@ class HeroWorld {
       steps++
     }
     if (steps === 3) this.acc = 0
-    this.draw()
+    // 90/120Hz screens get rAFs with no physics step — nothing moved, skip the redraw
+    if (steps || this.dirty) {
+      this.draw()
+      this.dirty = false
+    }
 
     if (this.drag) Sleeping.set(this.drag.body, false)
     const awake = this.drag || this.dynamic.some((b) => !b.isSleeping)
