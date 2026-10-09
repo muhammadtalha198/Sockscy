@@ -244,23 +244,28 @@ html.has-cursor :is(input, textarea, select, [contenteditable="true"]) {
 .cursor-trail svg { width: 100%; height: 100%; }
 
 /* ---------- E. PRODUCT CARDS --------------------------------------------- */
-.pcard-tile {
-  --rx: 0deg;
-  --ry: 0deg;
-  perspective: 900px;
-}
-.pcard-sock {
-  transform: rotateX(var(--rx)) rotateY(var(--ry));
-  transform-style: preserve-3d;
-  transition: transform var(--dur-med) var(--ease-spring);
-}
+/* v2: the tilt lives on <TiltCard> (parallax.css). The tile is the flat card plane;
+   the sock inside moves against it; the corner sticker floats in front of it. */
 .pcard-sock > * {
   transition: transform var(--dur-med) var(--ease-overshoot);
 }
 .group:hover .pcard-sock > *,
 .group:focus-visible .pcard-sock > * {
-  transform: translateZ(46px) rotate(var(--lean)) scale(1.03);
+  transform: rotate(var(--lean)) scale(1.06);
 }
+.pcard-peel-lift {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+/* first view: each card springs up into place, staggered along the row (no opacity —
+   nothing is ever held invisible) */
+.pcard {
+  transition: translate var(--dur-slow) var(--ease-spring), scale var(--dur-slow) var(--ease-spring);
+  transition-delay: calc(var(--i, 0) * 70ms);
+}
+.pcard:not([data-in]) { translate: 0 56px; scale: 0.94; }
 
 /* corner sticker that peels on hover */
 .peel {
@@ -840,6 +845,13 @@ html[data-lite] .animate-spin-slow { animation-play-state: paused; }
   }
 }
 
+/* ---------- v2: shop filter chips spring in, staggered (animate `transform`, so the
+   pills' own hover press on `translate` is untouched) ------------------------------ */
+.chip-in { animation: chip-in var(--dur-slow) var(--ease-spring) both; animation-delay: calc(var(--i, 0) * 40ms); }
+@keyframes chip-in {
+  from { transform: translate3d(0, 14px, 0) scale(0.8); }
+}
+
 /* ---------- REDUCED MOTION: effects off ---------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   .intro { display: none; }
@@ -848,8 +860,8 @@ html[data-lite] .animate-spin-slow { animation-play-state: paused; }
   .group:hover .pcard-price,
   .side-tab-inner.is-bumped,
   .side-tab-count { animation: none; }
-  .pcard-sock,
   .group:hover .pcard-sock > * { transform: none; }
+  .pcard:not([data-in]) { translate: none; scale: none; }
   .spin-splash { animation: none; display: none; }
   .factory { height: auto; }
   .factory-pin { position: relative; }

@@ -4,6 +4,7 @@ import { getProducts } from '../api/products'
 import { Flower, SockMonster, Star } from '../components/art/Doodles'
 import GiantHeadline from '../components/GiantHeadline'
 import ProductGrid from '../components/ProductGrid'
+import ParallaxSection from '../components/parallax/ParallaxSection'
 import Sticker from '../components/Sticker'
 import { useAsync } from '../hooks/useAsync'
 import { COLLECTIONS, COLORS, PRICE_RANGES, SIZES, SORTS } from '../lib/constants'
@@ -47,7 +48,7 @@ export default function Shop() {
     <>
       <title>{`${collection ? `${collection.label} socks` : 'shop all socks'} — SOCKSAVVY`}</title>
 
-      <section aria-labelledby="shop-title" className="tone-green clip-x relative pb-14 pt-28 md:pt-36">
+      <ParallaxSection rest="top" aria-labelledby="shop-title" className="tone-green clip-x relative pb-14 pt-28 md:pt-36">
         <Sticker className="absolute right-[6%] top-[86px] z-20 w-20 md:right-[12%] md:w-32" rotate={14} depth="near">
           <SockMonster fill="#f4d500" trim="#ff52a1" />
         </Sticker>
@@ -77,21 +78,22 @@ export default function Shop() {
             {loading ? 'counting socks…' : `${count} ${count === 1 ? 'pair' : 'pairs'} found`}
           </p>
         </div>
-      </section>
+      </ParallaxSection>
 
       <section aria-label="products" className="tone-offwhite relative pb-section">
         {/* filter bar */}
         <div className="sticky top-0 z-30 border-b-2 border-black bg-offwhite">
           <div className="flex items-center gap-3 px-gutter py-3 lg:pr-24">
             <div className="no-scrollbar -my-2 flex flex-1 gap-3 overflow-x-auto py-2 pr-2" role="group" aria-label="collection">
-              <button type="button" className={cx(pill, 'bg-white')} aria-pressed={filters.collection === 'all'} onClick={() => update({ collection: 'all' })}>
+              <button type="button" className={cx(pill, 'chip-in bg-white')} style={{ '--i': 0 }} aria-pressed={filters.collection === 'all'} onClick={() => update({ collection: 'all' })}>
                 all
               </button>
-              {COLLECTIONS.map((c) => (
+              {COLLECTIONS.map((c, i) => (
                 <button
                   key={c.id}
                   type="button"
-                  className={cx(pill, 'bg-white')}
+                  className={cx(pill, 'chip-in bg-white')}
+                  style={{ '--i': i + 1 }}
                   aria-pressed={filters.collection === c.id}
                   onClick={() => update({ collection: c.id })}
                 >
@@ -115,11 +117,12 @@ export default function Shop() {
               <fieldset>
                 <legend className="field-label">colour</legend>
                 <div className="flex flex-wrap gap-2">
-                  {COLORS.map((c) => (
+                  {COLORS.map((c, i) => (
                     <button
                       key={c.id}
                       type="button"
-                      className={cx(pill, 'min-h-10 bg-white px-3 py-1.5 text-sm')}
+                      className={cx(pill, 'chip-in min-h-10 bg-white px-3 py-1.5 text-sm')}
+                      style={{ '--i': i }}
                       aria-pressed={filters.colors.includes(c.id)}
                       onClick={() => toggle('color', filters.colors, c.id)}
                     >
@@ -133,12 +136,13 @@ export default function Shop() {
               <fieldset>
                 <legend className="field-label">size (in stock)</legend>
                 <div className="flex gap-2">
-                  {SIZES.map((s) => (
+                  {SIZES.map((s, i) => (
                     <button
                       key={s.id}
                       type="button"
                       title={s.fit}
-                      className={cx(pill, 'min-h-10 w-12 justify-center bg-white px-0 py-1.5 font-black uppercase')}
+                      className={cx(pill, 'chip-in min-h-10 w-12 justify-center bg-white px-0 py-1.5 font-black uppercase')}
+                      style={{ '--i': i + 2 }}
                       aria-pressed={filters.sizes.includes(s.id)}
                       aria-label={`size ${s.label}, ${s.fit}`}
                       onClick={() => toggle('size', filters.sizes, s.id)}
@@ -152,11 +156,12 @@ export default function Shop() {
               <fieldset>
                 <legend className="field-label">price</legend>
                 <div className="flex flex-wrap gap-2">
-                  {PRICE_RANGES.map((r) => (
+                  {PRICE_RANGES.map((r, i) => (
                     <button
                       key={r.id}
                       type="button"
-                      className={cx(pill, 'min-h-10 bg-white px-3 py-1.5 text-sm')}
+                      className={cx(pill, 'chip-in min-h-10 bg-white px-3 py-1.5 text-sm')}
+                      style={{ '--i': i + 4 }}
                       aria-pressed={filters.price === r.id}
                       onClick={() => update({ price: filters.price === r.id ? '' : r.id })}
                     >

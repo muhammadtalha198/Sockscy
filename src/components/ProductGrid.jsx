@@ -31,7 +31,8 @@ export default function ProductGrid({ products, loading = false, skeletons = 4, 
   if (!products?.length) return empty || null
 
   return (
-    <ul className={cx(grid, loading && 'opacity-60')} aria-busy={loading || undefined}>
+    // keyed by the result set: a new filter re-deals the grid, so the cards spring in again
+    <ul key={products.map((p) => p.id).join()} className={cx(grid, loading && 'opacity-60')} aria-busy={loading || undefined}>
       {products.map((p, i) => (
         <li key={p.id}>
           <ProductCard product={p} index={i} priority={i < 2} />

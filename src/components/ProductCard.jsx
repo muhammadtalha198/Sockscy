@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
 import { useInView } from '../hooks/useInView'
 import { useReducedMotion } from '../hooks/useReducedMotion'
+import TiltCard from './parallax/TiltCard'
 import { TILE_BG, TILE_CYCLE } from '../lib/constants'
 import { cx } from '../lib/cx'
 import { formatPKR, totalStock } from '../lib/format'
@@ -24,9 +25,11 @@ const RIGHT = `polygon(${pts[0]}, 100% 0, 100% 100%, ${[...pts].reverse().slice(
 
 /*
   Product card on a flat colour tile.
-  - hover: tile colour flips (hard cut), the sock tilts in 3D toward the pointer,
-    the corner sticker peels, the price bounces like a ball
-  - first view: a paper sheet tears apart to reveal the sock (or real photo once it loads)
+  - hover / touch-drag (TiltCard): the tile tilts in 3D toward the pointer, the sock inside
+    moves against it (a picture in a window), the corner sticker floats in front of the
+    tile and peels; the tile colour flips (hard cut), the price bounces like a ball
+  - first view: the card springs up into place (staggered along the row), then a paper
+    sheet tears apart to reveal the sock (or the real photo once it loads)
 */
 export default function ProductCard({ product, index = 0, priority = false }) {
   const reduced = useReducedMotion()
@@ -44,52 +47,44 @@ export default function ProductCard({ product, index = 0, priority = false }) {
     return () => clearTimeout(t)
   }, [inView, loaded, torn, index])
 
-  function tilt(e) {
-    if (e.pointerType !== 'mouse' || reduced) return
-    const r = e.currentTarget.getBoundingClientRect()
-    const px = (e.clientX - r.left) / r.width - 0.5
-    const py = (e.clientY - r.top) / r.height - 0.5
-    e.currentTarget.style.setProperty('--ry', `${(px * 26).toFixed(2)}deg`)
-    e.currentTarget.style.setProperty('--rx', `${(-py * 20).toFixed(2)}deg`)
-  }
-  function untilt(e) {
-    e.currentTarget.style.setProperty('--ry', '0deg')
-    e.currentTarget.style.setProperty('--rx', '0deg')
-  }
-
   return (
-    <article className="pcard relative">
+    <article ref={ref} className="pcard relative" data-in={inView || reduced || undefined} style={{ '--i': index % 4 }}>
       <Link to={`/product/${product.id}`} data-cursor="view" className="group block rounded-[1.75rem] focus-visible:outline-offset-4">
-        <div
-          ref={ref}
-          onPointerMove={tilt}
-          onPointerLeave={untilt}
-          className="pcard-tile relative aspect-[4/5] overflow-hidden rounded-[1.75rem] border-2 border-black bg-(--tile) group-hover:bg-(--tile-hover) group-focus-visible:bg-(--tile-hover)"
-          style={{ '--tile': TILE_BG[tile], '--tile-hover': TILE_BG[TILE_CYCLE[tile] || 'pink'], '--lean': index % 2 ? '7deg' : '-7deg' }}
-        >
-          <div className="pcard-sock h-full w-full">
-            <ProductImage
-              product={product}
-              view="single"
-              priority={priority}
-              decorative
-              artClassName="h-[84%] w-[84%]"
-              onLoad={() => setLoaded(true)}
-            />
-          </div>
+        <TiltCard className="pcard-tilt">
+          <div data-tilt-plane="" className="relative">
+            <div
+              className="pcard-tile relative aspect-[4/5] overflow-hidden rounded-[1.75rem] border-2 border-black bg-(--tile) group-hover:bg-(--tile-hover) group-focus-visible:bg-(--tile-hover)"
+              style={{ '--tile': TILE_BG[tile], '--tile-hover': TILE_BG[TILE_CYCLE[tile] || 'pink'], '--lean': index % 2 ? '7deg' : '-7deg' }}
+            >
+              {/* the sock moves against the tile (window parallax) */}
+              <div data-tilt-depth="" className="pcard-sock h-full w-full" style={{ '--tilt-depth': -14 }}>
+                <ProductImage
+                  product={product}
+                  view="single"
+                  priority={priority}
+                  decorative
+                  artClassName="h-[84%] w-[84%]"
+                  onLoad={() => setLoaded(true)}
+                />
+              </div>
 
-          <span className={cx('peel', soldOut && 'peel-dark')} aria-hidden="true">
-            <span className="peel-face">{label}</span>
-            <span className="peel-flap" />
-          </span>
+              {!reduced && !paperGone && (
+                <span className={cx('pcard-paper', torn && 'is-torn')} aria-hidden="true" onTransitionEnd={() => torn && setPaperGone(true)}>
+                  <span className="pcard-paper-half" style={{ clipPath: LEFT }} />
+                  <span className="pcard-paper-half pcard-paper-right" style={{ clipPath: RIGHT }} />
+                </span>
+              )}
+            </div>
 
-          {!reduced && !paperGone && (
-            <span className={cx('pcard-paper', torn && 'is-torn')} aria-hidden="true" onTransitionEnd={() => torn && setPaperGone(true)}>
-              <span className="pcard-paper-half" style={{ clipPath: LEFT }} />
-              <span className="pcard-paper-half pcard-paper-right" style={{ clipPath: RIGHT }} />
+            {/* the corner sticker lives outside the clipped tile, lifted toward the viewer */}
+            <span data-tilt-depth="" className="pcard-peel-lift" style={{ '--tilt-depth': 9, '--tilt-z': 34 }} aria-hidden="true">
+              <span className={cx('peel', soldOut && 'peel-dark')}>
+                <span className="peel-face">{label}</span>
+                <span className="peel-flap" />
+              </span>
             </span>
-          )}
-        </div>
+          </div>
+        </TiltCard>
 
         <div className="mt-3 px-1">
           <h3 className="text-base font-black uppercase leading-none tracking-tight [overflow-wrap:anywhere] md:text-xl">{product.name}</h3>
