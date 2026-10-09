@@ -9,6 +9,7 @@ import Cursor from './fx/Cursor'
 import Intro from './fx/Intro'
 import Footer from './Footer'
 import Navbar from './Navbar'
+import PlayButton from './PlayButton'
 import QuickView from './QuickView'
 import ScrollManager from './ScrollManager'
 import SideTab from './SideTab'
@@ -58,6 +59,7 @@ export default function Layout() {
       <SideTab />
       <CartDrawer />
       <QuickView />
+      <PlayButton />
       <CartToast />
       <Cursor />
       <p className="sr-only" role="status" aria-live="polite">

@@ -8,13 +8,15 @@ import GiftPackToggle from '../components/cart/GiftPackToggle'
 import GiantHeadline from '../components/GiantHeadline'
 import Sticker from '../components/Sticker'
 import { useCart } from '../store/cart'
+import { getTotals } from '../lib/pricing'
 
 export default function Cart() {
   const { items, giftPack, setGiftPack } = useCart(
     useShallow((s) => ({ items: s.items, giftPack: s.giftPack, setGiftPack: s.setGiftPack })),
   )
   const count = items.reduce((n, i) => n + i.qty, 0)
-  const subtotal = items.reduce((n, i) => n + i.price * i.qty, 0)
+  const discount = useCart((s) => s.discount)
+  const subtotal = getTotals(items, giftPack, discount).merchandise
 
   return (
     <>
@@ -67,7 +69,7 @@ export default function Cart() {
                   summary
                 </h2>
                 <GiftPackToggle checked={giftPack} onChange={setGiftPack} />
-                <CartSummary items={items} giftPack={giftPack} />
+                <CartSummary items={items} giftPack={giftPack} removable />
                 <Link to="/checkout" className="btn btn-pink btn-lg w-full">
                   checkout
                 </Link>

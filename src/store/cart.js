@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
+import { lookupDiscount } from '../lib/discount'
 
 /** "id:size" or "id:size:colorway" */
 const lineKey = (id, size, colorwayId) => (colorwayId ? `${id}:${size}:${colorwayId}` : `${id}:${size}`)
@@ -19,7 +20,7 @@ function rebalance(items) {
 }
 
 /**
- * Cart state. `items` and `giftPack` persist to localStorage ("socksavvy-cart");
+ * Cart state. `items`, `giftPack` and `discount` persist to localStorage ("socksavvy-cart");
  * drawer state, announcements and the last-added toast do not.
  */
 export const useCart = create(
@@ -27,6 +28,7 @@ export const useCart = create(
     (set, get) => ({
       items: [],
       giftPack: false,
+      discount: null, // { code, percent } — e.g. PAIRUP10 from the Find the Pair game
       isOpen: false,
       announcement: '',
       lastAdded: null,
@@ -105,7 +107,13 @@ export const useCart = create(
         }))
       },
 
-      clear: () => set({ items: [], giftPack: false }),
+      clear: () => set({ items: [], giftPack: false, discount: null }),
+      applyDiscount(code) {
+        const d = lookupDiscount(code)
+        if (d) set({ discount: { code: d.code, percent: d.percent }, announcement: `${d.code} applied: ${d.percent}% off your socks` })
+        return Boolean(d)
+      },
+      removeDiscount: () => set({ discount: null, announcement: 'discount removed' }),
       setGiftPack: (giftPack) => set({ giftPack }),
       openCart: () => set({ isOpen: true }),
       closeCart: () => set({ isOpen: false }),
@@ -115,7 +123,7 @@ export const useCart = create(
       name: 'socksavvy-cart',
       version: 1,
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ items: state.items, giftPack: state.giftPack }),
+      partialize: (state) => ({ items: state.items, giftPack: state.giftPack, discount: state.discount }),
     },
   ),
 )

@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router'
 import { useShallow } from 'zustand/react/shallow'
 import { useCart } from '../store/cart'
+import { getTotals } from '../lib/pricing'
 import { useDialog } from '../hooks/useDialog'
 import { cx } from '../lib/cx'
 import { SockMonster } from './art/Doodles'
@@ -20,7 +21,8 @@ export default function CartDrawer() {
   const closeRef = useRef(null)
   const { pathname } = useLocation()
   const count = items.reduce((n, i) => n + i.qty, 0)
-  const subtotal = items.reduce((n, i) => n + i.price * i.qty, 0)
+  const discount = useCart((s) => s.discount)
+  const subtotal = getTotals(items, giftPack, discount).merchandise
 
   // close when navigating
   useEffect(() => {

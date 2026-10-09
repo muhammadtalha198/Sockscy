@@ -519,6 +519,54 @@ html.lenis body { height: auto; }
 .factory-sock { overflow: visible; }
 .factory[data-live] .factory-sock { filter: drop-shadow(6px 10px 0 rgb(0 0 0 / 0)); }
 
+/* ---------- F. FIND THE PAIR ---------------------------------------------- */
+.play-button {
+  filter: drop-shadow(3px 5px 6px rgb(0 0 0 / 0.3));
+  transition: transform var(--dur-fast) var(--ease-spring);
+}
+.play-button:hover { transform: scale(1.08) rotate(-6deg); }
+.play-button[data-tucked] { transform: translate3d(-130%, 0, 0) rotate(-90deg); }
+.play-button:active { transform: scale(0.94); }
+.game-sock {
+  display: block;
+  width: clamp(3.4rem, 9vw, 5.4rem);
+  transform: translate(-50%, -50%) rotate(var(--rot)) scale(var(--s));
+  transition: transform var(--dur-fast) var(--ease-spring);
+  border-radius: 1rem;
+}
+.game-sock.is-floating { animation: game-float var(--float) ease-in-out infinite alternate; }
+@keyframes game-float {
+  to { transform: translate(-50%, calc(-50% - 10px)) rotate(calc(var(--rot) + 6deg)) scale(var(--s)); }
+}
+.game-sock:hover:not(:disabled) { transform: translate(-50%, -50%) rotate(var(--rot)) scale(calc(var(--s) * 1.12)); }
+.game-sock.is-selected {
+  animation: none;
+  transform: translate(-50%, -56%) rotate(0deg) scale(calc(var(--s) * 1.22));
+  outline: 4px solid var(--color-yellow);
+  outline-offset: 4px;
+}
+.game-sock.is-wrong { animation: game-wrong 0.42s both; }
+@keyframes game-wrong {
+  0%, 100% { transform: translate(-50%, -50%) rotate(var(--rot)) scale(var(--s)); }
+  25% { transform: translate(calc(-50% - 8px), -50%) rotate(calc(var(--rot) - 10deg)) scale(var(--s)); }
+  60% { transform: translate(calc(-50% + 7px), -50%) rotate(calc(var(--rot) + 8deg)) scale(var(--s)); }
+}
+.game-sock.is-pair { animation: game-pair 0.5s ease-in-out infinite alternate; outline: 4px solid var(--color-yellow); outline-offset: 4px; }
+@keyframes game-pair {
+  from { transform: translate(-50%, -50%) rotate(-10deg) scale(calc(var(--s) * 1.15)); }
+  to { transform: translate(-50%, -50%) rotate(10deg) scale(calc(var(--s) * 1.15)); }
+}
+.game-sock:disabled { cursor: default; }
+.game-timer {
+  width: 100%;
+  transform-origin: 0 50%;
+  animation: game-timer linear both;
+}
+@keyframes game-timer {
+  to { transform: scaleX(0); }
+}
+.game-result { animation: qv-in var(--dur-med) var(--ease-spring) both; }
+
 /* ---------- REDUCED MOTION: effects off ---------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   .intro { display: none; }
@@ -533,4 +581,9 @@ html.lenis body { height: auto; }
   .factory { height: auto; }
   .factory-pin { position: relative; }
   .sticker-fly-pending { transform: none; }
+  .game-sock.is-floating,
+  .game-sock.is-pair,
+  .game-sock.is-wrong,
+  .game-result { animation: none; }
+  .game-timer { animation-duration: 20s !important; animation-iteration-count: 1 !important; }
 }

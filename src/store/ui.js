@@ -31,6 +31,7 @@ export const useUi = create(
       soundOn: false,
       introDone: typeof window === 'undefined' || introAlreadyPlayed() || prefersReducedMotion(),
       quickViewId: null,
+      gameOpen: false,
 
       finishIntro: () => {
         markIntroPlayed()
@@ -39,6 +40,8 @@ export const useUi = create(
       setSound: (soundOn) => set({ soundOn }),
       openQuickView: (quickViewId) => set({ quickViewId }),
       closeQuickView: () => set({ quickViewId: null }),
+      openGame: () => set({ gameOpen: true }),
+      closeGame: () => set({ gameOpen: false }),
     }),
     {
       name: 'socksavvy-ui',

@@ -205,3 +205,11 @@ Order: A, B, C, E, D, F, H, J, G, I, K. 60fps on a mid-range Android. Lazy-load 
   before paint, always pushed away from the screen). `home/SockFactory.jsx`: 420svh section +
   sticky stage, ScrollTrigger-scrubbed timeline, steps via `data-step` hard cuts. Inner scroll
   areas need `data-lenis-prevent`.
+- **F Find the Pair** — `PlayButton.jsx` (fixed bottom-left Badge, hidden on /checkout and
+  /order-placed, tucks away while scrolling down on phones) lazy-loads `game/FindThePair.jsx`
+  (useDialog; 10 socks on phones / 16 desktop, one identical pair + near misses, 20 s).
+  Win → `cart.applyDiscount('PAIRUP10')` + `lib/discount.recordWin()` (localStorage
+  `socksavvy-game`, one prize per local day). Cart store `discount {code, percent}` persists;
+  `getTotals(items, giftPack, discount)` takes 10% off socks only, free shipping judged after
+  discount; `CartSummary` shows it (removable on /cart); checkout sends `discountCode`; mock API
+  re-validates via `lookupDiscount`. Order clears the discount.

@@ -53,8 +53,8 @@ function validate(f) {
 }
 
 export default function Checkout() {
-  const { items, giftPack, setGiftPack, clear } = useCart(
-    useShallow((s) => ({ items: s.items, giftPack: s.giftPack, setGiftPack: s.setGiftPack, clear: s.clear })),
+  const { items, giftPack, setGiftPack, clear, discount } = useCart(
+    useShallow((s) => ({ items: s.items, giftPack: s.giftPack, setGiftPack: s.setGiftPack, clear: s.clear, discount: s.discount })),
   )
   const [form, setForm] = useState(EMPTY)
   const [errors, setErrors] = useState({})
@@ -62,7 +62,7 @@ export default function Checkout() {
   const [serverError, setServerError] = useState('')
   const summaryRef = useRef(null)
   const navigate = useNavigate()
-  const totals = getTotals(items, giftPack)
+  const totals = getTotals(items, giftPack, discount)
 
   const set = (key) => (e) => {
     const value = e.target.value
@@ -92,6 +92,7 @@ export default function Checkout() {
         },
         payment: form.payment,
         giftPack,
+        discountCode: totals.discountCode || undefined,
         items: items.map((i) => ({ id: i.id, size: i.size, qty: i.qty, colorway: i.colorway?.id })),
       })
       if (res.paymentUrl) {

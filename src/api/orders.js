@@ -7,6 +7,7 @@
 //       shipping: { address, city, province, postalCode?, notes? },
 //       payment: "cod" | "card",
 //       giftPack: boolean,
+//       discountCode?: "PAIRUP10",          ← validate server-side (one win per visitor per day)
 //       items: [{ id, size, qty, colorway? }] ← ids only; the server prices the order.
 //                                              Stock is per size, shared by all colourways.
 //     }
@@ -19,6 +20,7 @@
 
 import productsData from '../data/products.json'
 import { getTotals } from '../lib/pricing'
+import { lookupDiscount } from '../lib/discount'
 import { normalisePhone } from '../lib/format'
 import { ApiError, USE_MOCK, mockDelay, request, toQuery } from './client'
 
@@ -85,7 +87,7 @@ function writeMockOrders(orders) {
   }
 }
 
-function mockCreateOrder({ customer, shipping, payment, giftPack, items }) {
+function mockCreateOrder({ customer, shipping, payment, giftPack, discountCode, items }) {
   if (!items?.length) throw new ApiError('your cart is empty', 400)
 
   // Re-price on the "server" from the catalogue, like the real backend must.
@@ -102,13 +104,14 @@ function mockCreateOrder({ customer, shipping, payment, giftPack, items }) {
     return { id, size, qty, colorway: cw?.id, name: cw ? `${product.name} (${cw.label})` : product.name, price: product.price }
   })
 
-  const totals = getTotals(priced, giftPack)
+  const totals = getTotals(priced, giftPack, lookupDiscount(discountCode))
   const orderNumber = `SS-${String(Date.now()).slice(-5)}${Math.floor(Math.random() * 10)}`
   const order = {
     orderNumber,
     createdAt: new Date().toISOString(),
     payment,
     giftPack: Boolean(giftPack),
+    discountCode: totals.discountCode,
     customer: { ...customer, phone: normalisePhone(customer.phone) },
     shipping,
     items: priced,
