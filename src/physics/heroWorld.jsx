@@ -9,6 +9,7 @@ import { bakeElement, bakeSticker } from '../fx/sprites'
 import { play } from '../fx/sound'
 import { clamp } from '../lib/motion'
 import { totalStock } from '../lib/format'
+import { useUi } from '../store/ui'
 
 const { Engine, Bodies, Body, Composite, Constraint, Query, Events, Sleeping, Vertices } = Matter
 
@@ -121,6 +122,11 @@ class HeroWorld {
     // letters finish sliding in after the intro — re-measure their sensors then
     this.timers.push(setTimeout(() => this.buildStatics(), 1300))
 
+    // logo-remix easter egg: SockArt reads ui.remix, so re-baking picks up the new patterns
+    this.unsubRemix = useUi.subscribe((s, prev) => {
+      if (s.remix !== prev.remix) this.remix()
+    })
+
     this.spawnInitial()
     this.updateRunning()
     s.__heroWorld = this // handle for browser tests / debugging
@@ -136,6 +142,26 @@ class HeroWorld {
     this.canvas.width = Math.round(this.w * dpr)
     this.canvas.height = Math.round(this.h * dpr)
     this.dirty = true // resizing clears the bitmap
+  }
+
+  async remix() {
+    const { sockW, outline, dpr } = this.cfg
+    const sockH = Math.round((sockW * SOCK_VIEWBOX.h) / SOCK_VIEWBOX.w)
+    for (const item of this.pool) {
+      if (item.kind !== 'sock' || item.product.cutout) continue
+      const sprite = await bakeElement(<SockArt art={item.product.art} view="upright" />, { width: sockW, height: sockH, outline, dpr })
+      if (this.destroyed) return
+      item.sprite = sprite // same size → same anchor and hull
+    }
+    // every sock hops so the change is seen
+    for (const b of this.dynamic) {
+      if (b.plugin.item.kind !== 'sock') continue
+      Sleeping.set(b, false)
+      Body.setVelocity(b, { x: rand(-2, 2), y: rand(-9, -6) })
+      Body.setAngularVelocity(b, rand(-0.15, 0.15))
+    }
+    this.dirty = true
+    this.kick()
   }
 
   async bakeAll() {
@@ -626,6 +652,7 @@ class HeroWorld {
   destroy() {
     this.destroyed = true
     this.stop()
+    this.unsubRemix?.()
     this.timers.forEach(clearTimeout)
     this.io?.disconnect()
     this.ro?.disconnect()

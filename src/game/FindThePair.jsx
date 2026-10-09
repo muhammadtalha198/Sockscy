@@ -208,7 +208,7 @@ export default function FindThePair({ onClose }) {
                       style={{ '--rot': `${s.rot}deg`, '--s': s.scale, '--float': `${s.float}s` }}
                     >
                       <span className="sticker block">
-                        <SockArt art={{ pattern: s.pattern, base: s.base, trim: s.trim }} view="upright" />
+                        <SockArt art={{ pattern: s.pattern, base: s.base, trim: s.trim }} view="upright" fixed />
                       </span>
                     </button>
                   </li>

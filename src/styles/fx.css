@@ -697,6 +697,73 @@ html.lenis body { height: auto; }
   html[data-buybar] .play-button { bottom: calc(6.1rem + env(safe-area-inset-bottom, 0px)); }
   html[data-buypage] footer { padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px)); }
 }
+/* ---------- G. SOUND + EASTER EGGS -------------------------------------- */
+.sound-toggle {
+  display: grid;
+  justify-items: center;
+  transition: transform var(--dur-fast) var(--ease-spring), bottom var(--dur-med) var(--ease-spring);
+}
+.sound-toggle:hover { transform: scale(1.08) rotate(6deg); }
+.sound-toggle:active { transform: scale(0.92); }
+.sound-toggle[data-tucked] { transform: translate3d(140%, 0, 0) rotate(90deg); }
+.sound-toggle-tag {
+  margin-top: -0.55rem;
+  padding: 0.1rem 0.45rem;
+  border: 2px solid #000;
+  border-radius: 999px;
+  background: var(--color-offwhite);
+  color: #000;
+  font-size: 0.65rem;
+  font-weight: 900;
+  line-height: 1.1;
+  white-space: nowrap;
+  transform: rotate(-6deg);
+}
+.sound-toggle[data-on] .sound-toggle-tag { background: var(--color-yellow); }
+.sound-toggle[data-on] .sound-wave { animation: sound-wave 0.9s ease-in-out infinite alternate; }
+.sound-toggle[data-on] .sound-wave-2 { animation-delay: 0.25s; }
+@keyframes sound-wave { from { opacity: 0.25; } to { opacity: 1; } }
+@media (max-width: 47.99rem) {
+  html[data-buybar] .sound-toggle { bottom: calc(6.1rem + env(safe-area-inset-bottom, 0px)); }
+}
+
+/* 404: the other sock peeks out from behind the footer */
+.lost-sock {
+  position: absolute;
+  bottom: 0;
+  left: 62%;
+  width: 4.25rem;
+  transform: translateY(58%) rotate(16deg);
+  transition: transform var(--dur-slow) var(--ease-spring);
+}
+.lost-sock:hover,
+.lost-sock:focus-visible { transform: translateY(44%) rotate(8deg); }
+.lost-sock[data-found] { transform: translateY(-35%) rotate(-12deg) scale(1.2); cursor: default; }
+.lost-sock-msg {
+  position: absolute;
+  bottom: 4.75rem;
+  left: calc(62% + 5rem);
+  max-width: 11rem;
+  padding: 0.35rem 0.75rem;
+  border: 2px solid #000;
+  border-radius: 999px;
+  background: var(--color-yellow);
+  color: #000;
+  font-weight: 900;
+  font-size: 0.85rem;
+  line-height: 1.15;
+  box-shadow: var(--shadow-hard);
+  transform: rotate(-4deg) scale(0);
+  transform-origin: 0 100%;
+  transition: transform var(--dur-med) var(--ease-overshoot);
+}
+.lost-sock-msg:empty { padding: 0; border: 0; box-shadow: none; }
+.lost-sock-msg[data-found] { transform: rotate(-4deg) scale(1); }
+@media (max-width: 47.99rem) {
+  .lost-sock { left: 52%; width: 3.5rem; }
+  .lost-sock-msg { left: auto; right: 0.75rem; bottom: 5.5rem; }
+}
+
 /* ---------- REDUCED MOTION: effects off ---------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   .intro { display: none; }
@@ -722,4 +789,8 @@ html.lenis body { height: auto; }
   .buy-bar,
   .play-button { transition: none; }
   .ship-sock-body { animation: none !important; }
+  .sound-toggle,
+  .lost-sock,
+  .lost-sock-msg { transition: none; }
+  .sound-wave { animation: none !important; }
 }

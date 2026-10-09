@@ -27,6 +27,11 @@ function load() {
   return loading
 }
 
+/** Resolves once the sounds are loaded (downloads howler on first call). */
+export function preloadSounds() {
+  return load() || Promise.resolve()
+}
+
 /** Play a named sound if the visitor has sound on. Never throws. */
 export function play(name, { volume, rate } = {}) {
   if (!useUi.getState().soundOn) return

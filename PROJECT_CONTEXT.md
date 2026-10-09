@@ -226,3 +226,9 @@ Order: A, B, C, E, D, F, H, J, G, I, K. 60fps on a mid-range Android. Lazy-load 
   `html[data-buypage|data-buybar]` so the footer pads and the game sticker hops up).
   OrderPlaced: sock confetti `rain()` + 'win' sound, Instagram share (Web Share → else copy
   caption + open IG). Urgency = real stock only (cards, stock note, buy bar tag).
+- **G Sound + easter eggs** — `fx/SoundToggle.jsx` (fixed bottom-right speaker sticker,
+  aria-pressed, off by default; turning it on downloads howler + plays 'pop').
+  `hooks/useTuckOnScroll.js` shared with PlayButton. `fx/EasterEggs.jsx`: Konami → `rain()`;
+  logo (`[data-logo]`) tapped 5× in 2.5 s → `ui.remixSocks()`; `SockArt` shifts its pattern by
+  `ui.remix` (prop `fixed` opts out — the game uses it) and heroWorld re-bakes its sprites.
+  404: the matching sock peeks out from behind the footer (`.lost-sock`).

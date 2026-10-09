@@ -1,4 +1,5 @@
 import { useId } from 'react'
+import { useUi } from '../../store/ui'
 
 /*
   Placeholder product art: an SVG crew sock filled with one of 12 patterns.
@@ -192,10 +193,21 @@ const VIEWS = {
   upright: { viewBox: '40 6 164 244', socks: [{ t: '' }] },
 }
 
-export default function SockArt({ art, view = 'single', title, className = '' }) {
+// logo-remix easter egg: shift every pattern by 5 places per remix (5 and 12 are
+// coprime, so a dozen remixes visit every pattern and distinct socks stay distinct)
+const PATTERN_ORDER = ['eggs', 'matcha', 'avocado', 'peach', 'pizza', 'hearts', 'flowers', 'smiley', 'cats', 'blobs', 'checker', 'stripes']
+function remixed(art, n) {
+  const i = PATTERN_ORDER.indexOf(art.pattern)
+  if (!n || i < 0) return art
+  return { ...art, pattern: PATTERN_ORDER[(i + n * 5) % PATTERN_ORDER.length] }
+}
+
+/** `fixed` opts out of the remix (the Find the Pair game describes patterns by name). */
+export default function SockArt({ art, view = 'single', title, className = '', fixed = false }) {
   const uid = `sock${useId().replace(/[^a-zA-Z0-9]/g, '')}`
   const v = VIEWS[view] || VIEWS.single
-  const a = art || { pattern: 'smiley', base: '#111', trim: '#f4d500' }
+  const remix = useUi((s) => (fixed ? 0 : s.remix))
+  const a = remixed(art || { pattern: 'smiley', base: '#111', trim: '#f4d500' }, remix)
 
   return (
     <svg

@@ -55,7 +55,7 @@ export default function Navbar({ tone = 'yellow' }) {
             </NavLink>
           </li>
         </ul>
-        <Link to="/" className="py-1 text-label font-black lowercase tracking-tight" aria-label="socksavvy home">
+        <Link to="/" data-logo className="py-1 text-label font-black lowercase tracking-tight" aria-label="socksavvy home">
           socksavvy.co
         </Link>
       </nav>

@@ -24,6 +24,7 @@ export function markIntroPlayed() {
  * UI / delight state. Only `soundOn` persists (localStorage "socksavvy-ui").
  *   introDone   — false while the first-visit intro is on screen
  *   quickViewId — product id shown in the quick-view dialog (null = closed)
+ *   remix       — easter egg counter (logo tapped 5×): shifts every placeholder sock's pattern
  */
 export const useUi = create(
   persist(
@@ -32,6 +33,7 @@ export const useUi = create(
       introDone: typeof window === 'undefined' || introAlreadyPlayed() || prefersReducedMotion(),
       quickViewId: null,
       gameOpen: false,
+      remix: 0,
 
       finishIntro: () => {
         markIntroPlayed()
@@ -42,6 +44,7 @@ export const useUi = create(
       closeQuickView: () => set({ quickViewId: null }),
       openGame: () => set({ gameOpen: true }),
       closeGame: () => set({ gameOpen: false }),
+      remixSocks: () => set((s) => ({ remix: s.remix + 1 })),
     }),
     {
       name: 'socksavvy-ui',

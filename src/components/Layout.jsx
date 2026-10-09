@@ -7,6 +7,8 @@ import { toneFor } from '../lib/routes'
 import CartDrawer from './CartDrawer'
 import CartToast from './CartToast'
 import Cursor from './fx/Cursor'
+import EasterEggs from './fx/EasterEggs'
+import SoundToggle from './fx/SoundToggle'
 import Intro from './fx/Intro'
 import Footer from './Footer'
 import Navbar from './Navbar'
@@ -48,8 +50,10 @@ export default function Layout() {
       <CartDrawer />
       <QuickView />
       <PlayButton />
+      <SoundToggle />
       <CartToast />
       <Cursor />
+      <EasterEggs />
       <p className="sr-only" role="status" aria-live="polite">
         {announcement}
       </p>

@@ -1,7 +1,7 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { useLocation } from 'react-router'
+import { useTuckOnScroll } from '../hooks/useTuckOnScroll'
 import { hasWonToday } from '../lib/discount'
-import { subscribeVelocity } from '../motion/velocity'
 import { useCart } from '../store/cart'
 import { useUi } from '../store/ui'
 import SockArt from './art/SockArt'
@@ -21,23 +21,8 @@ export default function PlayButton() {
   const closeGame = useUi((s) => s.closeGame)
   const discount = useCart((s) => s.discount)
   const [prefetched, setPrefetched] = useState(false)
-  const [tucked, setTucked] = useState(false)
-
   // phones: slide away while scrolling down so it never sits on top of what you're reading
-  useEffect(() => {
-    if (!window.matchMedia('(max-width: 47.99rem)').matches) return
-    let timer = 0
-    const unsub = subscribeVelocity((v) => {
-      if (v > 2) setTucked(true)
-      else if (v < -2) setTucked(false)
-      clearTimeout(timer)
-      timer = setTimeout(() => setTucked(false), 900)
-    })
-    return () => {
-      unsub()
-      clearTimeout(timer)
-    }
-  }, [])
+  const tucked = useTuckOnScroll()
   const won = discount?.code === 'PAIRUP10' || hasWonToday()
   const prefetch = () => {
     if (!prefetched) {

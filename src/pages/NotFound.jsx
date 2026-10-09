@@ -1,9 +1,23 @@
+import { useState } from 'react'
 import { Link } from 'react-router'
+import { play } from '../fx/sound'
 import SockArt from '../components/art/SockArt'
 import GiantHeadline from '../components/GiantHeadline'
 import Sticker from '../components/Sticker'
 
+const LOST = { pattern: 'smiley', base: '#111111', trim: '#f4d500' }
+
 export default function NotFound() {
+  // easter egg: the other sock of the pair is peeking out from behind the footer
+  const [found, setFound] = useState(false)
+  function find(e) {
+    if (found) return
+    setFound(true)
+    play('win')
+    const r = e.currentTarget.getBoundingClientRect()
+    import('../fx/confetti').then(({ burst }) => burst({ x: r.left + r.width / 2, y: r.top, count: 34, shapes: ['flower', 'star'], power: 11 }))
+  }
+
   return (
     <section aria-labelledby="lost-title" className="tone-pink clip-x relative min-h-[100svh] pb-section pt-28 md:pt-36">
       <title>oops, lost a sock — SOCKSAVVY</title>
@@ -13,7 +27,7 @@ export default function NotFound() {
         parallax={0.12}
         duration={6}
       >
-        <SockArt art={{ pattern: 'smiley', base: '#111111', trim: '#f4d500' }} view="single" />
+        <SockArt art={LOST} view="single" />
       </Sticker>
 
       <GiantHeadline
@@ -37,6 +51,22 @@ export default function NotFound() {
           </Link>
         </div>
       </div>
+
+      <button
+        type="button"
+        onClick={find}
+        className="lost-sock"
+        data-found={found || undefined}
+        data-cursor={found ? undefined : 'grab'}
+        aria-label={found ? 'the other sock — found it!' : 'something is peeking out from under the page'}
+      >
+        <span className="sticker block">
+          <SockArt art={LOST} view="upright" />
+        </span>
+      </button>
+      <p className="lost-sock-msg" data-found={found || undefined} role="status" aria-live="polite">
+        {found && 'found it! pair reunited ✦'}
+      </p>
     </section>
   )
 }
