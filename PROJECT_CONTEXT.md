@@ -227,7 +227,8 @@ axes, dead zone, low-pass, ±22°, paused when hidden; falls back to scroll only
 `TiltCard` (`--rx --ry --tx --ty`; children `data-tilt-plane`, `data-tilt-depth` + `--tilt-depth`
 /`--tilt-z`) · `StoryBlock` (paragraph enters at its depth) · `SoftBackdrop` + `DriftSticker` ·
 hook `useParallax(opts)`. `<Sticker depth="back|far|near|front">`. Calm: `ui.calm` → `setCalm`
-→ `html[data-calm]` (15%, float/spin loops paused, tilt off, confetti halved).
+→ `html[data-calm]` (15%, loops paused, tilt off); `lessMotion()`/`useLessMotion()` (hooks/
+useLessMotion.js) = reduced OR calm → no curtain wipe, Lenis wheel, marquee, physics, fly-ins, trail.
 **Rules**
 1. A layer element owns `translate` (and `scale`/`rotate` if it asks for them): never put
    Tailwind translate/rotate/scale utilities on it — wrap a child.
@@ -240,9 +241,8 @@ hook `useParallax(opts)`. `<Sticker depth="back|far|near|front">`. Calm: `ui.cal
    before every commit.
 
 ## 15. version-2 status / handoff
-Done: system + every page (hero, home sections, shop, product, about/contact/orders,
-cart/checkout, 404, order placed, transitions), perf pass (will-change policy, smaller phone
-controls), a11y pass (reduced motion everywhere, calm toggle, form never moves). Numbers:
+Done: system + every page, transitions, perf pass (will-change policy, smaller phone controls),
+a11y + regression review fixes (calm scope, footer focus, cart cleared at submit). Numbers:
 `docs/version-2/lighthouse-*.md`, frame table in CHANGES.md. **Owner decision still pending:**
 yellow on red = 2.84:1 (suggested red `#dc363c`; do NOT change without asking, §11).
 **Check on a real phone (UNVERIFIED here, no GPU/gyro):** tilt feel on iOS + Android, 60fps on a

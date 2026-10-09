@@ -21,8 +21,18 @@ checkout, routes and product data are unchanged; v2 adds depth. Screens: `before
   plane names.
 - **Inputs**: scroll; pointer on desktop; phone tilt only after a tap ("tilt" sticker, or the
   one-time chip), calibrated to how the phone is held, falling back to scroll only.
-- **Calm mode**: a sticker in the bottom-right cluster (with sound, and tilt on phones). 15%
-  strength, float/spin loops paused, tilt off, confetti halved. Remembered per device.
+- **Calm mode**: a sticker in the bottom-right cluster (with sound, and tilt on phones).
+  Remembered per device. It turns down everything that moves on its own:
+  - parallax drops to 15% and tilt is off;
+  - float/spin loops pause and the marquee stops (it is the marquee's pause control);
+  - page swaps are instant (no wipe) and wheel scrolling is native (no smoothing);
+  - no hero physics, sticker fly-ins or cursor trail;
+  - card tilt runs at 30%;
+  - cards, chips, paragraphs and headlines arrive in place;
+  - confetti is halved and the footer reveal is off.
+
+  What still moves: things you drive directly (dragging, scrubbing the factory scene) and
+  short fades.
 - **prefers-reduced-motion**: nothing registers. No scroll animations, no transforms, no
   confetti, no curtain. Tested on every page.
 
@@ -140,6 +150,37 @@ What the pass changed:
 
 **Lighthouse** (median of 3, `vite preview`): see `lighthouse-v1-before.md` and
 `lighthouse-v2-after.md`.
+
+## Accessibility pass
+
+The two review passes (one for regressions, one for accessibility) are below, with what was
+fixed.
+
+- **Keyboard focus in the desktop footer.** The footer was pinned underneath the page, so
+  focused links could be hidden. Focusing into the footer now uncovers it. This has a test.
+- **Tucked control clusters.** The tilt/calm/sound cluster and the game sticker slide off-screen
+  while you scroll; they now come back while focused.
+- **Button names match the visible words.** Toggles are named "calm mode", "tilt" and "sound",
+  and `aria-pressed` carries the state (WCAG 2.5.3).
+- **Tilt switch under reduced motion.** It is hidden, because nothing would move.
+- **Links and the drag-to-spin sock** no longer follow the pointer. They keep scroll depth
+  only. On phones the related rail stays inside its padding, so card tops and focus rings are
+  not clipped.
+- **Reduced motion switched on mid-visit** now also stops the footer reveal and drops any page
+  transition in flight.
+- **Checked and fine:**
+  - Every page is static under reduced motion (tested).
+  - Decorative layers are `aria-hidden`.
+  - Body ink is 12.9–16.7 : 1 on the soft cart/checkout sheets.
+  - No flashing.
+  - Tilt permission is asked only inside a tap.
+  - No form ever sits inside a moving layer.
+
+**Fixed from the regression review:**
+- The order page cleared the cart on every mount, so pressing Back to it wiped a new cart, and
+  pressing Back mid-curtain kept the old one (risking a duplicate order). Checkout now empties
+  the cart at submit and shows a snapshot while the curtain covers it. This has a test.
+- The desktop related-rail drift never registered.
 
 ## Also fixed (v1 handoff bugs, commit 50cae0e)
 
