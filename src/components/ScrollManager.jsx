@@ -1,10 +1,22 @@
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useLocation } from 'react-router'
 import { scrollToTarget } from '../motion/scroll'
 
-/** Scroll to top on page change, or to #hash targets (e.g. /#collections). */
+/** Scroll to top on page change, or to #hash targets (e.g. /#collections); focus moves to <main>. */
 export default function ScrollManager() {
   const { pathname, hash } = useLocation()
+  const firstRender = useRef(true)
+
+  // after a client-side page change, start keyboard/screen-reader users on the new page
+  useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false
+      return
+    }
+    // after any drawer/dialog closing on this navigation has restored its own focus
+    const t = setTimeout(() => document.getElementById('main')?.focus({ preventScroll: true }), 60)
+    return () => clearTimeout(t)
+  }, [pathname])
 
   useEffect(() => {
     if (hash) {

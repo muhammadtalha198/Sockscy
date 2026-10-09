@@ -14,10 +14,10 @@ export default function FeaturedDrop() {
     <section id="featured" aria-labelledby="featured-title" className="tone-red clip-x relative py-section">
       {/* scattered tags, like the reference's "PROVOCATION" */}
       <span aria-hidden="true" className="tag absolute left-[6%] top-8 text-yellow">thrifted</span>
-      <span aria-hidden="true" className="tag absolute right-[14%] top-16 text-yellow">one of one</span>
+      <span aria-hidden="true" className="tag absolute right-[14%] top-8 text-yellow md:top-16">one of one</span>
       <span aria-hidden="true" className="tag absolute right-[30%] top-[170px] hidden text-yellow lg:block">thrifted</span>
 
-      <Sticker className="absolute right-[5%] top-[14%] z-20 w-20 md:w-32" rotate={14} parallax={0.12}>
+      <Sticker className="absolute right-[4%] top-[3.25rem] z-20 w-16 md:right-[5%] md:top-[14%] md:w-32" rotate={14} parallax={0.12}>
         <Flower fill="#ff52a1" center="#f4d500" />
       </Sticker>
       <Sticker className="absolute left-[38%] top-[6%] z-20 hidden w-20 md:block" rotate={-10} parallax={0.2} outline={false}>

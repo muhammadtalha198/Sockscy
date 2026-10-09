@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import { useTuckOnScroll } from '../../hooks/useTuckOnScroll'
 import { play, preloadSounds } from '../../fx/sound'
 import { useUi } from '../../store/ui'
@@ -6,7 +7,8 @@ import { useUi } from '../../store/ui'
 export default function SoundToggle() {
   const soundOn = useUi((s) => s.soundOn)
   const setSound = useUi((s) => s.setSound)
-  const tucked = useTuckOnScroll()
+  const ref = useRef(null)
+  const tucked = useTuckOnScroll(ref)
 
   function toggle() {
     if (soundOn) {
@@ -19,6 +21,7 @@ export default function SoundToggle() {
 
   return (
     <button
+      ref={ref}
       type="button"
       onClick={toggle}
       aria-pressed={soundOn}

@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from 'react'
+import { lazy, Suspense, useRef, useState } from 'react'
 import { useLocation } from 'react-router'
 import { useTuckOnScroll } from '../hooks/useTuckOnScroll'
 import { hasWonToday } from '../lib/discount'
@@ -22,7 +22,8 @@ export default function PlayButton() {
   const discount = useCart((s) => s.discount)
   const [prefetched, setPrefetched] = useState(false)
   // phones: slide away while scrolling down so it never sits on top of what you're reading
-  const tucked = useTuckOnScroll()
+  const buttonRef = useRef(null)
+  const tucked = useTuckOnScroll(buttonRef)
   const won = discount?.code === 'PAIRUP10' || hasWonToday()
   const prefetch = () => {
     if (!prefetched) {
@@ -35,6 +36,7 @@ export default function PlayButton() {
     <>
       {!HIDDEN_ON.includes(pathname) && (
         <button
+          ref={buttonRef}
           type="button"
           onClick={openGame}
           onPointerEnter={prefetch}
