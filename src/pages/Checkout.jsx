@@ -130,7 +130,7 @@ export default function Checkout() {
   return (
     <section aria-labelledby="checkout-title" className="tone-offwhite clip-x relative pb-section pt-28 md:pt-36">
       <title>checkout — SOCKSAVVY</title>
-      <Sticker className="absolute right-[6%] top-[84px] z-20 w-16 md:w-24" rotate={12} parallax={0.1}>
+      <Sticker className="absolute right-[6%] top-[84px] z-20 w-16 md:w-24" rotate={12} depth="near">
         <Star fill="#f4d500" />
       </Sticker>
 

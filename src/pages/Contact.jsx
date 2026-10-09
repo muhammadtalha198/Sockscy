@@ -19,7 +19,7 @@ export default function Contact({ focus }) {
       <title>{focus === 'track' ? 'track your order — SOCKSAVVY' : 'contact — SOCKSAVVY'}</title>
 
       <section aria-labelledby="contact-title" className="tone-green clip-x relative pb-section pt-28 md:pt-36">
-        <Sticker className="absolute right-[6%] top-[80px] z-20 w-24 md:right-[14%] md:w-36" rotate={-10} parallax={0.12}>
+        <Sticker className="absolute right-[6%] top-[80px] z-20 w-24 md:right-[14%] md:w-36" rotate={-10} depth="near">
           <Smiley />
         </Sticker>
         <Sticker className="absolute left-[42%] top-[24%] hidden w-14 md:block" outline={false} rotate={12}>
@@ -166,7 +166,7 @@ function TrackOrder({ autoFocus }) {
   const order = state.order
   return (
     <section id="track" aria-labelledby="track-title" className="tone-yellow clip-x relative scroll-mt-4 py-section">
-      <Sticker className="absolute right-[6%] top-[8%] z-20 w-24 md:w-36" rotate={10} parallax={0.1}>
+      <Sticker className="absolute right-[6%] top-[8%] z-20 w-24 md:w-36" rotate={10} depth="near">
         <SockMonster />
       </Sticker>
       <Sticker className="absolute bottom-[5%] left-[8%] hidden w-14 md:block" outline={false} rotate={-8}>

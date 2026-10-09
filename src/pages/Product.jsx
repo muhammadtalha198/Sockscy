@@ -135,7 +135,7 @@ function ProductView({ product }) {
           </div>
 
           <div className="relative lg:col-span-5">
-            <Sticker className="absolute right-[4%] top-2 z-20 w-16 md:w-20 lg:-top-8" rotate={14} parallax={0.1}>
+            <Sticker className="absolute right-[4%] top-2 z-20 w-16 md:w-20 lg:-top-8" rotate={14} depth="near">
               <Flower fill="#f4d500" center="#e63a3f" />
             </Sticker>
 

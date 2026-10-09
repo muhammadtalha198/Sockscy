@@ -67,7 +67,7 @@ export default function OrderPlaced() {
   return (
     <section aria-labelledby="placed-title" className="tone-green clip-x relative min-h-[90svh] pb-section pt-28 md:pt-36">
       <title>order placed — SOCKSAVVY</title>
-      <Sticker className="absolute right-[3%] top-[64px] z-20 w-20 md:right-[6%] md:top-[96px] md:w-40" rotate={10} parallax={0.12}>
+      <Sticker className="absolute right-[3%] top-[64px] z-20 w-20 md:right-[6%] md:top-[96px] md:w-40" rotate={10} depth="near">
         <SockMonster fill="#f4d500" trim="#ff52a1" />
       </Sticker>
       <Sticker className="absolute bottom-[18%] right-[30%] w-14 md:w-20" outline={false} rotate={-10}>

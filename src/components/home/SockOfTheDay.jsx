@@ -15,6 +15,8 @@ import SizePicker, { firstInStockSize } from '../SizePicker'
 import Sticker from '../Sticker'
 import TornReveal from '../TornReveal'
 import TrustStrip from '../TrustStrip'
+import ParallaxLayer from '../parallax/ParallaxLayer'
+import ParallaxSection from '../parallax/ParallaxSection'
 
 /** Pink section — one huge product with a torn-paper reveal + add to cart */
 export default function SockOfTheDay() {
@@ -29,11 +31,11 @@ export default function SockOfTheDay() {
   const tile = product?.tile === 'pink' ? 'yellow' : product?.tile || 'yellow'
 
   return (
-    <section id="sock-of-the-day" aria-labelledby="sotd-title" className="tone-pink clip-x relative py-section">
-      <Sticker className="absolute left-[46%] top-[4%] z-20 w-20 md:w-28" outline={false} rotate={-20} parallax={0.15}>
+    <ParallaxSection id="sock-of-the-day" aria-labelledby="sotd-title" className="tone-pink clip-x relative py-section">
+      <Sticker className="absolute left-[46%] top-[4%] z-20 w-20 md:w-28" outline={false} rotate={-20} depth="near">
         <Squiggle />
       </Sticker>
-      <Sticker className="absolute right-[4%] top-[34%] z-20 hidden w-24 md:block" outline={false} rotate={30} parallax={0.1} delay={-2}>
+      <Sticker className="absolute right-[4%] top-[34%] z-20 hidden w-24 md:block" outline={false} rotate={30} depth="near" delay={-2}>
         <Squiggle />
       </Sticker>
 
@@ -50,6 +52,8 @@ export default function SockOfTheDay() {
           {loading || !product ? (
             <div className="aspect-square animate-pulse rounded-[2rem] border-2 border-black bg-offwhite/40" />
           ) : (
+            // the screen's hero object: a touch nearer than the page
+            <ParallaxLayer depth={0.1} decorative={false}>
             <TornReveal className="aspect-square overflow-hidden rounded-[2rem] border-2 border-black">
               <div className="h-full w-full" style={{ background: TILE_BG[tile] }}>
                 <ProductImage
@@ -60,13 +64,15 @@ export default function SockOfTheDay() {
                 />
               </div>
             </TornReveal>
+            </ParallaxLayer>
           )}
+          <ParallaxLayer depth="front" className="absolute -right-2 -top-10 z-20 w-28 md:-right-8 md:w-40">
           <Badge
             text="SOCKS OF THE DAY ✦ SOCKS OF THE DAY ✦ "
             bg="var(--color-yellow)"
             ink="#000"
-            className="absolute -right-2 -top-10 z-20 w-28 md:-right-8 md:w-40"
           />
+          </ParallaxLayer>
         </div>
 
         {product && (
@@ -104,6 +110,6 @@ export default function SockOfTheDay() {
           </div>
         )}
       </div>
-    </section>
+    </ParallaxSection>
   )
 }

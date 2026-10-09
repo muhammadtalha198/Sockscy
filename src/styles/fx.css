@@ -810,6 +810,36 @@ html[data-buybar] .tilt-chip { bottom: calc(5.5rem + env(safe-area-inset-bottom,
 html[data-lite] .animate-float,
 html[data-lite] .animate-spin-slow { animation-play-state: paused; }
 
+/* ---------- v2: sock factory — loose eggs float in at the PRINT step -------- */
+.factory[data-live] .f-float {
+  opacity: 0;
+  scale: 0.6;
+  transition: opacity var(--dur-med) ease, scale var(--dur-slow) var(--ease-spring);
+}
+.factory[data-live]:is([data-step='2'], [data-step='3'], [data-step='4']) .f-float { opacity: 1; scale: 1; }
+
+/* ---------- v2: footer reveal ---------------------------------------------
+   The giant word rises from behind this clip line (the © bar is the curtain's edge). */
+.footer-word {
+  overflow: clip;
+  overflow-clip-margin: 0.04em;
+  padding-top: 0.06em;
+}
+.footer-word > span { will-change: translate; transform-origin: 50% 100%; }
+/* desktop screens tall enough for the whole footer: the page lifts off it */
+@media (min-width: 48rem) and (prefers-reduced-motion: no-preference) {
+  html:not([data-calm]):has(.site-footer[data-fits]) #main {
+    position: relative;
+    z-index: 1;
+    background: var(--color-offwhite);
+  }
+  html:not([data-calm]) .site-footer[data-fits] {
+    position: sticky;
+    bottom: 0;
+    z-index: 0;
+  }
+}
+
 /* ---------- REDUCED MOTION: effects off ---------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   .intro { display: none; }

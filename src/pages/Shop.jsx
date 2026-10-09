@@ -48,7 +48,7 @@ export default function Shop() {
       <title>{`${collection ? `${collection.label} socks` : 'shop all socks'} — SOCKSAVVY`}</title>
 
       <section aria-labelledby="shop-title" className="tone-green clip-x relative pb-14 pt-28 md:pt-36">
-        <Sticker className="absolute right-[6%] top-[86px] z-20 w-20 md:right-[12%] md:w-32" rotate={14} parallax={0.12}>
+        <Sticker className="absolute right-[6%] top-[86px] z-20 w-20 md:right-[12%] md:w-32" rotate={14} depth="near">
           <SockMonster fill="#f4d500" trim="#ff52a1" />
         </Sticker>
         <Sticker className="absolute bottom-6 right-[30%] w-12 md:w-16" outline={false} rotate={-10}>

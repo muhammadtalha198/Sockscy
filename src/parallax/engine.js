@@ -262,7 +262,7 @@ function scrollOffset(l, d, anchorH) {
     // pinned scene: d runs from +(h−vh)/2 to −(h−vh)/2 while the stage is stuck
     const span = Math.max(1, anchorH - vh)
     const p = Math.min(1, Math.max(0, 0.5 - d / span))
-    const off = (0.5 - p) * 2 * l.depth * vh * t.travel * strength
+    const off = l.drift ? (0.5 - p) * 2 * l.drift * l.dir * strength : (0.5 - p) * 2 * l.depth * vh * t.travel * strength
     if (l.axis === 'x') tx = off
     else ty = off
   } else if (l.axis === 'x' || l.drift) {

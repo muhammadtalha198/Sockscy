@@ -12,10 +12,10 @@ export default function About() {
       <title>about — SOCKSAVVY</title>
 
       <section aria-labelledby="about-title" className="tone-red clip-x relative pb-section pt-28 md:pt-36">
-        <Sticker className="absolute right-[6%] top-[70px] z-20 w-24 md:right-[16%] md:w-40" rotate={12} parallax={0.14}>
+        <Sticker className="absolute right-[6%] top-[70px] z-20 w-24 md:right-[16%] md:w-40" rotate={12} depth="near">
           <SockMonster />
         </Sticker>
-        <Sticker className="absolute bottom-[3%] right-[4%] z-20 w-24 md:w-40" rotate={-18} parallax={0.1} delay={-2}>
+        <Sticker className="absolute bottom-[3%] right-[4%] z-20 w-24 md:w-40" rotate={-18} depth="near" delay={-2}>
           <SockArt art={{ pattern: 'eggs', base: '#111111', trim: '#f4d500' }} view="single" />
         </Sticker>
         <Sticker className="absolute left-[50%] top-[48%] hidden w-16 md:block" outline={false} rotate={-12}>
@@ -47,7 +47,7 @@ export default function About() {
       <Marquee className="tone-black" items={['THRIFTED', 'WASHED', 'HAND-PICKED', 'ONE OF ONE']} />
 
       <section aria-labelledby="thrift-title" className="tone-yellow clip-x relative py-section">
-        <Sticker className="absolute right-[6%] top-[8%] z-20 w-20 md:w-32" rotate={-10} parallax={0.12}>
+        <Sticker className="absolute right-[6%] top-[8%] z-20 w-20 md:w-32" rotate={-10} depth="near">
           <FriedEgg />
         </Sticker>
         <Sticker className="absolute bottom-[6%] right-[10%] w-12 md:w-16" outline={false} rotate={8}>
@@ -70,7 +70,7 @@ export default function About() {
         <Sticker className="absolute left-[60%] top-[6%] z-20 w-16 md:w-24" outline={false} rotate={-20}>
           <Squiggle />
         </Sticker>
-        <Sticker className="absolute bottom-[8%] right-[8%] z-20 w-24 md:w-36" rotate={10} parallax={0.1}>
+        <Sticker className="absolute bottom-[8%] right-[8%] z-20 w-24 md:w-36" rotate={10} depth="near">
           <Smiley />
         </Sticker>
         <Sticker className="absolute bottom-[30%] left-[6%] z-20 hidden w-16 md:block" rotate={-12}>

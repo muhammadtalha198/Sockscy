@@ -4,6 +4,7 @@ import { useAsync } from '../../hooks/useAsync'
 import { useInView } from '../../hooks/useInView'
 import { useParallax } from '../../hooks/useParallax'
 import { wordDrift } from '../GiantHeadline'
+import ParallaxSection from '../parallax/ParallaxSection'
 import { COLLECTIONS } from '../../lib/constants'
 import { cx } from '../../lib/cx'
 import SockArt from '../art/SockArt'
@@ -50,7 +51,7 @@ export default function Collections() {
   const counts = data?.reduce((acc, p) => ({ ...acc, [p.collection]: (acc[p.collection] || 0) + 1 }), {})
 
   return (
-    <section id="collections" aria-labelledby="collections-title" className="tone-green clip-x relative py-section">
+    <ParallaxSection id="collections" aria-labelledby="collections-title" className="tone-green clip-x relative py-section">
       <Sticker className="absolute right-[8%] top-10 w-14 md:w-20" outline={false} rotate={10}>
         <Sparkle fill="#f4d500" />
       </Sticker>
@@ -67,6 +68,6 @@ export default function Collections() {
           </li>
         ))}
       </ul>
-    </section>
+    </ParallaxSection>
   )
 }

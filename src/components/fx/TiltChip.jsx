@@ -26,6 +26,21 @@ export default function TiltChip() {
     return () => window.removeEventListener('scroll', onScroll)
   }, [done, calm, pathname])
 
+  // asked once: it steps aside after 8 s and never comes back (the tilt sticker in the
+  // bottom-right controls is always there)
+  useEffect(() => {
+    if (!show || done) return
+    const t = setTimeout(() => {
+      setDone(true)
+      try {
+        localStorage.setItem('socksavvy-tilt', 'later')
+      } catch {
+        /* fine */
+      }
+    }, 8000)
+    return () => clearTimeout(t)
+  }, [show, done])
+
   if (done || !show || calm || QUIET.includes(pathname)) return null
   const answer = async (yes) => {
     setDone(true)
@@ -39,7 +54,7 @@ export default function TiltChip() {
     }
   }
   return (
-    <div className="tilt-chip" role="dialog" aria-label="tilt mode">
+    <div className="tilt-chip" role="group" aria-label="tilt mode">
       <p className="text-sm font-black leading-tight">tilt your phone to look around?</p>
       <button type="button" className="btn btn-sm btn-black" onClick={() => answer(true)}>
         yes

@@ -24,7 +24,7 @@ export default function NotFound() {
       <Sticker
         className="absolute right-[4%] top-[46%] z-20 w-40 md:right-[10%] md:top-[24%] md:w-72"
         rotate={-18}
-        parallax={0.12}
+        depth="near"
         duration={6}
       >
         <SockArt art={LOST} view="single" />

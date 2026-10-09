@@ -29,6 +29,7 @@ export default function Sticker({
   rotate = 0,
   parallax,
   depth,
+  pin,
   float = true,
   flyIn = true,
   duration = 7,
@@ -38,7 +39,7 @@ export default function Sticker({
   style,
 }) {
   const plane = parallax ?? (typeof depth === 'string' ? depth : DEPTH_PLANE[depth ?? (outline ? 2 : 1)])
-  const parallaxRef = useParallax({ depth: plane })
+  const parallaxRef = useParallax({ depth: plane, pin })
   const flyRef = useRef(null)
   const [pending, setPending] = useState(() => flyIn && typeof window !== 'undefined' && !prefersReducedMotion())
   const side = useRef(-1)

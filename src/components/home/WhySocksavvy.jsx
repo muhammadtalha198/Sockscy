@@ -3,6 +3,7 @@ import { Flower, FriedEgg, Heart } from '../art/Doodles'
 import PizzaBox from '../art/PizzaBox'
 import GiantHeadline from '../GiantHeadline'
 import Sticker from '../Sticker'
+import ParallaxSection from '../parallax/ParallaxSection'
 
 const REASONS = [
   {
@@ -30,8 +31,8 @@ const REASONS = [
 /** Yellow section — short staggered lowercase blocks */
 export default function WhySocksavvy() {
   return (
-    <section aria-labelledby="why-title" className="tone-yellow clip-x relative py-section">
-      <Sticker className="absolute right-[6%] top-[6%] z-20 w-24 md:w-36" rotate={12} parallax={0.12}>
+    <ParallaxSection aria-labelledby="why-title" className="tone-yellow clip-x relative py-section">
+      <Sticker className="absolute right-[6%] top-[6%] z-20 w-24 md:w-36" rotate={12} depth="near">
         <FriedEgg />
       </Sticker>
       <Sticker className="absolute left-[4%] top-[2%] z-0 w-12 md:w-16" outline={false} rotate={-8}>
@@ -54,13 +55,13 @@ export default function WhySocksavvy() {
             <p className="copy mt-3">{r.text}</p>
           </article>
         ))}
-        <Sticker className="-mt-4 w-28 justify-self-end md:absolute md:right-[8%] md:top-[46%] md:mt-0 md:w-44" rotate={-8} parallax={0.1}>
+        <Sticker className="-mt-4 w-28 justify-self-end md:absolute md:right-[8%] md:top-[46%] md:mt-0 md:w-44" rotate={-8} depth="near">
           <PizzaBox />
         </Sticker>
-        <Sticker className="absolute bottom-[38%] left-[40%] hidden w-16 md:block" rotate={14} parallax={-0.12}>
+        <Sticker className="absolute bottom-[38%] left-[40%] hidden w-16 md:block" rotate={14} depth="far">
           <Heart />
         </Sticker>
       </div>
-    </section>
+    </ParallaxSection>
   )
 }

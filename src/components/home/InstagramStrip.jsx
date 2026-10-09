@@ -1,6 +1,8 @@
 import { SITE, TILE_BG } from '../../lib/constants'
 import SockArt from '../art/SockArt'
 import GiantHeadline from '../GiantHeadline'
+import ParallaxLayer from '../parallax/ParallaxLayer'
+import ParallaxSection from '../parallax/ParallaxSection'
 
 // REAL PHOTOS: swap each tile's <SockArt> for
 //   <img src="/instagram/1.webp" alt="…" loading="lazy" decoding="async" className="h-full w-full object-cover" />
@@ -16,7 +18,7 @@ const TILES = [
 /** Off-white section — 6 square tiles linking to Instagram */
 export default function InstagramStrip() {
   return (
-    <section aria-labelledby="ig-title" className="tone-offwhite clip-x relative py-section">
+    <ParallaxSection aria-labelledby="ig-title" className="tone-offwhite clip-x relative py-section">
       <GiantHeadline id="ig-title" size="huge" lines={[{ text: '@socksavvy.co', from: 'left', className: 'pl-gutter' }]} />
       <div className="mt-6 flex flex-wrap items-center justify-between gap-4 px-gutter lg:pr-28">
         <p className="copy">tag us in your weirdest fit. we repost the best ones every friday.</p>
@@ -26,7 +28,9 @@ export default function InstagramStrip() {
       </div>
       <ul className="mt-10 grid grid-cols-3 gap-2 px-gutter md:grid-cols-6 md:gap-4 lg:pr-24">
         {TILES.map((t, i) => (
-          <li key={i}>
+          // masonry: columns sit on two planes (by column, so stacked tiles on the 3-column
+          // phone grid never collide), the grid breathes and realigns at rest
+          <ParallaxLayer as="li" key={i} depth={i % 3 === 1 ? 0.12 : -0.06} decorative={false}>
             <a
               href={SITE.instagram}
               target="_blank"
@@ -39,9 +43,9 @@ export default function InstagramStrip() {
                 <SockArt art={t.art} view={t.view} className="h-[86%] w-[86%]" />
               </div>
             </a>
-          </li>
+          </ParallaxLayer>
         ))}
       </ul>
-    </section>
+    </ParallaxSection>
   )
 }

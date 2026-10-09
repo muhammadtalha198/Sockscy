@@ -5,6 +5,9 @@ import { loadScrollKit } from '../../motion/scroll'
 import { useParallax } from '../../hooks/useParallax'
 import { wordDrift } from '../GiantHeadline'
 import { SOCK_PATH } from '../art/SockArt'
+import { FriedEgg, Sparkle, Squiggle, Star } from '../art/Doodles'
+import ParallaxSection from '../parallax/ParallaxSection'
+import Sticker from '../Sticker'
 
 /*
   Pinned "sock factory": a CSS-sticky stage inside a tall section; GSAP ScrollTrigger
@@ -27,7 +30,8 @@ const EGGS = [
 export default function SockFactory() {
   const rootRef = useRef(null)
   const wordRef = useRef(null)
-  useParallax({ ref: wordRef, depth: 'far', axis: 'x', drift: wordDrift(), dir: -1, skew: true, pointer: false, own: true })
+  // the step word is the back plane: it slides across as you move through the pinned scene
+  useParallax({ ref: wordRef, depth: 'back', axis: 'x', pin: true, drift: wordDrift() * 1.4, dir: -1, skew: true, pointer: false })
 
   useEffect(() => {
     const root = rootRef.current
@@ -90,8 +94,29 @@ export default function SockFactory() {
   }, [])
 
   return (
-    <section ref={rootRef} id="factory" className="factory tone-black relative clip-x" data-step={STEPS.length - 1} aria-labelledby="factory-title">
+    <ParallaxSection innerRef={rootRef} id="factory" className="factory tone-black relative clip-x" data-step={STEPS.length - 1} aria-labelledby="factory-title">
       <div className="factory-pin sticky top-0 flex h-[100svh] flex-col overflow-hidden px-gutter pb-6 pt-16 md:pb-10 md:pt-20 lg:pr-24">
+        {/* depth inside the pinned stage (driven by progress through the scene):
+            back — doodles sinking slowly · mid — the sock being made · near — loose fried
+            eggs that float in at the PRINT step and rise past faster */}
+        <Sticker pin depth="back" outline={false} flyIn={false} className="absolute left-[8%] top-[22%] z-0 w-10 md:w-16" rotate={-12}>
+          <Star fill="#ff52a1" />
+        </Sticker>
+        <Sticker pin depth="back" outline={false} flyIn={false} className="absolute right-[10%] top-[64%] z-0 hidden w-24 md:block" rotate={14} delay={-3}>
+          <Squiggle fill="#f4d500" />
+        </Sticker>
+        <Sticker pin depth="far" outline={false} flyIn={false} className="absolute right-[24%] top-[14%] z-0 w-8 md:w-12" delay={-1}>
+          <Sparkle fill="#f4d500" />
+        </Sticker>
+        <Sticker pin depth="near" flyIn={false} className="f-float absolute left-[14%] top-[58%] z-30 w-16 md:left-[30%] md:w-24" rotate={-14}>
+          <FriedEgg />
+        </Sticker>
+        <Sticker pin depth="front" flyIn={false} className="f-float absolute right-[8%] top-[30%] z-30 w-14 md:right-[30%] md:w-20" rotate={18} delay={-2}>
+          <FriedEgg />
+        </Sticker>
+        <Sticker pin depth="near" flyIn={false} className="f-float absolute right-[18%] bottom-[16%] z-30 hidden w-14 md:block" rotate={-30} delay={-4}>
+          <FriedEgg />
+        </Sticker>
         <h2 id="factory-title" className="tag relative z-20">
           the sock factory ↓<span className="sr-only"> — how a weird sock comes together, in five steps</span>
         </h2>
@@ -183,6 +208,6 @@ export default function SockFactory() {
           </div>
         </div>
       </div>
-    </section>
+    </ParallaxSection>
   )
 }

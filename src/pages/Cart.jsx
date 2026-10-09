@@ -23,7 +23,7 @@ export default function Cart() {
     <>
       <title>{`cart (${count}) — SOCKSAVVY`}</title>
       <section aria-labelledby="cart-title" className="tone-yellow clip-x relative min-h-[80svh] pb-section pt-28 md:pt-36">
-        <Sticker className="absolute right-[8%] top-[90px] z-20 w-16 md:w-24" rotate={12} parallax={0.1}>
+        <Sticker className="absolute right-[8%] top-[90px] z-20 w-16 md:w-24" rotate={12} depth="near">
           <Heart />
         </Sticker>
         <Sticker className="absolute left-[44%] top-[120px] hidden w-20 md:block" outline={false} rotate={-14}>
