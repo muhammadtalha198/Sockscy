@@ -14,6 +14,7 @@ import ProductImage from '../ProductImage'
 import SizePicker, { firstInStockSize } from '../SizePicker'
 import Sticker from '../Sticker'
 import TornReveal from '../TornReveal'
+import TrustStrip from '../TrustStrip'
 
 /** Pink section — one huge product with a torn-paper reveal + add to cart */
 export default function SockOfTheDay() {
@@ -99,6 +100,7 @@ export default function SockOfTheDay() {
                 more details
               </Link>
             </div>
+            <TrustStrip className="mt-6" />
           </div>
         )}
       </div>

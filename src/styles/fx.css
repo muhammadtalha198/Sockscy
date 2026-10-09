@@ -539,7 +539,7 @@ html.lenis body { height: auto; }
 /* ---------- F. FIND THE PAIR ---------------------------------------------- */
 .play-button {
   filter: drop-shadow(3px 5px 6px rgb(0 0 0 / 0.3));
-  transition: transform var(--dur-fast) var(--ease-spring);
+  transition: transform var(--dur-fast) var(--ease-spring), bottom var(--dur-med) var(--ease-spring);
 }
 .play-button:hover { transform: scale(1.08) rotate(-6deg); }
 .play-button[data-tucked] { transform: translate3d(-130%, 0, 0) rotate(-90deg); }
@@ -640,6 +640,60 @@ html.lenis body { height: auto; }
   to { transform: rotate(-4deg) scale(1); }
 }
 
+/* ---------- J. CONVERSION: walking sock, sticky buy bar ------------------ */
+.ship-track { --ship-sock-w: 2.4rem; }
+.ship-fill { transition: width 0.9s cubic-bezier(0.45, 0, 0.25, 1); }
+.ship-sock {
+  position: absolute;
+  bottom: 0.72rem; /* toes rest on the bar's top edge */
+  width: var(--ship-sock-w);
+  pointer-events: none;
+  transition: left 0.9s cubic-bezier(0.45, 0, 0.25, 1);
+}
+.ship-sock-body {
+  display: block;
+  transform-origin: 50% 90%;
+  filter: drop-shadow(0 0 0 #fff) drop-shadow(1.5px 0 0 #fff) drop-shadow(-1.5px 0 0 #fff)
+    drop-shadow(0 -1.5px 0 #fff) drop-shadow(2px 3px 2px rgb(0 0 0 / 0.25));
+  transition: scale 0.2s var(--ease-overshoot);
+}
+.ship-sock[data-facing='back'] .ship-sock-body { scale: -1 1; }
+.ship-sock[data-walk] .ship-sock-body { animation: sock-walk 0.24s ease-in-out infinite alternate; }
+@keyframes sock-walk {
+  from { rotate: -11deg; translate: 0 0; }
+  to { rotate: 9deg; translate: 0 -5px; }
+}
+.ship-sock[data-done] .ship-sock-body { animation: sock-joy 1.1s var(--ease-overshoot) 2; }
+@keyframes sock-joy {
+  0%, 70%, 100% { translate: 0 0; rotate: 0deg; }
+  25% { translate: 0 -14px; rotate: -14deg; }
+  45% { translate: 0 0; rotate: 8deg; }
+}
+
+.buy-bar {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 1rem calc(0.65rem + env(safe-area-inset-bottom, 0px));
+  border-top: 2px solid #000;
+  background: var(--color-offwhite);
+  color: #000;
+  box-shadow: 0 -6px 18px rgb(0 0 0 / 0.12);
+  transform: translate3d(0, 115%, 0);
+  transition: transform var(--dur-med) var(--ease-spring);
+}
+.buy-bar[data-show] { transform: none; }
+@media (min-width: 48rem) {
+  .buy-bar { display: none; }
+}
+@media (max-width: 47.99rem) {
+  /* the game sticker hops above the bar; the footer leaves room for it */
+  html[data-buybar] .play-button { bottom: calc(6.1rem + env(safe-area-inset-bottom, 0px)); }
+  html[data-buypage] footer { padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px)); }
+}
 /* ---------- REDUCED MOTION: effects off ---------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   .intro { display: none; }
@@ -660,4 +714,9 @@ html.lenis body { height: auto; }
   .game-result { animation: none; }
   .game-timer { animation-duration: 20s !important; animation-iteration-count: 1 !important; }
   .curtain { display: none; }
+  .ship-sock,
+  .ship-fill,
+  .buy-bar,
+  .play-button { transition: none; }
+  .ship-sock-body { animation: none !important; }
 }

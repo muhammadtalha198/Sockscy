@@ -219,3 +219,10 @@ Order: A, B, C, E, D, F, H, J, G, I, K. 60fps on a mid-range Android. Lazy-load 
   preloads the page chunk (`loaderFor`), swaps `display` while covered, then wipes off.
   Search/hash/state-only changes and reduced motion swap instantly. `useLocation()` inside
   the tree returns the *displayed* location.
+- **J Conversion** — `TrustStrip.jsx` (COD / `SITE.returns` placeholder copy / WhatsApp link)
+  on Product, Cart summary, Sock of the Day. `FreeShippingBar` = walking sock (last cart item's
+  art) that walks to the progress, turns round on removal, jumps when free. Product page
+  `StickyBuyBar` (phones, shows while the main add button is off screen; sets
+  `html[data-buypage|data-buybar]` so the footer pads and the game sticker hops up).
+  OrderPlaced: sock confetti `rain()` + 'win' sound, Instagram share (Web Share → else copy
+  caption + open IG). Urgency = real stock only (cards, stock note, buy bar tag).

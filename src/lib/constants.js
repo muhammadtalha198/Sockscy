@@ -8,6 +8,8 @@ export const SITE = {
   email: 'hello@socksavvy.co',
   // Replace with the real number (digits only, 92 = Pakistan) via VITE_WHATSAPP_NUMBER in .env
   whatsapp: import.meta.env.VITE_WHATSAPP_NUMBER || '923001234567',
+  // PLACEHOLDER: shown in the trust strip — replace with the real returns policy
+  returns: 'easy size swaps',
 }
 
 export const FREE_SHIPPING_THRESHOLD = 3000

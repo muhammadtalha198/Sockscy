@@ -7,6 +7,7 @@ import FreeShippingBar from '../components/cart/FreeShippingBar'
 import GiftPackToggle from '../components/cart/GiftPackToggle'
 import GiantHeadline from '../components/GiantHeadline'
 import Sticker from '../components/Sticker'
+import TrustStrip from '../components/TrustStrip'
 import { useCart } from '../store/cart'
 import { getTotals } from '../lib/pricing'
 
@@ -74,6 +75,7 @@ export default function Cart() {
                   checkout
                 </Link>
                 <p className="text-center text-sm font-bold lowercase">cash on delivery or card · prices in pkr</p>
+                <TrustStrip className="justify-center" bg="bg-yellow" />
               </div>
             </aside>
           </div>

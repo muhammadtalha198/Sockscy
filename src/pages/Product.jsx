@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router'
 import { getProduct, getRelated } from '../api/products'
 import { Flower, Sparkle } from '../components/art/Doodles'
@@ -11,6 +11,8 @@ import SizePicker, { firstInStockSize } from '../components/SizePicker'
 import Sticker from '../components/Sticker'
 import { useAsync } from '../hooks/useAsync'
 import { useAddToCart } from '../hooks/useAddToCart'
+import SockArt from '../components/art/SockArt'
+import TrustStrip from '../components/TrustStrip'
 import { COLLECTIONS, FREE_SHIPPING_THRESHOLD, GIFT_PACK_PRICE } from '../lib/constants'
 import { cx } from '../lib/cx'
 import { formatPKR, stockNote, totalStock } from '../lib/format'
@@ -79,9 +81,12 @@ function ProductView({ product }) {
     if ((c.stock?.[size] ?? 0) === 0) setSize(firstInStockSize({ ...product, stock: c.stock }) ?? size)
   }
 
+  function add(source) {
+    if (size && available > 0) addToCart(product, size, amount, { colorway, source })
+  }
   function onSubmit(e) {
     e.preventDefault()
-    if (size && available > 0) addToCart(product, size, amount, { colorway, source: buttonRef.current })
+    add(buttonRef.current)
   }
 
   const buttonLabel = soldOut
@@ -211,8 +216,8 @@ function ProductView({ product }) {
               )}
             </div>
 
+            <TrustStrip className="mt-6" />
             <ul className="mt-8 space-y-1 border-t-2 border-black pt-4 text-sm font-bold lowercase">
-              <li>✦ cash on delivery anywhere in pakistan</li>
               <li>✦ free shipping over {formatPKR(FREE_SHIPPING_THRESHOLD)}</li>
               <li>✦ ships in 1–2 days, arrives in 3–5</li>
             </ul>
@@ -226,6 +231,18 @@ function ProductView({ product }) {
           </div>
         </div>
       </section>
+
+      <StickyBuyBar
+        watchRef={buttonRef}
+        art={art}
+        name={product.name}
+        price={product.price}
+        detail={[size && `size ${size}`, colorway?.label].filter(Boolean).join(' · ')}
+        urgency={available === 1 ? 'last pair' : available === 2 ? 'only 2 left' : null}
+        label={available > 0 ? `add · ${size}` : buttonLabel}
+        disabled={!size || available === 0}
+        onAdd={add}
+      />
 
       <section aria-labelledby="related-title" className="tone-red clip-x relative py-section">
         <Sticker className="absolute right-[8%] top-10 w-14 md:w-20" outline={false} rotate={-8}>
@@ -243,5 +260,65 @@ function ProductView({ product }) {
         </div>
       </section>
     </>
+  )
+}
+
+/**
+ * Phones: a sticky add-to-cart bar that slides up whenever the main add button is off
+ * screen. While the product page is open the footer and the game sticker make room for it.
+ */
+function StickyBuyBar({ watchRef, art, name, price, detail, urgency, label, disabled, onAdd }) {
+  const [show, setShow] = useState(false)
+  const btnRef = useRef(null)
+
+  useEffect(() => {
+    const el = watchRef.current
+    const mq = window.matchMedia('(max-width: 47.99rem)')
+    if (!el || !mq.matches) return
+    const root = document.documentElement
+    root.dataset.buypage = ''
+    const io = new IntersectionObserver(([entry]) => setShow(!entry.isIntersecting))
+    io.observe(el)
+    return () => {
+      io.disconnect()
+      delete root.dataset.buypage
+      delete root.dataset.buybar
+    }
+  }, [watchRef])
+
+  useEffect(() => {
+    if (show) document.documentElement.dataset.buybar = ''
+    else delete document.documentElement.dataset.buybar
+  }, [show])
+
+  return (
+    <div className="buy-bar" data-show={show || undefined} inert={!show} role="region" aria-label="quick add to cart">
+      <span className="sticker block w-11 shrink-0 -rotate-6" aria-hidden="true">
+        <SockArt art={art} view="upright" />
+      </span>
+      <div className="min-w-0 flex-1 leading-tight">
+        <p className="flex items-center gap-2 font-black uppercase">
+          <span className="truncate">{name}</span>
+          {urgency && (
+            <span className="shrink-0 -rotate-3 rounded-full border-2 border-black bg-yellow px-2 py-0.5 text-[0.7rem] lowercase leading-none">
+              {urgency}
+            </span>
+          )}
+        </p>
+        <p className="truncate text-sm font-bold">
+          {formatPKR(price)}
+          {detail ? ` · ${detail}` : ''}
+        </p>
+      </div>
+      <button
+        ref={btnRef}
+        type="button"
+        className="btn btn-pink shrink-0 px-5"
+        disabled={disabled}
+        onClick={() => onAdd(btnRef.current)}
+      >
+        {label}
+      </button>
+    </div>
   )
 }

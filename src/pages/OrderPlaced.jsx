@@ -1,13 +1,46 @@
+import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router'
 import { Flower, SockMonster, Sparkle } from '../components/art/Doodles'
 import GiantHeadline from '../components/GiantHeadline'
 import Sticker from '../components/Sticker'
 import { SITE } from '../lib/constants'
 import { formatPKR } from '../lib/format'
+import { play } from '../fx/sound'
 
 /** Confirmation screen. Checkout navigates here with the order in router state. */
 export default function OrderPlaced() {
   const order = useLocation().state?.order
+  const [shareNote, setShareNote] = useState('')
+
+  // it's a party: sock confetti rains once the page curtain has wiped off
+  useEffect(() => {
+    if (!order) return
+    const t = setTimeout(() => {
+      play('win')
+      import('../fx/confetti').then(({ rain }) => rain({ duration: 3400, perFrame: 1.6, shapes: ['sock', 'sock', 'flower', 'star'] }))
+    }, 650)
+    return () => clearTimeout(t)
+  }, [order])
+
+  async function share() {
+    const text = `just got my weird socks from ${SITE.instagramHandle} 🧦 #socksavvy`
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'SOCKSAVVY', text, url: `https://${SITE.domain}` })
+        return
+      } catch (e) {
+        if (e?.name === 'AbortError') return
+      }
+    }
+    // desktop: copy a caption and open our instagram
+    try {
+      await navigator.clipboard.writeText(text)
+      setShareNote(`caption copied — paste it in your story and tag ${SITE.instagramHandle}`)
+    } catch {
+      setShareNote(`tag ${SITE.instagramHandle} in your story so we can repost you`)
+    }
+    window.open(SITE.instagram, '_blank', 'noopener,noreferrer')
+  }
 
   if (!order) {
     return (
@@ -65,6 +98,18 @@ export default function OrderPlaced() {
         <Link to="/shop" className="self-center text-label font-extrabold lowercase underline decoration-[3px] underline-offset-[6px]">
           keep shopping
         </Link>
+      </div>
+      <div className="relative mt-12 max-w-xl px-gutter">
+        <div className="-rotate-1 rounded-[1.75rem] border-2 border-black bg-offwhite p-5 text-black shadow-hard-lg md:p-6">
+          <p className="text-[1.6rem] font-black leading-none">show off your pair</p>
+          <p className="copy mt-2">post your socks and tag {SITE.instagramHandle} — we repost our favourites.</p>
+          <button type="button" onClick={share} className="btn btn-pink mt-4">
+            share on instagram {SITE.instagramHandle}
+          </button>
+          <p className="mt-2 text-sm font-bold" role="status" aria-live="polite">
+            {shareNote}
+          </p>
+        </div>
       </div>
     </section>
   )
