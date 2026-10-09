@@ -234,8 +234,8 @@ Targets: 60fps drag, Lighthouse mobile 80+, no CLS, everything off with reduced 
    to version 2 with `migrate` re-deriving `sizeStock/lineStock` from products.json, clamp qty.
 5. `Checkout.jsx` calls `clear()` before navigate → "NOTHING TO PAY" flashes under the
    curtain. Clear the cart in `OrderPlaced` on mount (when `state.order` exists) instead.
-**Still to do:** re-run review lenses a11y / perf / completeness (script:
-`.claude` workflow `final-review-version1`, read-only, Playwright at
+**Still to do:** re-run review lenses a11y / perf / completeness against the A–K brief
+(§12/§13; read-only reviewers, Playwright at
 `/opt/node22/lib/node_modules/playwright`, preview on :4173 with sessionStorage
 `socksavvy-intro=1`); final Lighthouse on home/shop/product/cart/checkout/404; final report.
 **Owner decision pending:** yellow on red = 2.84:1 (< 3:1 large text). Suggested fix: red
