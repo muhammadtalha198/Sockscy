@@ -10,6 +10,32 @@ let dpr = 1
 let particles = []
 let raf = 0
 let sockSprites = []
+let lastScroll = 0
+
+// v2: the shower falls at three depths — far pieces are small, slow and faint, near ones
+// big and fast (drawn last, in front). `par` is how much a piece moves with page scroll
+// (1 = with the page, <1 behind it, >1 in front of it): scrolling mid-shower shows the depth.
+const BANDS = [
+  { z: 0, k: 0.55, speed: 0.6, alpha: 0.75, par: 0.35, weight: 0.4 },
+  { z: 1, k: 1, speed: 1, alpha: 1, par: 1, weight: 0.42 },
+  { z: 2, k: 1.7, speed: 1.5, alpha: 1, par: 1.6, weight: 0.18 },
+]
+const FLAT = { z: 1, k: 1, speed: 1, alpha: 1, par: 0 } // bursts: one plane, fixed to the screen
+
+function pickBand() {
+  let r = Math.random()
+  for (const b of BANDS) {
+    if ((r -= b.weight) <= 0) return b
+  }
+  return BANDS[1]
+}
+
+// keep the list sorted far → near so near pieces paint on top
+function add(p) {
+  let i = particles.length
+  while (i > 0 && particles[i - 1].z > p.z) i--
+  particles.splice(i, 0, p)
+}
 
 function ensureCanvas() {
   if (canvas) return
@@ -79,16 +105,20 @@ function frame() {
   ctx.setTransform(1, 0, 0, 1, 0, 0)
   ctx.clearRect(0, 0, canvas.width, canvas.height)
   const h = window.innerHeight + 80
-  particles = particles.filter((p) => p.y < h && p.life > 0)
+  const sy = window.scrollY
+  const dy = sy - lastScroll
+  lastScroll = sy
+  particles = particles.filter((p) => p.y < h && p.y > -400 && p.life > 0)
   for (const p of particles) {
     p.vx *= p.drag
     p.vy = p.vy * p.drag + p.gravity
     p.x += p.vx
-    p.y += p.vy
+    p.y += p.vy - dy * p.par
     p.rot += p.vr
     p.life -= 1
-    const fade = Math.min(1, p.life / 25)
-    ctx.setTransform(dpr, 0, 0, dpr, p.x * dpr, p.y * dpr)
+    const fade = Math.min(1, p.life / 25) * p.alpha
+    const k = dpr * p.k
+    ctx.setTransform(k, 0, 0, k, p.x * dpr, p.y * dpr)
     ctx.rotate(p.rot)
     ctx.globalAlpha = fade
     if (p.shape === 'sock' && p.sprite) {
@@ -103,7 +133,10 @@ function frame() {
 }
 
 function start() {
-  if (!raf) raf = requestAnimationFrame(frame)
+  if (!raf) {
+    lastScroll = window.scrollY
+    raf = requestAnimationFrame(frame)
+  }
 }
 
 const pick = (arr) => arr[Math.floor(Math.random() * arr.length)]
@@ -116,7 +149,8 @@ export function burst({ x, y, count = 26, shapes = ['flower', 'star'], power = 9
     const a = direction + (Math.random() - 0.5) * spread
     const v = power * (0.55 + Math.random() * 0.75)
     const shape = pick(shapes)
-    particles.push({
+    add({
+      ...FLAT,
       x, y,
       vx: Math.cos(a) * v,
       vy: Math.sin(a) * v,
@@ -140,25 +174,32 @@ export async function rain({ duration = 3200, perFrame = 1.4, shapes = ['sock', 
   if (shapes.includes('sock')) await loadSocks()
   ensureCanvas()
   const end = performance.now() + duration
+  // calm mode: half the pieces
+  const rate = perFrame * (window.innerWidth < 640 ? 0.6 : 1) * (document.documentElement.hasAttribute('data-calm') ? 0.5 : 1)
   let carry = 0
   const spawn = () => {
     if (!ctx) ensureCanvas()
-    carry += perFrame * (window.innerWidth < 640 ? 0.6 : 1)
+    carry += rate
     while (carry >= 1) {
       carry -= 1
       const shape = pick(shapes)
-      particles.push({
+      const band = pickBand()
+      add({
+        z: band.z,
+        k: band.k * (0.9 + Math.random() * 0.2),
+        alpha: band.alpha,
+        par: band.par,
         x: Math.random() * window.innerWidth,
-        y: -40,
-        vx: (Math.random() - 0.5) * 2,
-        vy: 2 + Math.random() * 3,
+        y: -40 * band.k,
+        vx: (Math.random() - 0.5) * 2 * band.speed,
+        vy: (2 + Math.random() * 3) * band.speed,
         rot: Math.random() * Math.PI * 2,
-        vr: (Math.random() - 0.5) * 0.12,
+        vr: (Math.random() - 0.5) * 0.12 * band.speed,
         size: 16 + Math.random() * 14,
         color: pick(COLOURS),
         shape,
         sprite: shape === 'sock' ? pick(sockSprites) : null,
-        gravity: 0.12,
+        gravity: 0.12 * band.speed,
         drag: 0.99,
         life: 600,
       })

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useLocation } from 'react-router'
 import { Flower, SockMonster, Sparkle } from '../components/art/Doodles'
 import GiantHeadline from '../components/GiantHeadline'
+import ParallaxSection from '../components/parallax/ParallaxSection'
 import Sticker from '../components/Sticker'
 import { SITE } from '../lib/constants'
 import { formatPKR } from '../lib/format'
@@ -65,12 +66,14 @@ export default function OrderPlaced() {
 
   const wa = `https://wa.me/${SITE.whatsapp}?text=${encodeURIComponent(`hi socksavvy! i just placed order ${order.orderNumber}`)}`
   return (
-    <section aria-labelledby="placed-title" className="tone-green clip-x relative min-h-[90svh] pb-section pt-28 md:pt-36">
+    // v2: the confetti socks fall at three depths (src/fx/confetti.js); the stickers sit on
+    // their planes and separate as the page scrolls — the order details never move
+    <ParallaxSection rest="top" aria-labelledby="placed-title" className="tone-green clip-x relative min-h-[90svh] pb-section pt-28 md:pt-36">
       <title>order placed — SOCKSAVVY</title>
       <Sticker className="absolute right-[3%] top-[64px] z-20 w-20 md:right-[6%] md:top-[96px] md:w-40" rotate={10} depth="near">
         <SockMonster fill="#f4d500" trim="#ff52a1" />
       </Sticker>
-      <Sticker className="absolute bottom-[18%] right-[30%] w-14 md:w-20" outline={false} rotate={-10}>
+      <Sticker className="absolute bottom-[18%] right-[30%] w-14 md:w-20" outline={false} rotate={-10} depth="back">
         <Sparkle fill="#f4d500" />
       </Sticker>
       <Sticker className="absolute left-[60%] top-[40%] hidden w-16 md:block" outline={false} rotate={18}>
@@ -117,6 +120,6 @@ export default function OrderPlaced() {
           </p>
         </div>
       </div>
-    </section>
+    </ParallaxSection>
   )
 }

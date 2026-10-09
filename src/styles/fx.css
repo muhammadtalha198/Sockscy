@@ -881,6 +881,73 @@ html[data-lite] .animate-spin-slow { animation-play-state: paused; }
 .soft-sheet-dark { background: color-mix(in srgb, var(--tone-bg), #000 5%); }
 .soft-sheet-light { background: color-mix(in srgb, var(--tone-bg), #fff 35%); }
 
+/* ---------- v2: 404 — the lost sock drifts through the planes ----------------
+   Two copies on one path (A: small, behind the headline → B: big, in front). Each is
+   shown for its half and they swap at the middle, where the sock overlaps nothing.
+   transform + opacity only; without motion the front copy rests at B. */
+.lost-ghost {
+  font-size: clamp(9rem, 54vw, 36rem);
+  line-height: 0.8;
+  letter-spacing: -0.06em;
+  color: color-mix(in srgb, var(--tone-bg), #000 7%);
+  user-select: none;
+}
+.lost-drift {
+  left: 52vw;
+  top: 9.5rem;
+  width: 38vw;
+  --lost-dx: 2vw;
+  --lost-dy: 14rem;
+  --lost-t: 9s;
+}
+@media (min-width: 48rem) {
+  .lost-drift {
+    left: 47vw;
+    top: 15rem;
+    width: min(19vw, 300px);
+    --lost-dx: 24vw;
+    --lost-dy: 14rem;
+  }
+}
+.lost-drift-back { z-index: 5; } /* the headline is z-10 */
+.lost-drift-front { z-index: 20; }
+.lost-x { translate: var(--lost-dx) 0; }
+.lost-y { translate: 0 var(--lost-dy); rotate: -14deg; }
+.lost-drift-back .lost-x { opacity: 0; }
+@keyframes lost-x {
+  from { translate: 0 0; }
+  to { translate: var(--lost-dx) 0; }
+}
+@keyframes lost-y {
+  from { translate: 0 0; scale: 0.55; rotate: -32deg; }
+  to { translate: 0 var(--lost-dy); scale: 1; rotate: -14deg; }
+}
+@keyframes lost-front {
+  0%, 50% { opacity: 0; }
+  50.01%, 100% { opacity: 1; }
+}
+@keyframes lost-back {
+  0%, 50% { opacity: 1; }
+  50.01%, 100% { opacity: 0; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* x and y ease differently (sine vs cubic): a curved path, both halfway at mid-time.
+     Starts at B (−1 period), so the first thing you see is the sock, big and clear. */
+  .lost-y { animation: lost-y var(--lost-t) cubic-bezier(0.65, 0, 0.35, 1) calc(var(--lost-t) * -1) infinite alternate both; }
+  .lost-drift-front .lost-x {
+    animation:
+      lost-x var(--lost-t) cubic-bezier(0.37, 0, 0.63, 1) calc(var(--lost-t) * -1) infinite alternate both,
+      lost-front var(--lost-t) linear calc(var(--lost-t) * -1) infinite alternate both;
+  }
+  .lost-drift-back .lost-x {
+    animation:
+      lost-x var(--lost-t) cubic-bezier(0.37, 0, 0.63, 1) calc(var(--lost-t) * -1) infinite alternate both,
+      lost-back var(--lost-t) linear calc(var(--lost-t) * -1) infinite alternate both;
+  }
+}
+html[data-calm] .lost-drift *,
+html[data-lite] .lost-drift * { animation-play-state: paused; }
+
 /* ---------- v2: story blocks enter at their own depth --------------------- */
 .story-block {
   transition: translate var(--dur-slow) var(--ease-spring), scale var(--dur-slow) var(--ease-spring), opacity 0.4s ease;
