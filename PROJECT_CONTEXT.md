@@ -237,3 +237,6 @@ Order: A, B, C, E, D, F, H, J, G, I, K. 60fps on a mid-range Android. Lazy-load 
   ~40 frames over 26 ms → `html[data-lite]` (canvas DPR 1, decorative float/spin loops paused).
   Never put `filter` on a parent of an infinite animation (re-rasterises every frame).
   `public/robots.txt`. Lighthouse mobile (vite preview): home 88–89, product 87, shop 88.
+- **K Polish** — focus moves to `<main>` after client-side navigation (ScrollManager);
+  hash landings re-pin for ~1 s; floating stickers tuck when a `.btn-lg`/`[data-avoid-float]`
+  sits under them on phones; skeletons match card height. Known gap: yellow on red is 2.84:1.

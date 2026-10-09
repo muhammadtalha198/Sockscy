@@ -50,6 +50,35 @@ Every product image is a flat-colour SVG sock for now. In development, each one 
 Images lazy-load, apart from the first one on each product. For hero and sticker cutouts, use transparent PNGs:
 `npm run images -- photos/cutouts public/cutouts`. Swap them in where `Hero.jsx` says so.
 
+## Version 1: the playful layer
+
+All of it switches off with the OS "reduce motion" setting. Heavy libraries load lazily (matter-js, gsap + ScrollTrigger, lenis, howler, the game).
+
+| Feature | Where |
+| --- | --- |
+| **Intro**: a knitted-sock loading bar, then letters drop to spell SOCKSAVVY. Plays once per session; tap or key to skip. | `components/fx/Intro.jsx` |
+| **Physics hero**: grab, throw and stack socks; the cursor pushes them; tilt and shake on phones; tap a sock for a quick view; letters shake when hit. Drops to a lighter mode on slow phones. | `physics/heroWorld.jsx`, `components/Hero.jsx`, `components/QuickView.jsx` |
+| **Custom cursor** (desktop): a flower that squishes with speed, a view/add pill, a trail, and magnetic buttons | `components/fx/Cursor.jsx` |
+| **Cards + product page**: tilt, peel sticker, bouncing price, torn-paper reveal. Drag-to-spin sock, colour swatches with a splash, fly-to-cart arc, confetti and a toast. | `ProductCard.jsx`, `product/SockSpinner.jsx`, `fx/flyToCart.jsx`, `fx/confetti.js` |
+| **Scroll story**: Lenis smooth scroll, velocity-skewed giant words, edge fly-in stickers with 3 parallax depths, reactive marquees, a pinned "sock factory" scene | `motion/*`, `Sticker.jsx`, `Marquee.jsx`, `home/SockFactory.jsx` |
+| **Find the Pair**: find the identical pair in 20 s to win **PAIRUP10** (10% off socks), applied automatically. One win per visitor per day. | `PlayButton.jsx`, `game/FindThePair.jsx`, `lib/discount.js` |
+| **Page transitions**: a torn-paper curtain in the next page's colour | `components/fx/Curtain.jsx`, `App.jsx` |
+| **Conversion**: sticky add-to-cart bar on phones, walking sock on the free-shipping bar, real-stock urgency labels, trust strip, confetti + Instagram share on the order page | `pages/Product.jsx`, `cart/FreeShippingBar.jsx`, `TrustStrip.jsx`, `pages/OrderPlaced.jsx` |
+| **Sound + easter eggs**: sound toggle (off by default); Konami code (↑↑↓↓←→←→BA) rains socks; tap the logo 5× to remix every sock pattern; a hidden sock on the 404 page | `fx/SoundToggle.jsx`, `fx/EasterEggs.jsx`, `fx/sound.js`, `pages/NotFound.jsx` |
+
+**Colourways have their own stock.** In `products.json`, `colorways[].stock` is per size, and the product's `stock` must equal the sum of its colourways. The cart caps every line by colour and by size.
+
+### Real files to add
+
+| File | Size / format | Used for |
+| --- | --- | --- |
+| `public/cutouts/<product-id>.webp`, then set `"cutout": "/cutouts/<id>.webp"` on the product | Transparent WebP, sock only, about 600–800 px tall, under 80 KB | Physics hero socks (otherwise the SVG placeholder is used) |
+| Product photos, via `npm run images` (see above) | WebP at 1200 px and 600 px wide, 4:5 | Cards, carousel, quick view |
+| Optional 360° spin: `public/spin/<id>/01.webp … 24.webp`, then set `"spin": ["/spin/<id>/01.webp", …]` | 24–36 frames, 800×1000 WebP, under 40 KB each | Product page "drag to spin" (otherwise a layered SVG sock is used) |
+| `public/sounds/{pop,drop,add,win}.webm` + `.mp3` | Under 30 KB each, mono, under 1 s (win: under 2 s) | Sound effects. The current ones are synthesized by `node scripts/make-sounds.mjs`. |
+
+Placeholder copy to replace: `SITE.returns` ("easy size swaps") in `src/lib/constants.js` (shown in the trust strip), and the About story.
+
 ## Plugging in the Go backend
 
 All network code lives in `src/api/`. Set `VITE_API_URL=https://api.socksavvy.co` and the site calls these endpoints:
@@ -64,7 +93,7 @@ All network code lives in `src/api/`. Set `VITE_API_URL=https://api.socksavvy.co
 
 The exact request and response shapes are commented at the top of each `api/*.js` file.
 
-Checkout sends only `{id, size, qty}` for each item. The server must re-price the order.
+Checkout sends only `{id, size, qty, colorway?}` for each item, plus `discountCode?` (for example `PAIRUP10`). The server must re-price the order, check stock per colourway + size, and validate the discount (one game win per visitor per day).
 
 For card payments, return a `paymentUrl` from your gateway (PayFast, Safepay, Stripe…) and the site redirects the buyer there. Card numbers never touch this app.
 
@@ -82,6 +111,6 @@ src/
 
 ## Notes
 
-- **Motion:** stickers float and move with scroll (parallax). Headlines slide in from the side. Turning on "reduce motion" in the OS switches all of this off.
-- **Text contrast:** body text passes 4.5:1 on every background: black on yellow, red and pink, off-white on green. Yellow is used only for giant display type on red and pink.
+- **Motion:** stickers float and move with scroll (parallax). Headlines slide in from the side. Turning on "reduce motion" in the OS switches all of this off, including the intro, physics, cursor, curtain, smooth scroll, confetti and fly-to-cart.
+- **Text contrast:** body text passes 4.5:1 on every background: black on yellow, red and pink, off-white on green. Yellow display type on **red** measures 2.84:1, just under the 3:1 large-text minimum. Darkening `--color-red` from `#e63a3f` to about `#dc363c` fixes it; this is a brand-colour decision.
 - **Deploying:** this is a single-page app, so the host must send every path to `index.html`. On Netlify, add a `_redirects` file containing `/* /index.html 200`. On Vercel, add a rewrite for all paths to `/`.
