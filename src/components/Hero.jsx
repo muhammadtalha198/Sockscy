@@ -10,6 +10,9 @@ import SockArt from './art/SockArt'
 import Badge from './Badge'
 import GiantHeadline from './GiantHeadline'
 import PhysicsLayer from './hero/PhysicsLayer'
+import ParallaxLayer from './parallax/ParallaxLayer'
+import ParallaxSection from './parallax/ParallaxSection'
+import { requestTilt } from '../parallax/tilt'
 import Ribbon from './Ribbon'
 import Sticker from './Sticker'
 
@@ -19,6 +22,7 @@ import Sticker from './Sticker'
 const EGG = { pattern: 'eggs', base: '#111111', trim: '#f4d500' }
 const HEART = { pattern: 'hearts', base: '#ff52a1', trim: '#e63a3f' }
 const CHECK = { pattern: 'checker', base: '#ffffff', trim: '#111111' }
+const SMILE = { pattern: 'smiley', base: '#111111', trim: '#f4d500' }
 
 const BADGE = {
   text: 'FRESH DROP ✦ SOCKS OF THE DAY ✦ ',
@@ -56,7 +60,11 @@ export default function Hero() {
 
   async function enableTilt() {
     if (!world) return
-    setTilt((await world.enableTilt()) ? 'on' : 'denied')
+    // the physics asks for motion permission first (inside this tap); once granted, the
+    // parallax planes follow the tilt too
+    const ok = await world.enableTilt()
+    setTilt(ok ? 'on' : 'denied')
+    if (ok) requestTilt()
   }
 
   const badge = (className) =>
@@ -75,9 +83,20 @@ export default function Hero() {
       <Badge {...BADGE} className={className} />
     )
 
+  /*
+    Depth planes (v2 parallax, all at rest on first paint — they separate as the hero
+    scrolls away; desktop pointer / phone tilt move them against each other):
+      back   the flat yellow itself; the giant headline is the slowest moving plane
+             (−0.1: it must never sink onto the copy below it)
+      far    doodles
+      near   sticker cutouts (hand over to the physics socks once those load)
+      mid    copy, CTA, badge — never move (physics socks land on them)
+      front  one big blurred foreground sock (desktop), crossing into the marquee
+  */
   return (
-    <section
-      ref={sectionRef}
+    <ParallaxSection
+      rest="top"
+      innerRef={sectionRef}
       className="hero tone-yellow clip-x relative min-h-[100svh] pb-12 pt-28 md:pb-20 md:pt-32"
       aria-labelledby="hero-title"
       data-physics={world ? 'on' : 'off'}
@@ -86,24 +105,25 @@ export default function Hero() {
       <Ribbon side="left" className="top-24 lg:hidden" />
       <Ribbon side="right" className="top-0 hidden lg:block" />
 
-      <GiantHeadline
-        as="h1"
-        id="hero-title"
-        size="mega"
-        ready={introDone}
-        skew={false}
-        className="z-10"
-        lines={[
-          { text: 'SOCK', from: 'right', className: 'text-right -mr-[0.16em]', letters: true },
-          { text: 'SAVVY', from: 'left', className: 'pl-gutter', style: { fontSize: 'min(29vw, 12.5rem)' }, letters: true },
-        ]}
-      />
+      <ParallaxLayer depth={-0.1} decorative={false} className="relative z-10">
+        <GiantHeadline
+          as="h1"
+          id="hero-title"
+          size="mega"
+          ready={introDone}
+          skew={false}
+          lines={[
+            { text: 'SOCK', from: 'right', className: 'text-right -mr-[0.16em]', letters: true },
+            { text: 'SAVVY', from: 'left', className: 'pl-gutter', style: { fontSize: 'min(29vw, 12.5rem)' }, letters: true },
+          ]}
+        />
+      </ParallaxLayer>
 
       {/* shared cutout above the headline */}
       <Sticker
         className="hero-cutout absolute right-[16%] top-[58px] z-20 w-24 md:w-32 lg:left-[36%] lg:right-auto lg:top-[92px] lg:w-36"
         rotate={22}
-        parallax={0.1}
+        depth="near"
         duration={6}
       >
         <SockArt art={HEART} view="single" />
@@ -111,7 +131,7 @@ export default function Hero() {
 
       {/* MOBILE play zone: socks pile here, on top of the copy (its bottom is the floor) */}
       <div data-physics-floor className="hero-playzone relative h-[30svh] min-h-[13rem] md:hidden">
-        <Sticker className="hero-cutout absolute -right-[6%] top-2 z-20 w-[42vw]" rotate={-6} parallax={0.08} duration={8} delay={-2}>
+        <Sticker className="hero-cutout absolute -right-[6%] top-2 z-20 w-[42vw]" rotate={-6} depth="near" duration={8} delay={-2}>
           <SockArt art={EGG} view="kick" />
         </Sticker>
         <Sticker className="hero-cutout absolute left-[2%] top-[22%] z-20 w-24" rotate={-8} duration={9}>
@@ -129,18 +149,29 @@ export default function Hero() {
       <Sticker
         className="hero-cutout absolute top-[300px] z-20 hidden md:block md:-right-[4%] md:w-[38vw] lg:right-[5%] lg:top-[190px] lg:w-[30vw] lg:max-w-[470px]"
         rotate={-6}
-        parallax={0.14}
+        depth="near"
         duration={8}
         delay={-2}
       >
         <SockArt art={EGG} view="kick" />
       </Sticker>
-      <Sticker className="hero-cutout absolute left-[10%] top-[250px] z-20 hidden w-44 lg:block" rotate={-16} parallax={0.18} duration={7} delay={-1}>
+      <Sticker className="hero-cutout absolute left-[10%] top-[250px] z-20 hidden w-44 lg:block" rotate={-16} depth="near" duration={7} delay={-1}>
         <SockArt art={CHECK} view="single" />
       </Sticker>
-      <Sticker className="hero-cutout absolute bottom-6 left-[3%] z-20 hidden md:block md:w-44 lg:bottom-[6%] lg:left-[4%] lg:w-56" rotate={-8} parallax={-0.1} duration={9}>
+      <Sticker className="hero-cutout absolute bottom-[22%] left-[2%] z-20 hidden md:block md:w-32 lg:w-40" rotate={-8} depth="far" duration={9}>
         <SockMonster />
       </Sticker>
+
+      {/* front plane: one big foreground sock, depth-of-field blur baked in (desktop only) */}
+      <ParallaxLayer depth="front" className="pointer-events-none absolute -bottom-[14%] -left-[5%] z-40 hidden w-[24vw] max-w-[380px] md:block">
+        <div className="-rotate-[24deg]">
+          <div className="dof-blur">
+            <div className="sticker">
+              <SockArt art={SMILE} view="single" />
+            </div>
+          </div>
+        </div>
+      </ParallaxLayer>
 
       {/* doodles */}
       <Sticker className="absolute left-[24%] top-[86px] z-0 hidden w-14 lg:block" outline={false} rotate={10} duration={10}>
@@ -215,6 +246,6 @@ export default function Hero() {
           </ul>
         </nav>
       )}
-    </section>
+    </ParallaxSection>
   )
 }

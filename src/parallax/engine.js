@@ -247,6 +247,17 @@ function scrollOffset(l, d, anchorH) {
   const t = tokens()
   let tx = 0
   let ty = 0
+  if (l.rest === 'top') {
+    // the first screen: at rest until its anchor starts to leave (exit range), then the
+    // planes separate over one viewport of scroll. d here = progress 0…1 through the exit.
+    const p = Math.min(1, Math.max(0, d))
+    const max = vh * t.clamp
+    const off = Math.max(-max, Math.min(max, -p * vh * l.depth * t.travel * 1.6 * strength))
+    if (l.axis === 'x') tx = off
+    else ty = off
+    const s = 1 + p * l.scale * strength
+    return { tx, ty, s, r: p * l.rotate * strength }
+  }
   if (l.pin) {
     // pinned scene: d runs from +(h−vh)/2 to −(h−vh)/2 while the stage is stuck
     const span = Math.max(1, anchorH - vh)
@@ -302,8 +313,8 @@ function measure() {
       if (!l.scroll || l.hidden) continue
       const h = l.section ? l.section.height : l.height
       const d0 = l.pin ? Math.max(0, h - vh) / 2 : (vh + h) / 2
-      const a = scrollOffset(l, d0, h)
-      const b = scrollOffset(l, -d0, h)
+      const a = l.rest === 'top' ? scrollOffset(l, 0, h) : scrollOffset(l, d0, h)
+      const b = l.rest === 'top' ? scrollOffset(l, 1, h) : scrollOffset(l, -d0, h)
       const st = l.el.style
       st.setProperty('--px-x0', `${a.tx.toFixed(1)}px`)
       st.setProperty('--px-x1', `${b.tx.toFixed(1)}px`)
@@ -362,7 +373,10 @@ function frame(now) {
 
     if (!useCss && l.scroll) {
       const anchor = l.section || l
-      const d = anchor.top + anchor.height / 2 - (y + vh / 2)
+      const d =
+        l.rest === 'top'
+          ? (y + vh - (anchor.top + anchor.height)) / vh // exit progress
+          : anchor.top + anchor.height / 2 - (y + vh / 2)
       const o = scrollOffset(l, d, anchor.height)
       tx = o.tx
       ty = o.ty
@@ -411,6 +425,7 @@ function frame(now) {
  *   section handle from createSection() — anchor to the section (all its layers rest
  *           when it is centred); otherwise the element is its own anchor
  *   pin     with section: progress through a pinned (sticky) scene drives the offset
+ *   rest    'top': at rest until the anchor starts to leave (first screen of a page)
  *   drift   px of sideways drift for giant words, dir ±1 · skew: lean with scroll speed
  *   scale / rotate  extra scale / degrees per viewport of distance
  *   pointer false: ignore pointer/tilt · scroll false: ignore scroll
@@ -424,6 +439,7 @@ export function addLayer(el, o = {}) {
     axis: o.axis || 'y',
     section: o.section || null,
     pin: !!(o.pin && o.section),
+    rest: o.rest || o.section?.rest || null,
     drift: o.drift || 0,
     dir: o.dir || 1,
     skew: !!o.skew,
@@ -443,6 +459,7 @@ export function addLayer(el, o = {}) {
   el.dataset.depth = typeof o.depth === 'string' ? o.depth : String(depth)
   if (layer.section) el.dataset.pxAnchor = 'section'
   if (layer.pin) el.dataset.pxPin = ''
+  if (layer.rest) el.dataset.pxRest = layer.rest
   el.style.setProperty('--depth', String(depth))
   layers.add(layer)
   measureQueued = true
@@ -456,12 +473,14 @@ export function addLayer(el, o = {}) {
     el.style.willChange = ''
     delete el.dataset.pxAnchor
     delete el.dataset.pxPin
+    delete el.dataset.pxRest
     delete el.__parallax
   }
 }
 
-export function createSection() {
-  return { el: null, top: 0, height: 0 }
+/** rest: 'top' for the first screen of a page (layers sit still until it starts to leave) */
+export function createSection(rest = null) {
+  return { el: null, top: 0, height: 0, rest }
 }
 export function attachSection(section, el) {
   start()

@@ -24,6 +24,7 @@
     [data-px-scroll='sr'] { animation-name: px-scroll-sr; }
     [data-px-scroll][data-px-anchor='section'] { animation-timeline: --px-section; }
     [data-px-scroll][data-px-pin] { animation-range: contain; }
+    [data-px-scroll][data-px-rest='top'] { animation-range: exit; }
   }
 }
 /* RULE: a layer owns its `translate` (and `scale`/`rotate` when it asks for them) —
