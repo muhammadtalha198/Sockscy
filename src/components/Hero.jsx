@@ -172,13 +172,20 @@ export default function Hero() {
             sock of the day ↓
           </a>
         </div>
-        {world && tilt !== 'on' && canTilt() && (
-          <button type="button" onClick={enableTilt} className="btn btn-sm btn-offwhite mt-5" aria-label="use phone tilt to move the socks">
+        {/* both reserve their space from the first paint (invisible until the physics is
+            ready) so nothing below shifts when it loads */}
+        {!reduced && tilt !== 'on' && canTilt() && (
+          <button
+            type="button"
+            onClick={enableTilt}
+            className={`btn btn-sm btn-offwhite mt-5${world ? '' : ' invisible'}`}
+            aria-label="use phone tilt to move the socks"
+          >
             {tilt === 'denied' ? 'no tilt? drag them instead' : 'tilt your phone to play'}
           </button>
         )}
-        {world && (
-          <p className="hero-hint mt-4 hidden text-sm font-extrabold lowercase md:block" data-hidden={touched || undefined} aria-hidden="true">
+        {!reduced && (
+          <p className="hero-hint mt-4 hidden text-sm font-extrabold lowercase md:block" data-hidden={touched || !world || undefined} aria-hidden="true">
             psst — grab a sock and throw it. click one for a quick look.
           </p>
         )}

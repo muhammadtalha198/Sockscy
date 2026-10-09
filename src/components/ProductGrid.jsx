@@ -15,7 +15,13 @@ export default function ProductGrid({ products, loading = false, skeletons = 4, 
         {Array.from({ length: skeletons }, (_, i) => (
           <div key={i}>
             <div className="aspect-[4/5] animate-pulse rounded-[1.75rem] border-2 border-black bg-offwhite/40" />
-            <div className="mt-3 h-5 w-2/3 rounded-full bg-black/15" />
+            {/* same height as a card's name + price rows, so nothing shifts when they load */}
+            <div className="mt-3 px-1">
+              <div className="h-4 w-2/3 rounded-full bg-black/15 md:h-5" />
+              <div className="mt-1.5 flex h-6 items-center md:h-7">
+                <div className="h-4 w-1/3 rounded-full bg-black/10" />
+              </div>
+            </div>
           </div>
         ))}
       </div>
