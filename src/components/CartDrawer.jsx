@@ -42,8 +42,8 @@ export default function CartDrawer() {
         aria-modal="true"
         aria-labelledby="cart-drawer-title"
         className={cx(
-          'tone-offwhite absolute right-0 top-0 flex h-dvh w-full max-w-[28rem] flex-col border-l-2 border-black transition-transform duration-[400ms] ease-snap',
-          isOpen ? 'translate-x-0' : 'translate-x-full',
+          'tone-offwhite absolute right-0 top-0 flex h-dvh w-full max-w-[28rem] flex-col border-l-2 border-black transition-[transform,visibility] duration-[400ms] ease-snap',
+          isOpen ? 'visible translate-x-0' : 'invisible translate-x-full',
         )}
       >
         <header className="flex items-start justify-between gap-4 border-b-2 border-black px-5 pb-4 pt-5">
@@ -77,7 +77,7 @@ export default function CartDrawer() {
             <div className="border-b-2 border-black px-5 py-4">
               <FreeShippingBar subtotal={subtotal} />
             </div>
-            <ul className="flex-1 divide-y-2 divide-black/15 overflow-y-auto overscroll-contain px-5">
+            <ul data-lenis-prevent className="flex-1 divide-y-2 divide-black/15 overflow-y-auto overscroll-contain px-5">
               {items.map((item) => (
                 <CartLine key={item.key} item={item} />
               ))}

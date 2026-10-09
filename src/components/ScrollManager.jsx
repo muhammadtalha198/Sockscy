@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { useLocation } from 'react-router'
+import { scrollToTarget } from '../motion/scroll'
 
 /** Scroll to top on page change, or to #hash targets (e.g. /#collections). */
 export default function ScrollManager() {
@@ -11,13 +12,13 @@ export default function ScrollManager() {
       let tries = 0
       const seek = () => {
         const el = document.getElementById(decodeURIComponent(hash.slice(1)))
-        if (el) el.scrollIntoView({ block: 'start' })
+        if (el) scrollToTarget(el, { immediate: true })
         else if (tries++ < 20) setTimeout(seek, 50)
       }
       seek()
       return
     }
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+    scrollToTarget(0, { immediate: true })
   }, [pathname, hash])
 
   return null

@@ -481,6 +481,44 @@ html.has-cursor :is(input, textarea, select, [contenteditable="true"]) {
   .cart-toast { right: 4.5rem; top: calc(50% + 7rem); }
 }
 
+/* ---------- D. SCROLL STORY --------------------------------------------- */
+/* Lenis (smooth wheel scroll) */
+html.lenis,
+html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: hidden; }
+
+/* stickers wait off-screen until they fly in */
+.sticker-fly-pending {
+  transform: translate3d(calc(var(--fly-side, -1) * 60vw), 0, 0) rotate(calc(var(--fly-side, -1) * 70deg)) scale(0.6);
+}
+
+/* pinned sock factory: tall section, sticky stage, steps swap with hard cuts */
+.factory { height: 420svh; }
+.f-word,
+.f-caption { display: none; }
+.factory-words { will-change: transform; }
+.factory-steps li { color: var(--color-offwhite); transition: transform var(--dur-fast) var(--ease-spring); }
+.factory:not([data-live]) .f-sketch { opacity: 0; }
+.factory[data-step="0"] [data-i="0"],
+.factory[data-step="1"] [data-i="1"],
+.factory[data-step="2"] [data-i="2"],
+.factory[data-step="3"] [data-i="3"],
+.factory[data-step="4"] [data-i="4"] { display: block; }
+.factory[data-step="0"] .factory-steps [data-i="0"],
+.factory[data-step="1"] .factory-steps [data-i="1"],
+.factory[data-step="2"] .factory-steps [data-i="2"],
+.factory[data-step="3"] .factory-steps [data-i="3"],
+.factory[data-step="4"] .factory-steps [data-i="4"] {
+  display: flex;
+  color: var(--color-yellow);
+  transform: translateX(0.6rem);
+}
+.factory-steps [data-i] { display: flex; }
+.factory-sock { overflow: visible; }
+.factory[data-live] .factory-sock { filter: drop-shadow(6px 10px 0 rgb(0 0 0 / 0)); }
+
 /* ---------- REDUCED MOTION: effects off ---------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   .intro { display: none; }
@@ -492,4 +530,7 @@ html.has-cursor :is(input, textarea, select, [contenteditable="true"]) {
   .pcard-sock,
   .group:hover .pcard-sock > * { transform: none; }
   .spin-splash { animation: none; display: none; }
+  .factory { height: auto; }
+  .factory-pin { position: relative; }
+  .sticker-fly-pending { transform: none; }
 }

@@ -196,3 +196,12 @@ Order: A, B, C, E, D, F, H, J, G, I, K. 60fps on a mid-range Android. Lazy-load 
   cart line key `id:size[:colorway]`, checkout sends `colorway`. `hooks/useAddToCart.js` →
   `fx/flyToCart.jsx` (WAAPI arc → `[data-cart-target]` SideTab shakes, count pops, 'add'
   sound, `fx/confetti.js` burst) + `CartToast` (drawer no longer auto-opens from these).
+- **D Scroll story** — `motion/scroll.js` lazy-loads gsap + ScrollTrigger + lenis after idle
+  (Layout); `scrollToTarget()` cooperates with Lenis (ScrollManager uses it); scroll lock stops
+  Lenis; ScrollTrigger refreshes when the page height changes. `motion/velocity.js` (shared
+  scroll-velocity loop) drives `motion/useScrollSkew.js` (GiantHeadline + collection words drift
+  and skew; hero opts out with `skew={false}`) and the JS `Marquee` (speeds up, reverses on
+  scroll up). `Sticker`: `depth` 1|2|3 parallax + spring fly-in from the nearest edge (measured
+  before paint, always pushed away from the screen). `home/SockFactory.jsx`: 420svh section +
+  sticky stage, ScrollTrigger-scrubbed timeline, steps via `data-step` hard cuts. Inner scroll
+  areas need `data-lenis-prevent`.

@@ -1,6 +1,7 @@
 import Collections from '../components/home/Collections'
 import FeaturedDrop from '../components/home/FeaturedDrop'
 import InstagramStrip from '../components/home/InstagramStrip'
+import SockFactory from '../components/home/SockFactory'
 import SockOfTheDay from '../components/home/SockOfTheDay'
 import WhySocksavvy from '../components/home/WhySocksavvy'
 import Hero from '../components/Hero'
@@ -9,7 +10,8 @@ import Marquee from '../components/Marquee'
 /*
   Home — colour order on scroll (hard cuts, no gradients):
   yellow hero → black marquee → red featured → green collections
-  → "be unique, be you" band → pink sock of the day → yellow why → off-white instagram → black footer
+  → "be unique, be you" band → pink sock of the day → black sock factory (pinned scroll scene)
+  → yellow why → off-white instagram → black footer
 */
 export default function Home() {
   return (
@@ -21,10 +23,11 @@ export default function Home() {
       <Collections />
       <div className="clip-x relative z-30 -my-10 py-6 md:-my-14">
         <div className="-ml-[5%] w-[110%] -rotate-3 border-y-2 border-black bg-black">
-          <Marquee items={['BE UNIQUE', 'BE YOU']} textClassName="text-pink" flower="#f4d500" reverse duration={22} />
+          <Marquee items={['BE UNIQUE', 'BE YOU']} textClassName="text-pink" flower="#f4d500" reverse speed={90} />
         </div>
       </div>
       <SockOfTheDay />
+      <SockFactory />
       <WhySocksavvy />
       <InstagramStrip />
     </>

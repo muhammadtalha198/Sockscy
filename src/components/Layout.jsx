@@ -1,6 +1,8 @@
-import { Suspense } from 'react'
+import { Suspense, useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router'
 import { useCart } from '../store/cart'
+import { whenIdle } from '../lib/motion'
+import { loadScrollKit } from '../motion/scroll'
 import CartDrawer from './CartDrawer'
 import CartToast from './CartToast'
 import Cursor from './fx/Cursor'
@@ -35,6 +37,9 @@ function PageLoader() {
 export default function Layout() {
   const { pathname } = useLocation()
   const announcement = useCart((s) => s.announcement)
+
+  // smooth scroll + ScrollTrigger kit, after first paint
+  useEffect(() => whenIdle(() => loadScrollKit(), 2000), [])
 
   return (
     <>

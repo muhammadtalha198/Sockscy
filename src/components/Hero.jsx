@@ -84,6 +84,7 @@ export default function Hero() {
         id="hero-title"
         size="mega"
         ready={introDone}
+        skew={false}
         className="z-10"
         lines={[
           { text: 'SOCK', from: 'right', className: 'text-right -mr-[0.16em]', letters: true },
