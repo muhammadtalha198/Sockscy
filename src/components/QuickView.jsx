@@ -1,5 +1,5 @@
-import { useRef, useState } from 'react'
-import { Link } from 'react-router'
+import { useEffect, useRef, useState } from 'react'
+import { Link, useLocation } from 'react-router'
 import { getProduct } from '../api/products'
 import { useAsync } from '../hooks/useAsync'
 import { useDialog } from '../hooks/useDialog'
@@ -16,6 +16,9 @@ import SizePicker, { firstInStockSize } from './SizePicker'
 export default function QuickView() {
   const id = useUi((s) => s.quickViewId)
   const close = useUi((s) => s.closeQuickView)
+  const { pathname } = useLocation()
+  // Back / any navigation closes the sheet instead of leaving it over the next page
+  useEffect(() => close(), [pathname, close])
   if (!id) return null
   return <QuickViewDialog key={id} id={id} onClose={close} />
 }

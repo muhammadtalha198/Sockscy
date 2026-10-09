@@ -32,7 +32,8 @@ export default function SockSpinner({ art, label, frames }) {
   const [shown, setShown] = useState(art)
   const [splash, setSplash] = useState(null)
   const first = useRef(true)
-  const st = useRef({ angle: -24, vel: 0, drag: false, lastX: 0, auto: true, raf: 0, visible: true })
+  // idle spin: one turn from -24° that eases to rest facing front, then the loop stops
+  const st = useRef({ angle: -24, vel: 0, drag: false, lastX: 0, auto: true, autoLeft: 384, raf: 0, visible: true })
 
   // colourway change → splash + swap
   useEffect(() => {
@@ -78,7 +79,10 @@ export default function SockSpinner({ art, label, frames }) {
           s.angle += s.vel
           s.vel *= 0.94
         } else if (s.auto) {
-          s.angle += 0.35
+          const step = Math.min(0.35, Math.max(0.03, s.autoLeft * 0.025))
+          s.angle += step
+          s.autoLeft -= step
+          if (s.autoLeft <= 0.01) s.auto = false
         } else {
           apply()
           return
