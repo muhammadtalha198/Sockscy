@@ -14,10 +14,10 @@ const SIZES = {
 
   <GiantHeadline lines={['FRESH', { text: 'DROP', className: 'pl-[20vw] text-offwhite' }]} />
 */
-export default function GiantHeadline({ as: Tag = 'h2', lines, size = 'giant', className = '', id, children }) {
+export default function GiantHeadline({ as: Tag = 'h2', lines, size = 'giant', className = '', id, ready = true, children }) {
   const [ref, inView] = useInView()
   return (
-    <Tag ref={ref} id={id} className={cx('giant t-display relative', SIZES[size], inView && 'is-in', className)}>
+    <Tag ref={ref} id={id} className={cx('giant t-display relative', SIZES[size], inView && ready && 'is-in', className)}>
       {lines.map((line, i) => {
         const l = typeof line === 'string' ? { text: line } : line
         return (

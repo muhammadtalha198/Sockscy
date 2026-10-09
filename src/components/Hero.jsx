@@ -7,6 +7,7 @@ import Badge from './Badge'
 import GiantHeadline from './GiantHeadline'
 import Ribbon from './Ribbon'
 import Sticker from './Sticker'
+import { useUi } from '../store/ui'
 
 // Hero cutouts — swap these for transparent product cutouts (WebP/PNG) when you have photos:
 //   <Sticker …><img src="/cutouts/egg-legs.webp" alt="" loading="eager" /></Sticker>
@@ -15,6 +16,7 @@ const HEART = { pattern: 'hearts', base: '#ff52a1', trim: '#e63a3f' }
 const CHECK = { pattern: 'checker', base: '#ffffff', trim: '#111111' }
 
 export default function Hero() {
+  const introDone = useUi((s) => s.introDone)
   return (
     <section className="tone-yellow clip-x relative min-h-[100svh] pb-20 pt-28 md:pt-32" aria-labelledby="hero-title">
       <Ribbon side="left" className="top-24 lg:hidden" />
@@ -24,6 +26,7 @@ export default function Hero() {
         as="h1"
         id="hero-title"
         size="mega"
+        ready={introDone}
         className="z-10"
         lines={[
           { text: 'SOCK', from: 'right', className: 'text-right -mr-[0.16em]' },

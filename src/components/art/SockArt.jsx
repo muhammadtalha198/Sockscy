@@ -11,7 +11,7 @@ import { useId } from 'react'
     detail — zoomed-in pattern
 */
 
-const SOCK_PATH =
+export const SOCK_PATH =
   'M48 12H124V156C124 170 136 176 156 181L170 185C198 192 200 238 172 241L86 243C54 245 44 222 46 196Z'
 const SKIN = '#c98d63'
 const S = { stroke: '#000', strokeWidth: 1.6, strokeLinejoin: 'round', strokeLinecap: 'round' }

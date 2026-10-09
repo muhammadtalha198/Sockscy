@@ -52,8 +52,16 @@
   --shadow-hard: 4px 4px 0 0 #000;
   --shadow-hard-lg: 8px 8px 0 0 #000;
 
-  /* ---------- MOTION ----------------------------------------------------- */
+  /* ---------- MOTION -----------------------------------------------------
+     One motion language: springs that overshoot slightly, 0.4–0.7s, nothing linear.
+     JS mirrors these in src/lib/motion.js. */
   --ease-snap: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-overshoot: cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* damped spring, ~8% overshoot, settles by the end */
+  --ease-spring: linear(0, 0.046, 0.159, 0.307, 0.466, 0.618, 0.753, 0.864, 0.95, 1.012, 1.052, 1.075, 1.083, 1.082, 1.074, 1.062, 1.049, 1.036, 1.024, 1.014, 1.006, 1, 0.996, 0.994, 0.993, 0.993, 0.994, 0.995, 1);
+  --dur-fast: 0.4s;
+  --dur-med: 0.55s;
+  --dur-slow: 0.7s;
   --animate-float: float var(--float-duration, 7s) ease-in-out var(--float-delay, 0s) infinite;
   --animate-spin-slow: spin 16s linear infinite;
   --animate-marquee: marquee var(--marquee-duration, 30s) linear infinite;

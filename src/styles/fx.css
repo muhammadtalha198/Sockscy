@@ -1,0 +1,123 @@
+/* ==========================================================================
+   SOCKSAVVY — EFFECTS (version-1 "maximum wow")
+   Intro, physics hero, cursor, cards, transitions, game, delight.
+   All of it is switched off by the reduced-motion block at the end.
+   ========================================================================== */
+
+/* ---------- A. INTRO ------------------------------------------------------ */
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  transition: transform var(--dur-slow) cubic-bezier(0.7, 0, 0.25, 1);
+  will-change: transform;
+}
+.intro[data-phase="exit"] {
+  transform: translate3d(0, calc(-100% - 3rem), 0);
+}
+.intro-edge {
+  position: absolute;
+  inset-inline: 0;
+  top: calc(100% - 1px);
+  width: 100%;
+  height: 2.5rem;
+}
+.intro-loader {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  transition:
+    transform 0.45s var(--ease-snap),
+    opacity 0.3s ease;
+}
+.intro:not([data-phase="knit"]) .intro-loader {
+  transform: translate3d(0, -42vh, 0) scale(0.45) rotate(-14deg);
+  opacity: 0;
+}
+.intro-knit {
+  width: clamp(7rem, 30vw, 11rem);
+  height: auto;
+  overflow: visible;
+}
+.intro-row {
+  transform-box: fill-box;
+  transform: scaleX(0);
+  animation: intro-knit 0.26s var(--ease-snap) forwards;
+}
+@keyframes intro-knit {
+  to { transform: scaleX(1); }
+}
+.intro-progress {
+  font-size: 1.0625rem;
+  font-weight: 800;
+  text-transform: lowercase;
+  font-variant-numeric: tabular-nums;
+}
+.intro-word {
+  position: relative;
+  margin: 0;
+  padding-inline: 1rem;
+  text-align: center;
+  white-space: normal;
+  font-size: clamp(4.5rem, 25vw, 15rem);
+  line-height: 0.82;
+  letter-spacing: -0.05em;
+}
+.intro-br { display: block; }
+.intro-letter {
+  position: relative;
+  display: inline-block;
+  transform: translate3d(0, -120vh, 0);
+  transform-origin: 50% 100%;
+}
+.intro:not([data-phase="knit"]) .intro-letter {
+  animation: intro-drop 0.9s both;
+}
+@keyframes intro-drop {
+  0% { transform: translate3d(0, -120vh, 0) scale(0.9, 1.2); animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  50% { transform: translate3d(0, 0, 0) scale(1.18, 0.78); animation-timing-function: cubic-bezier(0, 0.55, 0.45, 1); }
+  64% { transform: translate3d(0, -16%, 0) scale(0.94, 1.08); animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  78% { transform: translate3d(0, 0, 0) scale(1.06, 0.93); animation-timing-function: cubic-bezier(0, 0.55, 0.45, 1); }
+  89% { transform: translate3d(0, -4%, 0) scale(0.99, 1.02); }
+  100% { transform: translate3d(0, 0, 0) scale(1); }
+}
+.intro-topper {
+  position: absolute;
+  bottom: 80%;
+  left: 50%;
+  width: 0.4em;
+  transform: translate3d(-50%, -120vh, 0) rotate(var(--tilt));
+}
+.intro:not([data-phase="knit"]) .intro-topper {
+  animation: intro-topper 0.8s both;
+}
+@keyframes intro-topper {
+  0% { transform: translate3d(-50%, -120vh, 0) rotate(0deg); animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  55% { transform: translate3d(-50%, 0, 0) rotate(var(--tilt)); animation-timing-function: cubic-bezier(0, 0.55, 0.45, 1); }
+  72% { transform: translate3d(-50%, -22%, 0) rotate(calc(var(--tilt) * 1.4)); animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45); }
+  100% { transform: translate3d(-50%, 0, 0) rotate(var(--tilt)); }
+}
+.intro-skip {
+  position: absolute;
+  right: 1rem;
+  bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  padding: 0.6rem 0.4rem;
+  font-weight: 800;
+  text-transform: lowercase;
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+  text-underline-offset: 6px;
+}
+@media (min-width: 48rem) {
+  .intro-word { font-size: min(14vw, 15rem); }
+  .intro-br { display: none; }
+}
+
+/* ---------- REDUCED MOTION: effects off ---------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .intro { display: none; }
+}

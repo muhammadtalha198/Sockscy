@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import { Outlet, useLocation } from 'react-router'
 import { useCart } from '../store/cart'
 import CartDrawer from './CartDrawer'
+import Intro from './fx/Intro'
 import Footer from './Footer'
 import Navbar from './Navbar'
 import ScrollManager from './ScrollManager'
@@ -37,6 +38,7 @@ export default function Layout() {
       <a href="#main" className="btn btn-black sr-only-focusable fixed left-4 top-4 z-[100]">
         skip to content
       </a>
+      <Intro />
       <ScrollManager />
       <Navbar tone={toneFor(pathname)} />
       <main id="main" tabIndex={-1} className="outline-none">
