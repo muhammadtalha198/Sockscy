@@ -209,13 +209,17 @@
     text-transform: uppercase;
     letter-spacing: -0.01em;
     box-shadow: var(--shadow-hard);
-    transition: transform 0.12s ease, box-shadow 0.12s ease;
+    /* --mx/--my: magnetic pull set by the custom cursor (0 elsewhere) */
+    transform: translate(var(--mx, 0px), var(--my, 0px));
+    transition:
+      transform 0.35s var(--ease-overshoot),
+      box-shadow 0.12s ease;
     cursor: pointer;
     user-select: none;
   }
   .btn:hover,
   .btn:active {
-    transform: translate(4px, 4px);
+    transform: translate(calc(var(--mx, 0px) + 4px), calc(var(--my, 0px) + 4px));
     box-shadow: 0 0 0 0 #000;
   }
   .btn:disabled,

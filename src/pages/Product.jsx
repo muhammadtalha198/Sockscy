@@ -118,7 +118,7 @@ function ProductView({ product }) {
                 <QuantityStepper value={qty} max={Math.max(1, max)} onChange={setQty} label="quantity" />
                 {max > 0 && max <= 2 && <p className="mt-2 text-sm font-bold">max {max} — that’s every pair we’ve got in {size}.</p>}
               </div>
-              <button type="submit" className="btn btn-pink btn-lg w-full md:w-auto md:min-w-[18rem]" disabled={!size || max === 0}>
+              <button type="submit" data-cursor="add" className="btn btn-pink btn-lg w-full md:w-auto md:min-w-[18rem]" disabled={!size || max === 0}>
                 {soldOut ? 'sold out' : 'add to cart'}
               </button>
             </form>

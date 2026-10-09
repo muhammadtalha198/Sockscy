@@ -398,11 +398,14 @@ class HeroWorld {
     }
     if (e.pointerType !== 'mouse' || p.y < 0 || p.y > this.h) return
 
-    // cursor pushes nearby bodies away
+    // cursor pushes nearby bodies away — but never the one under the pointer,
+    // so it can still be hovered, clicked and grabbed
+    const hover = this.hitTest(p)
     const speed = Math.hypot(this.pointer.vx, this.pointer.vy)
     if (this.cfg.push && speed > 0.08) {
       const R = 130
       for (const b of this.dynamic) {
+        if (b === hover) continue
         const dx = b.position.x - p.x
         const dy = b.position.y - p.y
         const d = Math.hypot(dx, dy)
@@ -413,7 +416,6 @@ class HeroWorld {
         this.kick()
       }
     }
-    const hover = this.hitTest(p)
     const state = hover ? (hover.plugin.item.kind === 'sock' ? 'view' : 'grab') : null
     if (state) this.section.dataset.cursor = state
     else delete this.section.dataset.cursor

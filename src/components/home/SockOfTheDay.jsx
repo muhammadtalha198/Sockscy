@@ -77,6 +77,7 @@ export default function SockOfTheDay() {
               <button
                 type="button"
                 className="btn btn-yellow btn-lg"
+                data-cursor="add"
                 disabled={!size}
                 onClick={() => addItem(product, size, 1)}
               >

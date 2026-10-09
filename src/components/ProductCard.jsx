@@ -17,7 +17,7 @@ export default function ProductCard({ product, index = 0, priority = false }) {
 
   return (
     <article className="relative">
-      <Link to={`/product/${product.id}`} className="group block rounded-[1.75rem] focus-visible:outline-offset-4">
+      <Link to={`/product/${product.id}`} data-cursor="view" className="group block rounded-[1.75rem] focus-visible:outline-offset-4">
         <div
           className="relative aspect-[4/5] overflow-hidden rounded-[1.75rem] border-2 border-black bg-(--tile) group-hover:bg-(--tile-hover) group-focus-visible:bg-(--tile-hover)"
           style={{ '--tile': TILE_BG[tile], '--tile-hover': TILE_BG[TILE_CYCLE[tile] || 'pink'] }}
