@@ -25,7 +25,7 @@ export default function SoundToggle() {
       data-cursor="add"
       className="ctl sound-toggle"
     >
-      <span className="sticker block w-12 md:w-14">
+      <span className="sticker block w-10 md:w-14">
         <svg viewBox="0 0 64 64" aria-hidden="true">
           <circle cx="32" cy="32" r="29" fill={soundOn ? '#f4d500' : '#f5f1e8'} stroke="#000" strokeWidth="3" />
           <path d="M15 26h8l11-9v30l-11-9h-8z" fill="#000" strokeLinejoin="round" />

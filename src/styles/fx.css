@@ -746,6 +746,9 @@ html.lenis body { height: auto; }
 @keyframes sound-wave { from { opacity: 0.25; } to { opacity: 1; } }
 @media (max-width: 47.99rem) {
   html[data-buybar] .motion-controls { bottom: calc(6.1rem + env(safe-area-inset-bottom, 0px)); }
+  /* phones: a smaller cluster, so it stays clear of thumbnails and cards */
+  .motion-controls { gap: 0.15rem; }
+  .ctl-tag { margin-top: -0.5rem; padding: 0.05rem 0.35rem; font-size: 0.6rem; }
 }
 
 /* tilt opt-in chip (phones, once) */

@@ -140,12 +140,16 @@ function start() {
       for (const e of entries) {
         const layer = e.target.__parallax
         if (!layer) continue
-        if (e.isIntersecting) {
-          visible.add(layer)
-          layer.el.style.willChange = useCss ? 'translate, transform' : 'transform'
-        } else {
+        if (e.isIntersecting) visible.add(layer)
+        else {
           visible.delete(layer)
-          layer.el.style.willChange = ''
+          // will-change only while JS is writing this layer's transform (see the loop):
+          // the CSS scroll animations are composited on their own, and promoting every
+          // visible layer up front cost more style work per frame than it saved
+          if (layer.wc) {
+            layer.el.style.willChange = ''
+            layer.wc = false
+          }
         }
       }
       kick()
@@ -234,6 +238,10 @@ function clearLayer(l) {
   for (const p of ['--px-x0', '--px-x1', '--px-y0', '--px-y1', '--px-s0', '--px-s1', '--px-r0', '--px-r1']) l.el.style.removeProperty(p)
   l.cx = l.cy = 0
   l.written = ''
+  if (l.wc) {
+    l.el.style.willChange = ''
+    l.wc = false
+  }
 }
 
 function resetAll() {
@@ -424,6 +432,10 @@ function frame(now) {
     if (out !== l.written) {
       l.el.style.transform = out
       l.written = out
+      if (out && !l.wc) {
+        l.el.style.willChange = 'transform'
+        l.wc = true
+      }
     }
   }
 

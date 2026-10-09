@@ -17,7 +17,7 @@ export default function CalmToggle() {
       data-cursor="add"
       className="ctl"
     >
-      <span className="sticker block w-11 md:w-12">
+      <span className="sticker block w-9 md:w-12">
         <svg viewBox="0 0 64 64" aria-hidden="true">
           <circle cx="32" cy="32" r="29" fill={calm ? '#1c7d56' : '#f5f1e8'} stroke="#000" strokeWidth="3" />
           {calm ? (
