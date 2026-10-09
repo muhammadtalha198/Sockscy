@@ -1,0 +1,90 @@
+/* ============================================================================
+   PARALLAX (version 2) — the CSS half of src/parallax/engine.js
+   Depth tokens live in tokens.css (--depth-*, --parallax-*).
+   ========================================================================== */
+
+/* ---------- scroll path: scroll-driven animations (Chrome/Edge 115+, Safari 26+) --
+   The engine writes each layer's two end points (--px-*0 → --px-*1) and sets
+   data-px-scroll (y | sr = with scale/rotate). The browser then runs the scroll part off the main thread on the
+   `translate` / `scale` / `rotate` properties; the JS writes pointer, tilt and skew to
+   `transform`, which composes with them. Without support (Firefox) the engine does the
+   same maths in JS instead and never sets data-px-scroll. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    /* every <ParallaxSection> is a named view timeline its layers can follow */
+    [data-parallax-section] {
+      view-timeline-name: --px-section;
+      view-timeline-axis: block;
+    }
+    [data-px-scroll] {
+      animation: px-scroll linear both;
+      animation-timeline: view();
+      animation-range: cover;
+    }
+    [data-px-scroll='sr'] { animation-name: px-scroll-sr; }
+    [data-px-scroll][data-px-anchor='section'] { animation-timeline: --px-section; }
+    [data-px-scroll][data-px-pin] { animation-range: contain; }
+  }
+}
+/* RULE: a layer owns its `translate` (and `scale`/`rotate` when it asks for them) —
+   never put Tailwind translate-* / -translate-x-1/2 / rotate-* / scale-* utilities on
+   the layer element itself; put them on a child or wrapper. */
+@keyframes px-scroll {
+  from { translate: var(--px-x0, 0px) var(--px-y0, 0px); }
+  to { translate: var(--px-x1, 0px) var(--px-y1, 0px); }
+}
+@keyframes px-scroll-sr {
+  from {
+    translate: var(--px-x0, 0px) var(--px-y0, 0px);
+    scale: var(--px-s0, 1);
+    rotate: var(--px-r0, 0deg);
+  }
+  to {
+    translate: var(--px-x1, 0px) var(--px-y1, 0px);
+    scale: var(--px-s1, 1);
+    rotate: var(--px-r1, 0deg);
+  }
+}
+
+/* ---------- TiltCard -----------------------------------------------------------
+   --rx/--ry rotate the card, --tx/--ty (−1…1) move children by data-tilt-depth px:
+   negative = against the card (the photo inside a window), positive = toward the
+   pointer, --tilt-z lifts a child toward the viewer (a sticker popping out). */
+.tilt-card {
+  --rx: 0deg;
+  --ry: 0deg;
+  --tx: 0;
+  --ty: 0;
+  perspective: 900px;
+}
+.tilt-card [data-tilt-plane] {
+  transform: rotateX(var(--rx)) rotateY(var(--ry));
+  transform-style: preserve-3d;
+}
+.tilt-card [data-tilt-depth] {
+  transform: translate3d(
+    calc(var(--tx) * var(--tilt-depth, 0) * 1px),
+    calc(var(--ty) * var(--tilt-depth, 0) * 1px),
+    calc(var(--tilt-z, 0) * 1px)
+  );
+}
+
+/* ---------- depth of field ------------------------------------------------------
+   The foreground object is blurred inside its own SVG (filter on the art, never on a
+   moving ancestor, never animated). Phones and lite mode drop the blur and shrink it. */
+.dof-blur { filter: blur(var(--dof-blur)); }
+@media (max-width: 639px) {
+  .dof-blur { filter: none; }
+}
+html[data-lite] .dof-blur { filter: none; }
+
+/* ---------- calm mode -----------------------------------------------------------
+   The engine drops every plane to 15% strength; decorative loops pause too. */
+html[data-calm] .animate-float,
+html[data-calm] .animate-spin-slow { animation-play-state: paused; }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-px-scroll] { animation: none !important; }
+  .tilt-card [data-tilt-plane],
+  .tilt-card [data-tilt-depth] { transform: none !important; }
+}

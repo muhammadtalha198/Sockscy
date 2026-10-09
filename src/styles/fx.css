@@ -705,16 +705,24 @@ html.lenis body { height: auto; }
   html[data-buybar] .play-button { bottom: calc(6.1rem + env(safe-area-inset-bottom, 0px)); }
   html[data-buypage] footer { padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px)); }
 }
-/* ---------- G. SOUND + EASTER EGGS -------------------------------------- */
-.sound-toggle {
-  display: grid;
-  justify-items: center;
+/* ---------- G. SOUND + EASTER EGGS · v2 motion controls ------------------
+   Bottom-right cluster: [tilt (phones)] · calm · sound. Tucks away together. */
+.motion-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
   transition: transform var(--dur-fast) var(--ease-spring), bottom var(--dur-med) var(--ease-spring);
 }
-.sound-toggle:hover { transform: scale(1.08) rotate(6deg); }
-.sound-toggle:active { transform: scale(0.92); }
-.sound-toggle[data-tucked] { transform: translate3d(140%, 0, 0) rotate(90deg); }
-.sound-toggle-tag {
+.motion-controls[data-tucked] { transform: translate3d(140%, 0, 0) rotate(90deg); }
+.ctl {
+  display: grid;
+  justify-items: center;
+  transition: transform var(--dur-fast) var(--ease-spring);
+}
+.ctl:hover { transform: scale(1.08) rotate(6deg); }
+.ctl:active { transform: scale(0.92); }
+.ctl-tag {
   margin-top: -0.55rem;
   padding: 0.1rem 0.45rem;
   border: 2px solid #000;
@@ -727,13 +735,38 @@ html.lenis body { height: auto; }
   white-space: nowrap;
   transform: rotate(-6deg);
 }
-.sound-toggle[data-on] .sound-toggle-tag { background: var(--color-yellow); }
+.ctl[aria-pressed='true'] .ctl-tag { background: var(--color-yellow); }
 .sound-toggle[data-on] .sound-wave { animation: sound-wave 0.45s ease-in-out 6 alternate both; } /* finite: it sits inside a filtered sticker */
 .sound-toggle[data-on] .sound-wave-2 { animation-delay: 0.25s; }
 @keyframes sound-wave { from { opacity: 0.25; } to { opacity: 1; } }
 @media (max-width: 47.99rem) {
-  html[data-buybar] .sound-toggle { bottom: calc(6.1rem + env(safe-area-inset-bottom, 0px)); }
+  html[data-buybar] .motion-controls { bottom: calc(6.1rem + env(safe-area-inset-bottom, 0px)); }
 }
+
+/* tilt opt-in chip (phones, once) */
+.tilt-chip {
+  position: fixed;
+  left: 50%;
+  bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  z-index: 46;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: max-content;
+  max-width: calc(100vw - 2rem);
+  padding: 0.5rem 0.5rem 0.5rem 0.9rem;
+  border: 2px solid #000;
+  border-radius: 999px;
+  background: var(--color-yellow);
+  color: #000;
+  box-shadow: var(--shadow-hard);
+  transform: translate(-50%, 0) rotate(-1.5deg);
+  animation: tilt-chip-in var(--dur-slow) var(--ease-spring) both;
+}
+@keyframes tilt-chip-in {
+  from { transform: translate(-50%, 160%) rotate(4deg); }
+}
+html[data-buybar] .tilt-chip { bottom: calc(5.5rem + env(safe-area-inset-bottom, 0px)); }
 
 /* 404: the other sock peeks out from behind the footer */
 .lost-sock {
@@ -802,7 +835,9 @@ html[data-lite] .animate-spin-slow { animation-play-state: paused; }
   .buy-bar,
   .play-button { transition: none; }
   .ship-sock-body { animation: none !important; }
-  .sound-toggle,
+  .motion-controls,
+  .ctl,
+  .tilt-chip,
   .lost-sock,
   .lost-sock-msg { transition: none; }
   .sound-wave { animation: none !important; }

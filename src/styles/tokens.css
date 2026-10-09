@@ -78,6 +78,29 @@
   }
 }
 
+/* ---------- DEPTH (version-2 parallax) -------------------------------------
+   One depth scale for the whole site. A depth is a speed multiplier against the
+   scroll, measured from the page plane (0 = text, forms, buttons — they don't move).
+     > 0  nearer: moves faster than the page and further with the pointer / phone tilt
+     < 0  further: lags behind the page and moves against the pointer
+   Read once by src/parallax/engine.js (the JS never hard-codes them).
+   Max 5–6 layers on screen, one hero element per screen, body text stays on 0. */
+:root {
+  --depth-back: -0.3;    /* flat colour shapes, the slowest giant words */
+  --depth-far: -0.15;    /* doodles, faded backdrops */
+  --depth-mid: 0;        /* the page: copy, forms, buttons, product grids */
+  --depth-near: 0.2;     /* stickers, sock cutouts */
+  --depth-front: 0.45;   /* one foreground hero object per screen (may get --dof-blur) */
+
+  --parallax-travel: 0.42;   /* scroll shift per unit depth, × distance from viewport centre */
+  --parallax-clamp: 0.3;     /* never shift a layer by more than 30% of the viewport height */
+  --parallax-pointer: 70px;  /* pointer / tilt shift per unit depth */
+  --parallax-tilt-deg: 22;   /* phone tilt that reaches the full pointer shift */
+  --parallax-calm: 0.15;     /* "calm mode" strength */
+  --parallax-phone: 0.65;    /* strength under 640px wide */
+  --dof-blur: 2.5px;         /* depth-of-field blur on the foreground object */
+}
+
 /* ==========================================================================
    SECTION TONES — one section = one flat colour, no gradients.
    Each tone sets which colour the giant type, body copy, accents and focus

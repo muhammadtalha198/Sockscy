@@ -4,8 +4,8 @@ import { useParallax } from '../hooks/useParallax'
 import { cx } from '../lib/cx'
 import { springEasing } from '../lib/motion'
 
-// three parallax depths: far doodles, mid stickers, near cutouts
-const DEPTH_SPEED = { 1: 0.05, 2: 0.12, 3: 0.22 }
+// v1 numeric depths map onto the site-wide planes (tokens.css --depth-*)
+const DEPTH_PLANE = { 1: 'far', 2: 'near', 3: 'front' }
 
 /*
   Die-cut sticker wrapper. Layers (outer → inner):
@@ -13,8 +13,9 @@ const DEPTH_SPEED = { 1: 0.05, 2: 0.12, 3: 0.22 }
     → sticker outline → rotation
   Put any SVG / cutout image inside. Decorative by default (aria-hidden).
 
-  - depth 1|2|3 picks a parallax speed (default: outlined stickers 2, doodles 1);
-    an explicit `parallax` number overrides it
+  - depth: 'back'|'far'|'near'|'front' (or v1's 1|2|3 = far|near|front); default: outlined
+    stickers near, doodles far. An explicit `parallax` number is used as the depth.
+    Inside a <ParallaxSection> it moves with its section's planes (scroll, pointer, tilt).
   - the first time it scrolls into view it flies in from the nearest screen edge
     and settles with a spring (off with reduced motion or flyIn={false})
 
@@ -36,8 +37,8 @@ export default function Sticker({
   decorative = true,
   style,
 }) {
-  const speed = parallax ?? DEPTH_SPEED[depth ?? (outline ? 2 : 1)]
-  const parallaxRef = useParallax(speed)
+  const plane = parallax ?? (typeof depth === 'string' ? depth : DEPTH_PLANE[depth ?? (outline ? 2 : 1)])
+  const parallaxRef = useParallax({ depth: plane })
   const flyRef = useRef(null)
   const [pending, setPending] = useState(() => flyIn && typeof window !== 'undefined' && !prefersReducedMotion())
   const side = useRef(-1)
@@ -83,7 +84,7 @@ export default function Sticker({
       aria-hidden={decorative || undefined}
     >
       <div ref={flyRef} className={pending ? 'sticker-fly-pending' : undefined}>
-        <div ref={parallaxRef} className="will-change-transform">
+        <div ref={parallaxRef}>
           <div
             className={float ? 'animate-float' : undefined}
             style={{ '--float-duration': `${duration}s`, '--float-delay': `${delay}s` }}

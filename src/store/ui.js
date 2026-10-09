@@ -25,6 +25,7 @@ export function markIntroPlayed() {
  *   introDone   — false while the first-visit intro is on screen
  *   quickViewId — product id shown in the quick-view dialog (null = closed)
  *   remix       — easter egg counter (logo tapped 5×): shifts every placeholder sock's pattern
+ *   calm        — "calm mode": parallax at its minimum, decorative loops paused (persists)
  */
 export const useUi = create(
   persist(
@@ -34,6 +35,7 @@ export const useUi = create(
       quickViewId: null,
       gameOpen: false,
       remix: 0,
+      calm: false,
 
       finishIntro: () => {
         markIntroPlayed()
@@ -45,12 +47,13 @@ export const useUi = create(
       openGame: () => set({ gameOpen: true }),
       closeGame: () => set({ gameOpen: false }),
       remixSocks: () => set((s) => ({ remix: s.remix + 1 })),
+      setCalm: (calm) => set({ calm }),
     }),
     {
       name: 'socksavvy-ui',
       version: 1,
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ soundOn: state.soundOn }),
+      partialize: (state) => ({ soundOn: state.soundOn, calm: state.calm }),
     },
   ),
 )

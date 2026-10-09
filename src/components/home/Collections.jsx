@@ -2,7 +2,8 @@ import { Link } from 'react-router'
 import { getProducts } from '../../api/products'
 import { useAsync } from '../../hooks/useAsync'
 import { useInView } from '../../hooks/useInView'
-import { useScrollSkew } from '../../motion/useScrollSkew'
+import { useParallax } from '../../hooks/useParallax'
+import { wordDrift } from '../GiantHeadline'
 import { COLLECTIONS } from '../../lib/constants'
 import { cx } from '../../lib/cx'
 import SockArt from '../art/SockArt'
@@ -21,7 +22,7 @@ const OFFSET = ['pl-gutter', 'pl-[20vw]', 'pl-[7vw]', 'pl-[30vw]', 'pl-gutter']
 
 function CollectionWord({ c, index, count }) {
   const [ref, inView] = useInView()
-  useScrollSkew(ref, { dir: index % 2 ? 1 : -1 })
+  useParallax({ ref, depth: 'far', axis: 'x', drift: wordDrift(), dir: index % 2 ? 1 : -1, skew: true, pointer: false, own: true })
   return (
     <Link
       ref={ref}

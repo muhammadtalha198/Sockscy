@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @import "./tokens.css";
 @import "./fx.css";
+@import "./parallax.css";
 
 @layer base {
   html {

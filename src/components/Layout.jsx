@@ -8,7 +8,9 @@ import CartDrawer from './CartDrawer'
 import CartToast from './CartToast'
 import Cursor from './fx/Cursor'
 import EasterEggs from './fx/EasterEggs'
-import SoundToggle from './fx/SoundToggle'
+import MotionControls from './fx/MotionControls'
+import TiltChip from './fx/TiltChip'
+import ParallaxRoot from '../parallax/ParallaxRoot'
 import Intro from './fx/Intro'
 import Footer from './Footer'
 import Navbar from './Navbar'
@@ -50,7 +52,9 @@ export default function Layout() {
       <CartDrawer />
       <QuickView />
       <PlayButton />
-      <SoundToggle />
+      <MotionControls />
+      <TiltChip />
+      <ParallaxRoot />
       <CartToast />
       <Cursor />
       <EasterEggs />

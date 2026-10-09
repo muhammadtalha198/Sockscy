@@ -3,6 +3,7 @@
 // Reduced motion → resolves to null and nothing is loaded.
 import { prefersReducedMotion } from '../hooks/useReducedMotion'
 import { registerScrollHooks } from '../lib/scrollLock'
+import { attachTicker } from '../parallax/engine'
 
 let kit = null
 let loading = null
@@ -19,6 +20,8 @@ export function loadScrollKit() {
         lenis.on('scroll', ScrollTrigger.update)
         gsap.ticker.add((t) => lenis.raf(t * 1000))
         gsap.ticker.lagSmoothing(0)
+        // parallax runs in the same tick, right after Lenis has moved the page
+        attachTicker(gsap.ticker)
         registerScrollHooks({ stop: () => lenis.stop(), start: () => lenis.start() })
         // content above a trigger can load later (products, fonts) — re-measure when the page grows
         let refreshTimer = 0

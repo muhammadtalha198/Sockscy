@@ -1,5 +1,5 @@
 import { useInView } from '../hooks/useInView'
-import { useScrollSkew } from '../motion/useScrollSkew'
+import { useParallax } from '../hooks/useParallax'
 import { cx } from '../lib/cx'
 
 const SIZES = {
@@ -18,10 +18,14 @@ const SIZES = {
   Scrolling drifts the whole headline sideways and skews it with scroll velocity
   (skew={false} to opt out — the physics hero does, its letters are collision sensors).
 */
+/** sideways travel of giant words: 12% of the screen, at most 220px */
+export const wordDrift = () => (typeof window !== 'undefined' ? Math.min(220, window.innerWidth * 0.12) : 120)
+
 export default function GiantHeadline({ as: Tag = 'h2', lines, size = 'giant', className = '', id, ready = true, skew = true, children }) {
   const [ref, inView] = useInView()
   const first = typeof lines[0] === 'string' ? lines[0] : lines[0]?.text || ''
-  useScrollSkew(ref, { dir: first.length % 2 ? 1 : -1, enabled: skew })
+  // giant words drift sideways against the scroll and lean with its speed (ParallaxText)
+  useParallax({ ref, depth: 'far', axis: 'x', drift: wordDrift(), dir: first.length % 2 ? 1 : -1, skew: true, pointer: false, own: true, enabled: skew })
   return (
     <Tag ref={ref} id={id} className={cx('giant t-display relative', SIZES[size], inView && ready && 'is-in', className)}>
       {lines.map((line, i) => {

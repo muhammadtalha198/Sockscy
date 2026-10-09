@@ -2,7 +2,8 @@ import { useEffect, useRef } from 'react'
 import { Link } from 'react-router'
 import { prefersReducedMotion } from '../../hooks/useReducedMotion'
 import { loadScrollKit } from '../../motion/scroll'
-import { useScrollSkew } from '../../motion/useScrollSkew'
+import { useParallax } from '../../hooks/useParallax'
+import { wordDrift } from '../GiantHeadline'
 import { SOCK_PATH } from '../art/SockArt'
 
 /*
@@ -26,7 +27,7 @@ const EGGS = [
 export default function SockFactory() {
   const rootRef = useRef(null)
   const wordRef = useRef(null)
-  useScrollSkew(wordRef, { dir: -1 })
+  useParallax({ ref: wordRef, depth: 'far', axis: 'x', drift: wordDrift(), dir: -1, skew: true, pointer: false, own: true })
 
   useEffect(() => {
     const root = rootRef.current

@@ -1,14 +1,10 @@
-import { useRef } from 'react'
-import { useTuckOnScroll } from '../../hooks/useTuckOnScroll'
 import { play, preloadSounds } from '../../fx/sound'
 import { useUi } from '../../store/ui'
 
-/** Floating speaker sticker (bottom-right). Sound is OFF until the visitor turns it on. */
+/** Speaker sticker (in the bottom-right MotionControls cluster). Sound is OFF until turned on. */
 export default function SoundToggle() {
   const soundOn = useUi((s) => s.soundOn)
   const setSound = useUi((s) => s.setSound)
-  const ref = useRef(null)
-  const tucked = useTuckOnScroll(ref)
 
   function toggle() {
     if (soundOn) {
@@ -21,15 +17,13 @@ export default function SoundToggle() {
 
   return (
     <button
-      ref={ref}
       type="button"
       onClick={toggle}
       aria-pressed={soundOn}
       aria-label="sound effects"
       data-on={soundOn || undefined}
-      data-tucked={tucked || undefined}
       data-cursor="add"
-      className="sound-toggle fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] right-3 z-40 md:bottom-6 md:right-6"
+      className="ctl sound-toggle"
     >
       <span className="sticker block w-12 md:w-14">
         <svg viewBox="0 0 64 64" aria-hidden="true">
@@ -45,7 +39,7 @@ export default function SoundToggle() {
           )}
         </svg>
       </span>
-      <span className="sound-toggle-tag" aria-hidden="true">
+      <span className="ctl-tag" aria-hidden="true">
         {soundOn ? 'sound on' : 'sound off'}
       </span>
     </button>
