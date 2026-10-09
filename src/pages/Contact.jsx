@@ -6,6 +6,8 @@ import { DEMO_ORDER_NUMBER, trackOrder } from '../api/orders'
 import { Flower, Smiley, SockMonster, Sparkle } from '../components/art/Doodles'
 import { TextArea, TextField } from '../components/form/Field'
 import GiantHeadline from '../components/GiantHeadline'
+import ParallaxSection from '../components/parallax/ParallaxSection'
+import StoryBlock from '../components/parallax/StoryBlock'
 import Sticker from '../components/Sticker'
 import { SITE } from '../lib/constants'
 import { cx } from '../lib/cx'
@@ -18,7 +20,7 @@ export default function Contact({ focus }) {
     <>
       <title>{focus === 'track' ? 'track your order — SOCKSAVVY' : 'contact — SOCKSAVVY'}</title>
 
-      <section aria-labelledby="contact-title" className="tone-green clip-x relative pb-section pt-28 md:pt-36">
+      <ParallaxSection rest="top" aria-labelledby="contact-title" className="tone-green clip-x relative pb-section pt-28 md:pt-36">
         <Sticker className="absolute right-[6%] top-[80px] z-20 w-24 md:right-[14%] md:w-36" rotate={-10} depth="near">
           <Smiley />
         </Sticker>
@@ -37,8 +39,12 @@ export default function Contact({ focus }) {
 
         <div className="mt-10 grid gap-12 px-gutter lg:grid-cols-12 lg:pr-24">
           <div className="lg:col-span-5">
-            <p className="copy">questions about sizes, an order, a collab or a very specific sock you saw once in 2009? we’re fastest on whatsapp.</p>
-            <p className="copy copy-offset mt-2">usually replying within a few hours, 11am–9pm, mon–sat.</p>
+            <StoryBlock depth="near">
+              <p className="copy">questions about sizes, an order, a collab or a very specific sock you saw once in 2009? we’re fastest on whatsapp.</p>
+            </StoryBlock>
+            <StoryBlock depth="far" className="mt-2">
+              <p className="copy copy-offset">usually replying within a few hours, 11am–9pm, mon–sat.</p>
+            </StoryBlock>
             <div className="mt-8 flex flex-col items-start gap-4">
               <a href={wa} target="_blank" rel="noopener noreferrer" className="btn btn-yellow btn-lg">
                 chat on whatsapp ↗
@@ -55,7 +61,7 @@ export default function Contact({ focus }) {
             <ContactForm />
           </div>
         </div>
-      </section>
+      </ParallaxSection>
 
       <TrackOrder autoFocus={focus === 'track'} />
     </>
@@ -165,7 +171,7 @@ function TrackOrder({ autoFocus }) {
 
   const order = state.order
   return (
-    <section id="track" aria-labelledby="track-title" className="tone-yellow clip-x relative scroll-mt-4 py-section">
+    <ParallaxSection id="track" aria-labelledby="track-title" className="tone-yellow clip-x relative scroll-mt-4 py-section">
       <Sticker className="absolute right-[6%] top-[8%] z-20 w-24 md:w-36" rotate={10} depth="near">
         <SockMonster />
       </Sticker>
@@ -270,11 +276,13 @@ function TrackOrder({ autoFocus }) {
               <Sticker className="w-24 shrink-0" rotate={-8} float={false}>
                 <Smiley fill="#ff52a1" />
               </Sticker>
-              <p className="copy">pop in your order number to see where your socks are. you’ll find it in your whatsapp confirmation.</p>
+              <StoryBlock depth="far">
+                <p className="copy">pop in your order number to see where your socks are. you’ll find it in your whatsapp confirmation.</p>
+              </StoryBlock>
             </div>
           )}
         </div>
       </div>
-    </section>
+    </ParallaxSection>
   )
 }

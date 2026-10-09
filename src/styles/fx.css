@@ -871,6 +871,12 @@ html[data-lite] .animate-spin-slow { animation-play-state: paused; }
   pointer-events: none;
 }
 
+/* ---------- v2: story blocks enter at their own depth --------------------- */
+.story-block {
+  transition: translate var(--dur-slow) var(--ease-spring), scale var(--dur-slow) var(--ease-spring), opacity 0.4s ease;
+}
+.story-block:not([data-in]) { translate: 0 var(--enter-y, 60px); scale: var(--enter-s, 1); opacity: 0.001; }
+
 /* ---------- REDUCED MOTION: effects off ---------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   .intro { display: none; }
@@ -881,6 +887,7 @@ html[data-lite] .animate-spin-slow { animation-play-state: paused; }
   .side-tab-count { animation: none; }
   .group:hover .pcard-sock > * { transform: none; }
   .pcard:not([data-in]) { translate: none; scale: none; }
+  .story-block:not([data-in]) { translate: none; scale: none; opacity: 1; }
   .spin-splash { animation: none; display: none; }
   .factory { height: auto; }
   .factory-pin { position: relative; }
