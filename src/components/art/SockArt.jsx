@@ -6,6 +6,7 @@ import { useId } from 'react'
 
   views:
     single — one sock, slightly tilted (cutouts, thumbnails)
+    upright — one sock, untilted and tightly cropped (physics sprites)
     pair   — flat-lay pair
     kick   — two legs in the air wearing the socks
     detail — zoomed-in pattern
@@ -187,6 +188,8 @@ const VIEWS = {
     ],
   },
   detail: { viewBox: '52 70 128 128', socks: [{ t: '' }] },
+  // un-rotated, cropped tight to the sock — used for physics bodies & stickers
+  upright: { viewBox: '40 6 164 244', socks: [{ t: '' }] },
 }
 
 export default function SockArt({ art, view = 'single', title, className = '' }) {

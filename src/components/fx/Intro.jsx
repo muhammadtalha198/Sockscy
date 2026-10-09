@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useUi } from '../../store/ui'
+import { lockScroll, unlockScroll } from '../../lib/scrollLock'
 import SockArt, { SOCK_PATH } from '../art/SockArt'
 
 /*
@@ -32,13 +33,18 @@ export default function Intro() {
   const [gone, setGone] = useState(false)
   const pctRef = useRef(null)
   const timers = useRef([])
+  const releaseRef = useRef(null)
 
   // knitting progress counter + phase timeline
   useEffect(() => {
     if (!show) return
-    const root = document.documentElement
-    const prevOverflow = root.style.overflow
-    root.style.overflow = 'hidden'
+    lockScroll()
+    let locked = true
+    const release = () => {
+      if (locked) unlockScroll()
+      locked = false
+    }
+    releaseRef.current = release
 
     const t0 = performance.now()
     let raf = 0
@@ -62,7 +68,7 @@ export default function Intro() {
     return () => {
       cancelled = true
       cancelAnimationFrame(raf)
-      root.style.overflow = prevOverflow
+      release()
       timers.current.forEach(clearTimeout)
     }
   }, [show])
@@ -70,7 +76,7 @@ export default function Intro() {
   // exit: release the page, tell the hero to start, unmount after the lift
   useEffect(() => {
     if (phase !== 'exit') return
-    document.documentElement.style.overflow = ''
+    releaseRef.current?.()
     finishIntro()
     const t = setTimeout(() => setGone(true), EXIT_MS + 50)
     return () => clearTimeout(t)

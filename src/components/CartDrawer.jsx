@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { Link, useLocation } from 'react-router'
 import { useShallow } from 'zustand/react/shallow'
 import { useCart } from '../store/cart'
+import { useDialog } from '../hooks/useDialog'
 import { cx } from '../lib/cx'
 import { SockMonster } from './art/Doodles'
 import CartLine from './cart/CartLine'
@@ -9,8 +10,6 @@ import CartSummary from './cart/CartSummary'
 import FreeShippingBar from './cart/FreeShippingBar'
 import GiftPackToggle from './cart/GiftPackToggle'
 import Sticker from './Sticker'
-
-const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea, [tabindex]:not([tabindex="-1"])'
 
 /** Slide-in cart from the right. Esc / overlay closes; focus is trapped while open. */
 export default function CartDrawer() {
@@ -28,38 +27,7 @@ export default function CartDrawer() {
     closeCart()
   }, [pathname, closeCart])
 
-  useEffect(() => {
-    if (!isOpen) return
-    const previouslyFocused = document.activeElement
-    const prevOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    closeRef.current?.focus()
-
-    const onKey = (e) => {
-      if (e.key === 'Escape') {
-        closeCart()
-        return
-      }
-      if (e.key !== 'Tab' || !panelRef.current) return
-      const nodes = panelRef.current.querySelectorAll(FOCUSABLE)
-      if (!nodes.length) return
-      const first = nodes[0]
-      const last = nodes[nodes.length - 1]
-      if (e.shiftKey && document.activeElement === first) {
-        e.preventDefault()
-        last.focus()
-      } else if (!e.shiftKey && document.activeElement === last) {
-        e.preventDefault()
-        first.focus()
-      }
-    }
-    document.addEventListener('keydown', onKey)
-    return () => {
-      document.body.style.overflow = prevOverflow
-      document.removeEventListener('keydown', onKey)
-      if (previouslyFocused?.isConnected) previouslyFocused.focus()
-    }
-  }, [isOpen, closeCart])
+  useDialog(isOpen, { onClose: closeCart, panelRef, initialFocusRef: closeRef })
 
   return (
     <div className={cx('fixed inset-0 z-50', !isOpen && 'pointer-events-none')} inert={!isOpen}>

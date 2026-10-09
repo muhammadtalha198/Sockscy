@@ -5,6 +5,7 @@ import CartDrawer from './CartDrawer'
 import Intro from './fx/Intro'
 import Footer from './Footer'
 import Navbar from './Navbar'
+import QuickView from './QuickView'
 import ScrollManager from './ScrollManager'
 import SideTab from './SideTab'
 
@@ -49,6 +50,7 @@ export default function Layout() {
       <Footer />
       <SideTab />
       <CartDrawer />
+      <QuickView />
       <p className="sr-only" role="status" aria-live="polite">
         {announcement}
       </p>

@@ -117,7 +117,49 @@
   .intro-br { display: none; }
 }
 
+/* ---------- B. PHYSICS HERO ---------------------------------------------- */
+.giant-letter {
+  display: inline-block;
+  transform-origin: 50% 90%;
+}
+.hero-cutout {
+  transition:
+    opacity 0.3s ease,
+    transform var(--dur-med) var(--ease-overshoot);
+}
+.hero[data-physics="on"] .hero-cutout {
+  opacity: 0;
+  transform: scale(0.4) rotate(18deg);
+  pointer-events: none;
+}
+.hero[data-cursor="grab"],
+.hero[data-cursor="view"] { cursor: grab; }
+.hero[data-cursor="grabbing"] { cursor: grabbing; }
+.hero-hint {
+  transition: opacity 0.4s ease;
+}
+.hero-hint[data-hidden] { opacity: 0; }
+.hero-badge {
+  display: block;
+  transition: transform var(--dur-fast) var(--ease-spring);
+}
+.hero-badge:hover { transform: scale(1.06) rotate(-4deg); }
+.hero-badge:active { transform: scale(0.94); }
+
+/* quick view: bottom sheet on phones, card on desktop */
+.qv-overlay { animation: fx-fade 0.25s ease both; }
+.qv-panel { animation: qv-in var(--dur-med) var(--ease-spring) both; }
+@keyframes qv-in {
+  from { transform: translate3d(0, 48px, 0) scale(0.97); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+@keyframes fx-fade {
+  from { opacity: 0; }
+}
+
 /* ---------- REDUCED MOTION: effects off ---------------------------------- */
 @media (prefers-reduced-motion: reduce) {
   .intro { display: none; }
+  .qv-panel,
+  .qv-overlay { animation: none; }
 }
